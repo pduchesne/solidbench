@@ -1,0 +1,23 @@
+{
+  "@context": "https://www.w3.org/ns/solid/oidc-context.jsonld",
+  "client_id": "${process.env.ROOT_URL}/client.jsonld",
+  "client_name": "Test SolidBench App",
+  "redirect_uris": [
+    "https://localhost:8000/",
+    "https://localhost:8000/tools/pod-viewer",
+    "${process.env.ROOT_URL}/tools/pod-viewer",
+    "${process.env.ROOT_URL}/",
+    "${process.env.ROOT_URL}"
+  ],
+  "client_uri": "${process.env.ROOT_URL}",
+  "logo_uri": "https://annotations.highlatitud.es/logo.png",
+  "tos_uri": "https://annotations.highlatitud.es/tos",
+  "scope": "openid offline_access webid",
+  "grant_types": [
+    "refresh_token",
+    "authorization_code"
+  ],
+  "response_types": [
+    "code"
+  ]
+}

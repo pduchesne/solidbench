@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {HashRouter, Route, Routes} from 'react-router-dom';
+import {BrowserRouter, Route, Routes} from 'react-router-dom';
 import './solidbench.scss';
 import { SessionProvider} from '@inrupt/solid-ui-react';
 
@@ -32,10 +32,9 @@ export const App = () => {
 
     // Using the BrowserRouter within GH Pages is tricky and requires a redefinition of the default 404 page
     // (cf https://github.com/orgs/community/discussions/36010)
-    // --> use the HashRouter instead
 
     return (
-        <HashRouter>
+        <BrowserRouter>
             <SessionProvider restorePreviousSession={true} sessionId="solidbench-app" onError={console.log}>
                 <AppContextProvider>
                     {ctx => (
@@ -61,7 +60,7 @@ export const App = () => {
                     )}
                 </AppContextProvider>
             </SessionProvider>
-        </HashRouter>
+        </BrowserRouter>
     );
 };
 

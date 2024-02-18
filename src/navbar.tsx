@@ -76,14 +76,15 @@ export const AppNavBar = () => {
                                 authOptions={
                                     {
                                         //clientName: "Web Annotations App",
-                                        clientId: "https://highlatitud.es/app/annotations.jsonld",
-                                        redirectUrl: new URL("/", window.location.href).toString(),
+                                        clientId: process.env.ROOT_URL+"/client.jsonld",
+                                        //clientId: "https://highlatitud.es/app/annotations.jsonld",
+                                        //redirectUrl: new URL("/", window.location.href).toString(),
 
                                         tokenType: 'Bearer'
                                         /*, popUp: true */
                                     }
                                 }
-                                redirectUrl={new URL("/#/tools/pod-viewer", window.location.href).toString()}
+                                redirectUrl={new URL("/tools/pod-viewer", window.location.href).toString()}
                                 onError={console.log}
                             >
                                 <Button variant="contained" color="primary">

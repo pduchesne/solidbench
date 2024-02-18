@@ -1,6 +1,8 @@
+const Dotenv = require("dotenv-webpack");
 const HtmlWebPackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 var webpack = require('webpack');
+require('dotenv').config();
 
 var path = require('path');
 
@@ -15,10 +17,13 @@ const htmlPlugin = new HtmlWebPackPlugin({
     chunks: [APP_NAME],
 });
 
+const dotenvPlugin = new Dotenv();
+
 var localVariables;
 try {
     localVariables = require('./local-config.json');
-} catch (e) {}
+} catch (e) {
+}
 const definePlugin = new webpack.DefinePlugin({
     PROXY_URL: (localVariables && JSON.stringify(localVariables.proxyUrl)) || false
 });
@@ -26,15 +31,23 @@ const definePlugin = new webpack.DefinePlugin({
 const dev = true;
 
 var styleLoader = 'style-loader';
-var cssLoader =  'css-loader';
+var cssLoader = 'css-loader';
+
+
+function injectEnv(buffer) {
+    // parse the JSON content
+    var strValue = buffer.toString();
+
+    return strValue.replaceAll('${process.env.ROOT_URL}', process.env.ROOT_URL)
+}
 
 
 module.exports = {
     mode: dev ? 'development' : 'production',
-    optimization: { minimize: !dev },
+    optimization: {minimize: !dev},
 
     //specify the entry point for your project
-    entry: { [APP_NAME] : [ './src/index.tsx' ] },
+    entry: {[APP_NAME]: ['./src/index.tsx']},
     // specify the output file name
     output: {
         path: path.resolve(__dirname, 'dist'),
@@ -83,7 +96,7 @@ module.exports = {
                 test: /\.scss$/,
                 use: [styleLoader, cssLoader, 'sass-loader']
             },
-           // { test: /\.json$/, loader: "json-loader" },
+            // { test: /\.json$/, loader: "json-loader" },
             { // required for font-awesome
                 test: /\.(jpe?g|png|gif|svg|ico|woff(2)?|ttf|eot)(\?v=\d+\.\d+\.\d+)?$/,
                 loader: "file-loader",
@@ -108,7 +121,6 @@ module.exports = {
         https: true,
 
 
-
         proxy: {
             "/proxy": {
                 //"changeOrigin": true,
@@ -127,8 +139,18 @@ module.exports = {
         htmlPlugin,
         definePlugin,
         new CopyWebpackPlugin({
-            patterns:[
-            { from: 'static' }
-        ]}),
+            patterns: [
+                {from: 'static'},
+                {
+                    from: "./src/client.jsonld",
+                    to: "./client.jsonld",
+                    transform(content, path) {
+                        console.log("inject: "+path)
+                        return injectEnv(content)
+                    }
+                }
+            ]
+        }),
+        dotenvPlugin
     ]
 };
