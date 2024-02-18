@@ -3,6 +3,7 @@ import {useEffect, useMemo, useState} from "react";
 import {LoginButton} from '@inrupt/solid-ui-react';
 import {Button, MenuItem, Select} from "@mui/material";
 import {getFile, overwriteFile, WithResourceInfo} from "@inrupt/solid-client";
+import {GetFileOptions} from "@inrupt/solid-client/dist/resource/file";
 
 const ISSUERS: Record<string, string> = {
     //"https://openid.sandbox-pod.datanutsbedrijf.be": "DNB Sandbox",
@@ -37,7 +38,6 @@ export const LoginMultiButton = (props: Omit<Parameters<typeof LoginButton>[0], 
     );
 };
 
-
 export type SolidFile = {
     file: Promise<Blob & WithResourceInfo>,
     saveRawContent: (rawContent: string | Blob) => Promise<void>
@@ -54,6 +54,36 @@ function loadRawContent(path: string,
 }
 
  */
+
+
+export type SolidFileMetadata = WithResourceInfo & {
+    headers: Record<string, string>
+    //creationDate: string,
+    //modificationDate: string,
+    //contentLength: number
+}
+
+export async function getFileWithHeaders(path: string, options?: GetFileOptions): Promise<Blob & SolidFileMetadata> {
+    const fetchFn: GetFileOptions['fetch'] = options?.fetch || fetch;
+    const headers: Record<string, string> = {};
+    const fetchOverride: GetFileOptions['fetch'] = async (url: string, init) => {
+        const resp = await fetchFn(url, init);
+        resp.headers.forEach((value, key) => {
+            headers[key] = value
+        });
+        return resp;
+    }
+    const opts = options ? {...options, fetch: fetchOverride} : {fetch: fetchOverride};
+
+    const file = await getFile(
+        path,
+        opts
+    )
+
+    Object.assign(file, {headers});
+
+    return file as unknown as Blob & SolidFileMetadata;
+}
 
 /**
  * Create a memoized annotation container to perform storage operations on an annotation file

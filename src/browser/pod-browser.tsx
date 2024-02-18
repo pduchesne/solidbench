@@ -12,16 +12,25 @@ import 'codemirror/mode/javascript/javascript';
 import {useSession} from "@inrupt/solid-ui-react";
 import {DirtyCodemirror} from "./codemirror";
 
-import {PromiseContainer, PromiseStateContainer} from "@hilats/react-utils/dist/esm";
+import {PromiseContainer, PromiseStateContainer, PromiseState, usePromiseFn} from "@hilats/react-utils";
 import {useSolidFile} from "../solid";
-import {PromiseState, usePromiseFn} from "@hilats/react-utils";
-import {getContainedResourceUrlAll, getSolidDataset, isContainer, WithResourceInfo} from "@inrupt/solid-client";
+import {
+    getContainedResourceUrlAll, getContentType,
+    getSolidDataset,
+    getSourceUrl,
+    isContainer, isRawData,
+    WithResourceInfo,
+    getResourceInfo, WithServerResourceInfo, acp_ess_2
+} from "@inrupt/solid-client";
 import {SolidDataset} from "@inrupt/solid-client/dist/interfaces";
 import {AppContext} from "../appContext";
 import FolderIcon from '@mui/icons-material/Folder';
 import DescriptionIcon from '@mui/icons-material/Description';
 import {Breadcrumbs, Link} from "@mui/material";
 import {CommonProps} from "@mui/material/OverridableComponent";
+import FolderSharedIcon from '@mui/icons-material/FolderShared';
+import BasicTabs, {TabDescriptor} from "../ui/tabs";
+import {UniversalAccessMetadata} from "./resourceAccess";
 
 
 export const PodBrowserPanel = () => {
@@ -32,11 +41,17 @@ export const PodBrowserPanel = () => {
     return appContext.podUrl ? <PodBrowser fileUrl={appContext.podUrl} fetch={fetch}/> : null;
 }
 
+/**
+ * Display a breadcrumb element for a given resourceURL, displaying all path elements up to a given root.
+ * @param props
+ * @constructor
+ */
 function FileBreadcrumbs(props: { rootUrl?: string, path: string, onSelect: (url: string) => void } & CommonProps) {
 
     const {rootUrl, path, onSelect, ...commonProps} = props;
 
-    const [computedRoot, relPath] = useMemo( () => {
+    // compute the root and the relative path of the file
+    const [computedRoot, relPath] = useMemo(() => {
         const computedRoot = rootUrl || new URL(path).origin + '/';
 
         return [computedRoot, path.startsWith(computedRoot) ? path.substring(computedRoot.length) : path]
@@ -44,7 +59,11 @@ function FileBreadcrumbs(props: { rootUrl?: string, path: string, onSelect: (url
 
     const pathElements = relPath.split('/');
 
-    const subpaths = pathElements.reduce((acc: string[], path: string, idx, arr) => {if (path) acc.push(acc[acc.length-1] + path + ((idx < arr.length-1) ? '/' : '')); return acc;}, [computedRoot]);
+    // create the list of all subpaths
+    const subpaths = pathElements.reduce((acc: string[], path: string, idx, arr) => {
+        if (path) acc.push(acc[acc.length - 1] + path + ((idx < arr.length - 1) ? '/' : ''));
+        return acc;
+    }, [computedRoot]);
 
     return (
         <Breadcrumbs aria-label="breadcrumb" {...commonProps}>
@@ -61,9 +80,10 @@ function FileBreadcrumbs(props: { rootUrl?: string, path: string, onSelect: (url
     );
 }
 
-export const PodBrowser = (props: { fileUrl: string, fetch?: typeof fetch }) => {
+export const PodBrowser = (props: { fileUrl: string, fetch?: typeof fetch, displayMetadata?: boolean }) => {
 
     const [currentUrl, setCurrentUrl] = useState(props.fileUrl);
+    const [displayMetadata, setDisplayMetadata] = useState(props.displayMetadata);
     const currentFolder = new URL('./', currentUrl).toString();
 
     const currentFile = useSolidFile(
@@ -82,11 +102,16 @@ export const PodBrowser = (props: { fileUrl: string, fetch?: typeof fetch }) => 
 
     return (
         <div className="vFlow fill">
-            <FileBreadcrumbs path={currentUrl} onSelect={setCurrentUrl} style={{flex: 'none'}}/>
-            <div className="viewer-basic hFlow">
-                <PodDirectoryTree folderUrl={currentFolder} fetch={props.fetch} onSelectFile={setCurrentUrl}/>
-                <div className="vFlow">
-
+            <div style={{flex: 0, minHeight: '25px'}}>
+                <FileBreadcrumbs path={currentUrl} onSelect={setCurrentUrl} style={{display: 'inline-block'}}/>
+                <FolderSharedIcon sx={{verticalAlign: 'sub', fontSize: '110%'}}
+                                  onClick={() => setDisplayMetadata(!displayMetadata)}/>
+            </div>
+            <div className="viewer-basic hFlow" style={{flex: 1}}>
+                <div>
+                    <PodDirectoryTree folderUrl={currentFolder} fetch={props.fetch} onSelectFile={setCurrentUrl}/>
+                </div>
+                <div className="vFlow" style={{flex: 2}}>
                     {fileBlob$ ?
                         <PromiseContainer promise={fileBlob$}>
                             {(fileContent) => <DirtyCodemirror
@@ -103,16 +128,15 @@ export const PodBrowser = (props: { fileUrl: string, fetch?: typeof fetch }) => 
                     }
 
                 </div>
-
-
+                {displayMetadata ? <div className="vFlow">
+                    <ResourceMetadata resourceUrl={currentUrl} fetch={props.fetch}/>
+                </div> : null}
             </div>
-            {/*    }
-        </SizeMeasurer> */}
         </div>
     );
 };
 
-export const PodDirectoryTree = (props: { folderUrl: string, fetch?: typeof fetch, onSelectFile: (url: string) => void }) => {
+export const PodDirectoryTree = (props: { folderUrl: string, fetch?: typeof fetch, onSelectFile: (url: string) => void, selected?: string }) => {
 
     const container$: PromiseState<{ dataset: SolidDataset & WithResourceInfo, children: string[] }> = usePromiseFn(
         async () => {
@@ -135,12 +159,77 @@ export const PodDirectoryTree = (props: { folderUrl: string, fetch?: typeof fetc
             <PromiseStateContainer promiseState={container$}>
                 {(container) => <div>
                     {container.children.map(res =>
-                        <div onClick={() => props.onSelectFile(res)}>
+                        <div onClick={() => props.onSelectFile(res)}
+                             className={props.selected == res ? 'selected' : undefined}>
                             {res.endsWith('/') ? <FolderIcon/> : <DescriptionIcon/>}
                             {res.substring(props.folderUrl.length)}
                         </div>)}
                 </div>}
             </PromiseStateContainer>
+        </div>
+    );
+};
+
+//type ResourceInfoWithAccess = Awaited<ReturnType<typeof acp_ess_1.getResourceInfoWithAccessDatasets>>;
+
+export async function resolveResourceInfo(resource: string | WithResourceInfo, fetchFn?: typeof fetch) {
+    return typeof resource == 'string' ?
+        await acp_ess_2.getResourceInfoWithAccessDatasets(
+            resource,               // File in Pod to Read
+            {fetch: fetchFn}       // fetch from authenticated session
+        ) : resource
+}
+
+
+export const ResourceMetadata = (props: { resourceUrl: string, resource?: string, fetch?: typeof fetch }) => {
+
+    const resInfo$: PromiseState<WithServerResourceInfo> = usePromiseFn(
+        async () => {
+            return getResourceInfo(props.resourceUrl, {fetch: props.fetch});
+        },
+        [props.resourceUrl, props.fetch]
+    );
+
+    const tabs = useMemo<TabDescriptor<{ resourceUrl: string, resourceInfo: WithServerResourceInfo, fetch?: typeof fetch }>[]>(() => [
+        {label: 'Description', Comp: (tabProps) => <ResourceInfo {...tabProps}/>},
+        {label: 'Access', Comp: (tabProps) => <UniversalAccessMetadata {...tabProps}/>},
+        {label: 'Raw', Comp: (tabProps) => <RawResourceInfo {...tabProps}/>}
+    ], [resInfo$]);
+
+    return (
+        <div>
+            <PromiseStateContainer promiseState={resInfo$}>
+                {(resourceInfo) => <BasicTabs tabs={tabs} tabProps={{
+                    resourceInfo,
+                    resourceUrl: props.resourceUrl,
+                    fetch: props.fetch
+                }}/>}
+            </PromiseStateContainer>
+        </div>
+    );
+};
+
+
+export const ResourceInfo = (props: { resourceInfo: WithResourceInfo }) => {
+
+    return (
+        <div>
+            <h3>Resource Info</h3>
+            <div>{getSourceUrl(props.resourceInfo)}</div>
+            <div>{isRawData(props.resourceInfo)}</div>
+            <div>{getContentType(props.resourceInfo)}</div>
+        </div>
+    );
+};
+
+
+export const RawResourceInfo = (props: { resourceInfo: WithResourceInfo }) => {
+
+    return (
+        <div>
+            <pre>
+                {JSON.stringify(props.resourceInfo, undefined, 4)}
+            </pre>
         </div>
     );
 };
