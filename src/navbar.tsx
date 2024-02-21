@@ -18,6 +18,7 @@ const ToolsMenu = () => {
             <Menu {...bindMenu(popupState)}>
                 <MenuItem onClick={popupState.close} component={Link} to="/tools/spotify">Spotify</MenuItem>
                 <MenuItem onClick={popupState.close} component={Link} to="/tools/colruyt">Colruyt</MenuItem>
+                <MenuItem onClick={popupState.close} component={Link} to="/tools/colruytdb">ColruytDB</MenuItem>
             </Menu>
         </>
     )

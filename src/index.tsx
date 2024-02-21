@@ -8,8 +8,9 @@ import {PodBrowserPanel} from "./browser/pod-browser";
 import {createRoot} from "react-dom/client";
 import {AppNavBar} from "./navbar";
 import {AppContextProvider} from "./appContext";
-import {ColruytPanel} from "./tools/colruyt";
+import {ColruytPanel} from "./tools/retail";
 import {SpotifyPanel} from "./tools/spotify";
+import { ColruytDbPanel } from './tools/retail/colruytdb';
 
 
 const routes = [
@@ -20,6 +21,10 @@ const routes = [
     {
         component: ColruytPanel,
         path: '/tools/colruyt'
+    },
+    {
+        component: ColruytDbPanel,
+        path: '/tools/colruytdb'
     },
     {
         component: SpotifyPanel,

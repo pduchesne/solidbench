@@ -1,31 +1,7 @@
-import {TextItem} from "pdfjs-dist/types/src/display/api";
+import {TextItem, TextMarkedContent, TypedArray} from "pdfjs-dist/types/src/display/api";
 import {assert} from "@hilats/utils";
-
-export type Article = {
-    articleId: string;
-    label: string;
-}
-
-export type Purchase = {
-    date: string
-    coupon?: string;
-    quantity: number;
-    unitPrice: number;
-    discount: number;
-    amount: number;
-}
-
-export type Receipt = {
-    receiptId: string;
-    date: string;
-    storeId: string;
-    storeName: string;
-    items: ReceiptItem[];
-    returnedBottles: number;
-    totalAmount: number;
-}
-
-export type ReceiptItem = Article & Purchase
+import {getDocument, PDFDocumentProxy} from "pdfjs-dist";
+import {Receipt, ReceiptItem} from "../model";
 
 function findNextReceiptIdx(items: Array<TextItem>, offset: number = 0) {
     return items.findIndex((i, idx) => idx >= offset && i.str.startsWith('Ticket de caisse '));
@@ -204,4 +180,100 @@ function parseReceipt(textItems: Array<TextItem>, startOffset: number): [Receipt
 
 
     return [receipt, currentOffset];
+}
+
+
+function isTextItem(item: TextItem | TextMarkedContent): item is TextItem {
+    return 'transform' in item;
+}
+
+export function reduceItems(items: Array<TextItem>, collapseEOL?: boolean) {
+    const firstPass: Array<TextItem> = [];
+
+    items.forEach((i, idx) => {
+
+        //const prevOriginalItem = idx > 0 && items[idx-1];
+        const prevItem = firstPass.length > 0 && firstPass[firstPass.length - 1];
+
+        if (prevItem) {
+            // this is a whitespace chunk with an abnormal width
+            // probably a column separator, ignore it
+            if (!i.hasEOL && i.str.trim().length == 0 && i.width > 6 * i.str.length) {
+                return;
+            }
+
+            // item on same baseline and is adjacent to previous one, without white space
+            if (!prevItem.hasEOL && i.transform[5] == prevItem.transform[5] && Math.abs(prevItem.transform[4] + prevItem.width - i.transform[4]) < 0.01) {
+                prevItem.str += i.str;
+                prevItem.hasEOL = i.hasEOL;
+                prevItem.width += i.width;
+                prevItem.height = Math.max(prevItem.height, i.height);
+                return;
+            }
+        }
+
+        if (i.width > 0 || i.hasEOL)
+            firstPass.push({...i, transform: [...i.transform]});
+
+    });
+
+    const secondPass: Array<TextItem> = [];
+
+    firstPass.forEach((i, idx) => {
+        const prevItem = secondPass.length > 0 ? secondPass[secondPass.length - 1] : undefined;
+
+        // previous item has EOL --> merge with a whitespace
+        if (prevItem?.hasEOL && collapseEOL && prevItem.transform[5] > i.transform[5] && Math.abs(prevItem.transform[5] - i.transform[5]) < 1.3 * i.height) {
+            prevItem.str = (prevItem.str + ' ' + i.str).trim();
+            prevItem.hasEOL = i.hasEOL;
+            prevItem.width = (Math.max(prevItem.transform[4] + prevItem.width, i.transform[4] + i.width)) - (Math.min(prevItem.transform[4], i.transform[4]));
+            prevItem.transform[4] = Math.min(prevItem.transform[4], i.transform[4]);
+            prevItem.height = Math.max(prevItem.transform[5] + prevItem.height, i.transform[5] + i.height) - Math.min(prevItem.transform[5], i.transform[5]);
+            prevItem.transform[5] = Math.min(prevItem.transform[5], i.transform[5]);
+
+            return;
+        }
+
+        /*
+        const nextItem = firstPass[idx + 1];
+        // it's one of these case where the EOL char has been sent to the next line already --> merge it with the upper line
+        if (prevItem && !prevItem.hasEOL && i?.hasEOL && collapseEOL && i.height == 0 && i.width == 0 && i.str.length == 0 && nextItem && i.transform[5] == nextItem.transform[5]) {
+            prevItem.hasEOL = i.hasEOL;
+
+            return;
+        }
+         */
+
+        secondPass.push({...i, transform: [...i.transform]});
+    });
+
+    return secondPass.filter(i => i.str.trim().length);
+}
+
+export async function aggregatePages(doc: PDFDocumentProxy) {
+    const items: TextItem[] = [];
+
+    for (let idx = 1; idx <= doc.numPages; idx++) {
+        const page = await doc.getPage(idx);
+        const content = await page.getTextContent();
+
+        items.push(...content.items.filter(isTextItem));
+    }
+
+    return items;
+}
+
+export async function parsePdfData(data: Blob | string | URL | TypedArray | ArrayBuffer) {
+    if (data instanceof Blob)
+        data = await data.arrayBuffer();
+
+    const doc = await getDocument(data).promise;
+    const pageItems = await aggregatePages(doc);
+    const receipts = parseDoc(reduceItems(pageItems, true));
+
+    return {
+        receipts,
+        doc,
+        pageItems
+    };
 }
