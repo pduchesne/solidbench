@@ -8,9 +8,11 @@ import {PodBrowserPanel} from "./browser/pod-browser";
 import {createRoot} from "react-dom/client";
 import {AppNavBar} from "./navbar";
 import {AppContextProvider} from "./appContext";
-import {ColruytPanel} from "./tools/retail";
 import {SpotifyPanel} from "./tools/spotify";
 import { ColruytDbPanel } from './tools/retail/colruytdb';
+import {RetailDashboard} from "./tools/retail";
+import {useCallback} from "react";
+import {useNavigate} from "react-router";
 
 
 const routes = [
@@ -19,12 +21,12 @@ const routes = [
         path: '/tools/pod-viewer'
     },
     {
-        component: ColruytPanel,
-        path: '/tools/colruyt'
+        component: RetailDashboard,
+        path: '/tools/retail'
     },
     {
         component: ColruytDbPanel,
-        path: '/tools/colruytdb'
+        path: '/tools/retail/colruytdb'
     },
     {
         component: SpotifyPanel,
@@ -33,42 +35,56 @@ const routes = [
 
 ];
 
-export const App = () => {
+export const AppRouter = () => {
 
     // Using the BrowserRouter within GH Pages is tricky and requires a redefinition of the default 404 page
     // (cf https://github.com/orgs/community/discussions/36010)
 
     return (
         <BrowserRouter>
-            <SessionProvider restorePreviousSession={true} sessionId="solidbench-app" onError={console.log}>
+           <App />
+        </BrowserRouter>
+    );
+};
+
+export const App = () => {
+    const navigate = useNavigate();
+
+    const sessionRestoreCb = useCallback((url: string) => {
+        const host = new URL(url).host;
+        const path = url.substring(url.indexOf(host) + host.length);
+        navigate(path);
+    }, [history])
+
+    return (
+            <SessionProvider restorePreviousSession={true} sessionId="solidbench-app" onSessionRestore={sessionRestoreCb} onError={console.log}>
                 <AppContextProvider>
                     {ctx => (
                         <div className="mainApp vFlow">
                             <AppNavBar/>
                             <div className='contentPane vFlow'>
-                            <ErrorBoundary>
-                                <Routes>
-                                    <Route
-                                        path="/"
-                                        //component={...}
+                                <ErrorBoundary>
+                                    <Routes>
+                                        <Route
+                                            path="/"
+                                            //component={...}
 
-                                        element={<div>Main page</div>}
-                                    />
+                                            element={<div>Main page</div>}
+                                        />
 
-                                    {routes.map((route, i) => (
-                                        <Route path={route.path} key={i} element={<route.component/>}/>
-                                    ))}
-                                </Routes>
-                            </ErrorBoundary>
+                                        {routes.map((route, i) => (
+                                            <Route path={route.path} key={i} element={<route.component/>}/>
+                                        ))}
+                                    </Routes>
+                                </ErrorBoundary>
                             </div>
                         </div>
                     )}
                 </AppContextProvider>
             </SessionProvider>
-        </BrowserRouter>
     );
 };
 
 const container = document.getElementById('index');
 const root = createRoot(container!);
-root.render(<App/>);
+root.render(<AppRouter/>);

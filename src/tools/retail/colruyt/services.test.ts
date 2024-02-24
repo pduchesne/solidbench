@@ -10,7 +10,7 @@ jest.setTimeout(3000000);
 const log = getLogger('test');
 log.level = "debug";
 
-const TEST_FOLDER = 'https://pduchesne.solidcommunity.net/test/';
+const TEST_FOLDER = 'https://storage.inrupt.com/42036c04-d45a-4ff2-8545-c7d718029299/test/'; //'https://pduchesne.solidcommunity.net/test/';
 
 test('Fetch Colruyt EIN', async () => {
     const ein = await getProductEAN('26719');
@@ -35,7 +35,7 @@ test('Parse PDF', async () => {
     const {receipts} = await parsePdfData(new Uint8Array(pdfData).buffer);
 
     log.log(`Processing ${receipts.length} receipts`);
-    const {colruyt_items, off_items, eanMapUpdate} = await enrichReceipts(receipts.slice(0, 70), einMap, event => {
+    const {colruyt_items, off_items, eanMapUpdate} = await enrichReceipts(receipts, einMap, event => {
         log.log(`Progress: ${Object.keys(event.colruyt_items).length}, ${Object.keys(event.off_items).length}`);
     });
 

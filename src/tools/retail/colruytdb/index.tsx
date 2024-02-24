@@ -6,9 +6,8 @@ import {ColruytDbStorage} from "./storage";
 export const ColruytDbPanel = () => {
 
     const colruytDb = useMemo(() => {
-        return new ColruytDbStorage('https://pduchesne.solidcommunity.net/test/', {fetch: window.fetch.bind(window)});
-    }, [
-    ]);
+        return new ColruytDbStorage('https://storage.inrupt.com/42036c04-d45a-4ff2-8545-c7d718029299/test/', {fetch: window.fetch.bind(window)});
+    }, []);
 
 
     return <>
@@ -16,7 +15,12 @@ export const ColruytDbPanel = () => {
         <PromiseContainer promise={colruytDb.einMap}>
             {(einMap) => <div>
                 <pre>
-                    {JSON.stringify(einMap, null, 2)}
+                    {Object.entries(einMap).filter(entry => !entry[1].ean).map(([articleId, ean]) =>
+                        <div>
+                            <span>{articleId}</span>
+                            <span>{ean.ean}</span>
+                            <span>{ean.label}</span>
+                        </div>)}
                 </pre>
             </div>}
         </PromiseContainer>

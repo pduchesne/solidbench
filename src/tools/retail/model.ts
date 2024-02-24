@@ -1,6 +1,7 @@
 export type Article = {
     articleId: string;
     label: string;
+    ean?: string
 }
 export type Purchase = {
     date: string
