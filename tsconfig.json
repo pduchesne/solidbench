@@ -22,7 +22,7 @@
         //"suppressImplicitAnyIndexErrors": true,
         "noUnusedLocals": true,
         "preserveConstEnums": true,
-
+        "resolveJsonModule": true,
         "skipLibCheck": true,
         //"typeRoots": [ "./types", "./node_modules/@types"]
 
@@ -32,5 +32,7 @@
         "outDir": "dist/lib",
         "declarationDir": "dist/types",
         "rootDir": "src"
-    }
+    },
+
+    "include": ["src/**/*", "src/**/*.json"]
 }

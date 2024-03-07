@@ -11,7 +11,7 @@ import {Box, Input, Pagination, Tab} from "@mui/material";
 import {TabContext, TabList, TabPanel} from '@mui/lab';
 import ReactEcharts from "echarts-for-react";
 import {EChartsOption} from 'echarts';
-import {Purchase, Receipt} from "./model";
+import {Receipt, ReceiptItem} from "./model";
 import {RetailStorage} from "./storage";
 import {useSession} from "@inrupt/solid-ui-react";
 import {AppContext} from "../../appContext";
@@ -124,8 +124,8 @@ export const ReceiptsTable = (props: { receipts: Array<Receipt> }) => {
                     <td>{i.quantity}</td>
                     <td>{i.unitPrice}</td>
                     <td>{i.amount}</td>
-                    <td>{i.articleId}</td>
-                    <td>{i.label}</td>
+                    <td>{i.article.vendorId}</td>
+                    <td>{i.article.label}</td>
                 </tr>)}
             </table>
         </div>
@@ -136,15 +136,15 @@ export const ReceiptsTable = (props: { receipts: Array<Receipt> }) => {
 export const Dashboard = (props: { receipts: Array<Receipt> }) => {
 
     const items = useMemo(() => {
-        const items: Record<string, { id: string, label: string, history: Purchase[] }> = {};
+        const items: Record<string, { id: string, label: string, history: ReceiptItem[] }> = {};
         props.receipts.forEach(r => {
             r.items.forEach(i => {
-                if (i.articleId in items) {
-                    items[i.articleId].history.push(i);
+                if (i.article.vendorId in items) {
+                    items[i.article.vendorId].history.push(i);
                 } else {
-                    items[i.articleId] = {
-                        id: i.articleId,
-                        label: i.label,
+                    items[i.article.vendorId] = {
+                        id: i.article.vendorId,
+                        label: i.article.label,
                         history: [i]
                     }
                 }
@@ -172,16 +172,16 @@ export const ItemsTable = (props: { receipts: Array<Receipt> }) => {
     const [selectedItem, setSelectedItem] = useState(0);
 
     const [items, sortedReceipts] = useMemo(() => {
-        const items: Record<string, { id: string, label: string, ean?: string, history: Purchase[] }> = {};
+        const items: Record<string, { id: string, label: string, ean?: string, history: ReceiptItem[] }> = {};
         props.receipts.forEach(r => {
             r.items.forEach(i => {
-                if (i.articleId in items) {
-                    items[i.articleId].history.push(i);
+                if (i.article.vendorId in items) {
+                    items[i.article.vendorId].history.push(i);
                 } else {
-                    items[i.articleId] = {
-                        id: i.articleId,
-                        label: i.label,
-                        ean: i.ean,
+                    items[i.article.vendorId] = {
+                        id: i.article.vendorId,
+                        label: i.article.label,
+                        ean: i.article.ean,
                         history: [i]
                     }
                 }

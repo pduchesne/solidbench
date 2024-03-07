@@ -1,15 +1,28 @@
 export type Article = {
-    articleId: string;
     label: string;
-    ean?: string
+    ean: string;
+    vendorIds: Record<string, string>;
+
+    off?: {
+       escore: string;
+       nscore: string;
+       // TODO
+    }
 }
-export type Purchase = {
+
+export type VendorArticle = {
+    label: string;
+    vendorId: string;
+    ean?: string;
+}
+export type ReceiptItem = {
     date: string
     coupon?: string;
     quantity: number;
     unitPrice: number;
     discount: number;
     amount: number;
+    article: VendorArticle;
 }
 export type Receipt = {
     receiptId: string;
@@ -20,4 +33,3 @@ export type Receipt = {
     returnedBottles: number;
     totalAmount: number;
 }
-export type ReceiptItem = Article & Purchase

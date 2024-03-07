@@ -86,13 +86,12 @@ function parseReceipt(textItems: Array<TextItem>, startOffset: number): [Receipt
         //let rowIdx = 0;
         let currentMiddleY = cellMiddleY(textItems[currentOffset]);
         let currentItem: ReceiptItem = {
-            articleId: '',
-            label: '',
             quantity: 0,
             unitPrice: 0,
             discount: 0,
             amount: 0,
-            date: ''
+            date: '',
+            article: {label: '', vendorId: ''}
         };
 
         for (; headerIdx < textItems.length; currentOffset++) {
@@ -107,8 +106,7 @@ function parseReceipt(textItems: Array<TextItem>, startOffset: number): [Receipt
             if (Math.abs(middleY - currentMiddleY) > 10) {
                 receipt.items.push(currentItem);
                 currentItem = {
-                    articleId: '',
-                    label: '',
+                    article: {label: '', vendorId: ''},
                     quantity: 0,
                     unitPrice: 0,
                     discount: 0,
@@ -138,11 +136,11 @@ function parseReceipt(textItems: Array<TextItem>, startOffset: number): [Receipt
 
             else if (isColumn(currentTextItem, 3))
                 // Article ID
-                currentItem.articleId = currentTextItem.str;
+                currentItem.article.vendorId = currentTextItem.str;
 
             else if (isColumn(currentTextItem, 4))
                 // Article Label
-                currentItem.label = currentTextItem.str;
+                currentItem.article.label = currentTextItem.str;
 
             else if (isColumn(currentTextItem, 5))
                 // Coupon
