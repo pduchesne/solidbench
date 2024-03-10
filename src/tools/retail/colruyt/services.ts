@@ -3,7 +3,8 @@ import {fetchFoodFacts} from "../off";
 import {Receipt, VendorArticle} from "../model";
 import {ColruytEanMap} from "../colruytdb/storage";
 import {proxify_url, throwOnHttpStatus} from "@hilats/utils";
-import colruytIdMap from './colruyt_off_id_map.json';
+
+const colruytIdMap: ColruytIdEanMap = require('./colruyt_id_ean_map.json');
 
 /*
 import { setTimeout } from "timers/promises";
@@ -11,16 +12,23 @@ import {getLogger} from "log4js";
 const logger = getLogger('colruyt');
 logger.level = "debug";
 */
+
+export type ColruytIdEanMap = Record<string, { eans: [string], off: string }>;
+
 export class ColruytProductDb {
 
     private API_ROOT: string;
+    private CLIENT: string;
+    private PLACE: string;
     private API_KEY: string | undefined;
     private cookies: string[];
 
-    constructor(API_ROOT: string, API_KEY?: string, cookies?: string[]) {
+    constructor(API_ROOT: string, CLIENT: string, PLACE: string, API_KEY?: string, cookies?: string[]) {
         this.API_ROOT = API_ROOT;
         this.API_KEY = API_KEY;
         this.cookies = cookies || [];
+        this.CLIENT = CLIENT;
+        this.PLACE = PLACE;
     }
 
     async fetchAllProducts(max = -1, pageSize = 100, start = 0,) {
@@ -46,12 +54,12 @@ export class ColruytProductDb {
 
     async fetchProducts(page = 0, pageSize = 100) {
 
-        const url = `${this.API_ROOT}/fr/products?placeId=604&clientCode=CLP&page=${page + 1}&size=${pageSize}`;
+        const url = `${this.API_ROOT}/fr/products?placeId=${this.PLACE}&clientCode=${this.CLIENT}&page=${page + 1}&size=${pageSize}`;
 
         //console.log(`Fetching ${url}`);
 
         const headers: Record<string, string> = this.API_KEY ? {'X-CG-APIKey': this.API_KEY} : {};
-        headers['User-Agent'] ='Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36';
+        headers['User-Agent'] = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36';
         headers['Accept'] = 'application/json';
         headers['Origin'] = 'https://www.colruyt.be';
         headers['Referer'] = 'https://www.colruyt.be/';
@@ -128,7 +136,7 @@ export async function enrichReceipts(receipts: Receipt[], eanMap: ColruytEanMap,
 
                 colruyt_items[item.article.vendorId] = {...item, ean};
                 if (ean && !(ean in off_items)) {
-                    const itemFacts = (await fetchFoodFacts(ean))?.product || null;
+                    const itemFacts = (await fetchFoodFacts(ean)) || null;
                     off_items[ean] = itemFacts;
                 }
 
@@ -172,7 +180,7 @@ export async function enrichArticles(articles: VendorArticle[], eanMap: ColruytE
 
             items[item.vendorId] = {...item, ean};
             if (fetchOff && ean && !(ean in off_items)) {
-                const itemFacts = (await fetchFoodFacts(ean))?.product || null;
+                const itemFacts = (await fetchFoodFacts(ean)) || null;
                 off_items[ean] = itemFacts;
             }
 
@@ -194,6 +202,6 @@ export async function enrichArticles(articles: VendorArticle[], eanMap: ColruytE
 
 export function enrichArticlesFromCache(articles: VendorArticle[]) {
     articles.forEach(a => {
-        if (!a.ean) a.ean = a.vendorId in colruytIdMap ? (colruytIdMap as any)[a.vendorId] : 'NOT SET';
+        if (!a.ean) a.ean = !(a.vendorId in colruytIdMap) ? undefined : colruytIdMap[a.vendorId].off ? colruytIdMap[a.vendorId].off : colruytIdMap[a.vendorId].eans?.length > 0 ? colruytIdMap[a.vendorId].eans[0] : undefined;
     })
 }

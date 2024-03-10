@@ -1,5 +1,5 @@
 import * as React from "react";
-import {FC, useContext, useMemo, useState} from "react";
+import {FC, useCallback, useContext, useMemo, useState} from "react";
 import {GlobalWorkerOptions} from 'pdfjs-dist';
 // @ts-ignore
 import PdfjsWorker from "pdfjs-dist/build/pdf.worker.js";
@@ -15,12 +15,15 @@ import {Receipt, ReceiptItem} from "./model";
 import {RetailStorage} from "./storage";
 import {useSession} from "@inrupt/solid-ui-react";
 import {AppContext} from "../../appContext";
-import {PromiseContainer} from "@hilats/react-utils";
+import {ErrorBoundary, PromiseContainer} from "@hilats/react-utils";
 import {ColruytPanel} from "./colruyt/ImportPanel";
 import Dropzone from "react-dropzone";
 import classNames from "classnames";
 
-const RETAILERS: Record<string, { label: string, comp: FC<{ blob: Blob }> }> = {
+/**
+ * Import UI components for specific retailers
+ */
+const RETAILERS: Record<string, { label: string, comp: FC<{ blob: Blob, onImport: (receipts: Receipt[]) => void }> }> = {
     colruyt: {
         label: "Colruyt",
         comp: ColruytPanel
@@ -49,6 +52,10 @@ export const RetailDashboard = () => {
     const [upload, setUpload] = useState<{ retailer: string, blob: Blob } | { retailer?: undefined }>({});
     const UploadComp = upload.retailer && RETAILERS[upload.retailer].comp;
 
+    const importCallback = useCallback((receipts: Receipt[]) => {
+        (upload.retailer && retailStorage) && retailStorage.saveHistory(upload.retailer, receipts);
+    }, [retailStorage, upload.retailer]);
+
     return <div className="retail">
         <div className="hFlow retailers">
             {Object.entries(RETAILERS).map(([retailer, config]) => {
@@ -59,11 +66,16 @@ export const RetailDashboard = () => {
             })}
         </div>
         {UploadComp ?
-            <div className="uploader"><UploadComp blob={upload.blob}/></div> :
+            /* *Display retailer importer */
+            <div className="uploader"><UploadComp blob={upload.blob} onImport={importCallback}/></div> :
+
+            /* Display currenty history*/
+            <ErrorBoundary>
             <PromiseContainer promise={history$}>{(history) => history ?
                 <ShoppingDashboard receipts={history}/> :
                 <div>No purchase history found</div>}
             </PromiseContainer>
+            </ErrorBoundary>
         }
     </div>
 }

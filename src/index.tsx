@@ -73,7 +73,7 @@ export const App = () => {
                                         />
 
                                         {routes.map((route, i) => (
-                                            <Route path={route.path} key={i} element={<route.component/>}/>
+                                            <Route path={route.path} key={i} element={<ErrorBoundary><route.component/></ErrorBoundary>}/>
                                         ))}
                                     </Routes>
                                 </ErrorBoundary>

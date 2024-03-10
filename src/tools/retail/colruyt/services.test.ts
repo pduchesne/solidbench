@@ -78,6 +78,10 @@ test('Login to NSS', async () => {
 
 test('Fetch Colruyt MD', async () => {
 
+
+    // Bioplanet : https://apip.bioplanet.be/gateway/ictmgmt.emarkecom.cgproductretrsvc.v2/v2/v2/fr/products/626163?ts=1709809695910&placeId=1811&clientCode=BIOBE
+    // X-CG-APIKey : 6f88ea62-82ee-4372-9b60-13bbd0a61cf7
+
     /*
     const colruytDb = new ColruytProductDb(
         'https://apip.colruyt.be/gateway/ictmgmt.emarkecom.cgproductretrsvc.v2/v2/v2',
@@ -87,17 +91,33 @@ test('Fetch Colruyt MD', async () => {
         "dtCookie=v_4_srv_19_sn_75900D988FBF2D97D1D778847AD046AE_perc_100000_ol_0_mul_1_app-3Ab84fed97a8123cd5_0"]);
 */
     const colruytDb = new ColruytProductDb(
-        'https://ecgproductmw.colruyt.be/ecgproductmw/v1');
+        'https://ecgproductmw.colruyt.be/ecgproductmw/v1', 'CLP', '604');
     const results = await colruytDb.fetchAllProducts(-1, 245, 0);
 
     writeFileSync("products-test.json", JSON.stringify(results, null, 4));
 });
 
+
+test('Fetch Bioplanet MD', async () => {
+
+
+    // Bioplanet : https://apip.bioplanet.be/gateway/ictmgmt.emarkecom.cgproductretrsvc.v2/v2/v2/fr/products/626163?ts=1709809695910&placeId=1811&clientCode=BIOBE
+    // X-CG-APIKey : 6f88ea62-82ee-4372-9b60-13bbd0a61cf7
+
+    const colruytDb = new ColruytProductDb(
+        'https://ecgproductmw.colruyt.be/ecgproductmw/v1', 'BIOBE', '1811');
+    const results = await colruytDb.fetchAllProducts(-1, 200, 0);
+
+    writeFileSync("products-bioplanet.json", JSON.stringify(results, null, 4));
+});
+
+
+
 test('Process Colruyt MD', async () => {
 
     const existingProducts:Record<string, any> = existsSync("colruyt_off_map.json") ? JSON.parse(readFileSync("colruyt_off_map.json", { encoding: "utf-8" })) : {};
 
-    const items = JSON.parse(readFileSync("products-test.json", { encoding: "utf-8" }));
+    const items = JSON.parse(readFileSync("products-bioplanet.json", { encoding: "utf-8" }));
 
     for (let idx in items) {
         const i = items[idx];
@@ -108,7 +128,7 @@ test('Process Colruyt MD', async () => {
             offs = [];
             for (let ean of (gtin || [])) {
                 const off = await fetchFoodFacts(ean).catch(_404undefined);
-                off && offs.push(off.product);
+                off && offs.push(off);
             }
             offs = offs.sort((o1, o2) => ((o1.completeness || 0) > (o2.completeness || 0)) ? -1 : 1);
             if (offs.length) {
@@ -122,6 +142,8 @@ test('Process Colruyt MD', async () => {
         if (! existingProducts[i.commercialArticleNumber]) {
             existingProducts[i.commercialArticleNumber] = {productId, commercialArticleNumber, technicalArticleNumber, name, LongName, gtin, offs};
             log.info(`Product added : ${i.commercialArticleNumber}`);
+        } else {
+            log.info(`Product already exists : ${i.commercialArticleNumber}`);
         }
 
         //console.log(`Processing ${idx} of ${items.length} - best off ${offs.length && offs[0].completeness}`);
@@ -138,12 +160,12 @@ test('Process Colruyt and OFF MD', async () => {
     const items = JSON.parse(readFileSync("colruyt_off_map.json", { encoding: "utf-8" }));
 
     const offMap:Record<string, string> = {};
-    const idMap:Record<string, any> = {};
+    const idMap:Record<string, {eans: [string], off: string}> = {};
 
     let count = 0;
     for (let id in items) {
         const i = items[id];
-        const { /* productId, commercialArticleNumber, technicalArticleNumber, name, LongName, gtin*/   offs} = i;
+        const { /* productId, commercialArticleNumber, technicalArticleNumber, name, LongName,*/ gtin,   offs} = i;
 
         offs.forEach((off:any) => {
             if (!offMap[off.code])
@@ -153,13 +175,13 @@ test('Process Colruyt and OFF MD', async () => {
         })
 
         if (id in idMap) console.warn(`ID already set : ${id}`);
-        else idMap[id] = offs[0]?.code || null;
+        else idMap[id] = {eans: gtin, off: offs[0]?.code || null} ;
         count++;
     }
 
     console.log(`Processed items : ${count}`);
 
-    writeFileSync("colruyt_off_id_map.json", JSON.stringify(idMap, null, 4));
+    writeFileSync("colruyt_id_ean_map.json", JSON.stringify(idMap, null, 4));
 });
 
 

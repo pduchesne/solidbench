@@ -8,7 +8,7 @@ import {Receipt, VendorArticle} from "../model";
 import {TabContext, TabList, TabPanel} from "@mui/lab";
 import {enrichArticlesFromCache} from "./services";
 
-export const ColruytPanel = (props: { blob: Blob , saveReceipts: (receipts: Receipt[]) => void}) => {
+export const ColruytPanel = (props: { blob: Blob , onImport: (receipts: Receipt[]) => void}) => {
 
     const pdf$ = useMemo(() => {
         return parsePdfData(props.blob);
@@ -19,12 +19,12 @@ export const ColruytPanel = (props: { blob: Blob , saveReceipts: (receipts: Rece
     return <>
         <h3>Colruyt Import</h3>
         <PromiseContainer promise={pdf$}>
-            {(pdf) => <ColruytImportResult receipts={pdf.receipts}/>}
+            {(pdf) => <ColruytImportResult receipts={pdf.receipts} onImport={props.onImport}/>}
         </PromiseContainer>
     </>
 }
 
-export const ColruytImportResult = (props: { receipts: Receipt[]}) => {
+export const ColruytImportResult = (props: { receipts: Receipt[], onImport: (receipts: Receipt[]) => void}) => {
 
     const [tab, setTab] = useState('0');
 
@@ -39,12 +39,17 @@ export const ColruytImportResult = (props: { receipts: Receipt[]}) => {
             })
         })
 
+        enrichArticlesFromCache(Object.values(items));
+
         return items;
     }, [
         props.receipts
     ])
 
     return <Box className="vFlow">
+        <div>
+            <Button onClick={() => props.onImport(props.receipts)}>Save receipts</Button>
+        </div>
         <TabContext value={tab}>
             <Box sx={{borderBottom: 1, borderColor: 'divider', flex: 'none'}}>
                 <TabList onChange={(e, value) => setTab(value)} aria-label="lab API tabs example">
@@ -62,7 +67,7 @@ export const ColruytReceiptsTable = (props: { receipts: Array<Receipt>, lastUpda
 
     const [onlyNew, setOnlyNew] = useState(false);
 
-    const showedReceipts = useMemo( () => props.receipts.filter(r => !props.lastUpdate || new Date(r.date).getTime() > props.lastUpdate), [onlyNew, props.lastUpdate, props.receipts])
+    const showedReceipts = useMemo(() => props.receipts.filter(r => !props.lastUpdate || new Date(r.date).getTime() > props.lastUpdate), [onlyNew, props.lastUpdate, props.receipts])
 
     const [page, setPage] = useState(1);
     const r = showedReceipts[page - 1];
