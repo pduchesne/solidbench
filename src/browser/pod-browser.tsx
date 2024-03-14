@@ -38,7 +38,9 @@ export const PodBrowserPanel = () => {
     const {fetch} = useSession();
     const appContext = useContext(AppContext)
 
-    return appContext.podUrl ? <PodBrowser fileUrl={appContext.podUrl} fetch={fetch}/> : null;
+    return appContext.podUrl ?
+        <PodBrowser fileUrl={appContext.podUrl} fetch={fetch}/> :
+        <div> Please login to your Solid pod to use the Pod Browser</div>;
 }
 
 /**

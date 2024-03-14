@@ -16,6 +16,7 @@ const ToolsMenu = () => {
                 Tools
             </Button>
             <Menu {...bindMenu(popupState)}>
+                <MenuItem onClick={popupState.close} component={Link} to="/tools/pod-viewer">Pod Viewer</MenuItem>
                 <MenuItem onClick={popupState.close} component={Link} to="/tools/spotify">Spotify</MenuItem>
                 <MenuItem onClick={popupState.close} component={Link} to="/tools/retail">Retail</MenuItem>
                 <MenuItem onClick={popupState.close} component={Link} to="/tools/retail/colruytdb">ColruytDB</MenuItem>
@@ -58,12 +59,12 @@ export const AppNavBar = () => {
 
     return (
 
-        <AppBar position="static" className='navbar'>
+        <AppBar position="static" className='navbar' color="primary">
             <Toolbar disableGutters>
                 <img src="/images/logo-big.png" height={60}/>
 
                 <Box sx={{flexGrow: 1}}>
-                    <Button component={Link} to="/tools/pod-viewer" variant="contained">Pod Viewer</Button>
+                    <Button component={Link} to="/tools/personal-dashboard" variant="contained">Personal Dashboard</Button>
                     <ToolsMenu/>
                 </Box>
 

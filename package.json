@@ -62,6 +62,7 @@
         "echarts": "^5.4.3",
         "echarts-for-react": "^3.0.2",
         "gh-pages": "^6.0.0",
+        "lastfm-ts-api": "^2.1.0",
         "log4js": "^6.9.1",
         "material-ui-popup-state": "^5.0.10",
         "pdfjs-dist": "^3.11.174",

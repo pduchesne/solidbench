@@ -57,9 +57,9 @@ export const RetailDashboard = () => {
     }, [retailStorage, upload.retailer]);
 
     return <div className="retail">
-        <div className="hFlow retailers">
+        <div className="hFlow dataproviders">
             {Object.entries(RETAILERS).map(([retailer, config]) => {
-                return <div className={classNames('retailerCard', {'selected': upload.retailer == retailer})}>
+                return <div className={classNames('providerCard', {'selected': upload.retailer == retailer})}>
                     {config.label}
                     <FileDrop onData={(blob) => setUpload({retailer, blob})}/>
                 </div>

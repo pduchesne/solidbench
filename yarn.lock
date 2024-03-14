@@ -5152,6 +5152,11 @@ kleur@^3.0.3:
   resolved "https://registry.yarnpkg.com/kleur/-/kleur-3.0.3.tgz#a79c9ecc86ee1ce3fa6206d1216c501f147fc07e"
   integrity sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w==
 
+lastfm-ts-api@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/lastfm-ts-api/-/lastfm-ts-api-2.1.0.tgz#1bfcad6234584fe61fe1dd015454eaae706e2c07"
+  integrity sha512-mcfHKhsaPX+Mw7j7Eea6y/Xv94fJE7iR1tUr0STkf3VeLhFYCsI01NJDF0YTktBZTBOsqjUDjp1e7y+9Y+ArJw==
+
 launch-editor@^2.6.0:
   version "2.6.1"
   resolved "https://registry.yarnpkg.com/launch-editor/-/launch-editor-2.6.1.tgz#f259c9ef95cbc9425620bbbd14b468fcdb4ffe3c"

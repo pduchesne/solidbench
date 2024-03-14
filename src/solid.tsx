@@ -24,6 +24,7 @@ export const LoginMultiButton = (props: Omit<Parameters<typeof LoginButton>[0], 
             <Button variant="contained" color="primary">
                 Log in with&nbsp;
                 <Select
+                    sx={{ '& .MuiSelect-select': {padding: "5px 6px"}}}
                     value={issuer}
                     onClick={(e) => e.stopPropagation()}
                     onChange={(e) => {

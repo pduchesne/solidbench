@@ -13,8 +13,9 @@ export type Preferences = any;
 
 export class RetailStorage extends PodStorage {
 
-    constructor(podUri: string, options?: { fetch?: typeof fetch }) {
-        super(podUri, options);
+    constructor(podUri: string, options?: { fetch?: typeof fetch, podFolder?: string }) {
+        const podFolder = options?.podFolder || 'retail/';
+        super(podUri + podFolder, options);
     }
 
     fetchPreferences() {

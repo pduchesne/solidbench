@@ -72,12 +72,34 @@ body {
   width: auto;
 }
 
+.sidenav {
+  flex: none;
+  background-color: #1976d2;
+  border-right: 1px solid rgb(19, 40, 74);
+  padding: 5px;
+
+  & > button {
+    display: block;
+    border-radius: 10%;
+    margin: 1px;
+    color: white;
+
+    &[aria-selected="true"] {
+      box-shadow: inset 0px 0px 6px 2px rgba(0, 0, 0, 0.3);
+    }
+
+    &:hover {
+      box-shadow: inset 0px 0px 6px 4px rgba(255, 255, 255, 0.3);
+    }
+  }
+}
+
 
 .retail {
-  .retailers {
+  .dataproviders {
     flex: 0;
     height: 100px;
-    .retailerCard {
+    .providerCard {
       position: relative;
       overflow: clip;
       background: #eaeaea;

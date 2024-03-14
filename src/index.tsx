@@ -8,14 +8,37 @@ import {PodBrowserPanel} from "./browser/pod-browser";
 import {createRoot} from "react-dom/client";
 import {AppNavBar} from "./navbar";
 import {AppContextProvider} from "./appContext";
-import {SpotifyPanel} from "./tools/spotify";
 import { ColruytDbPanel } from './tools/retail/colruytdb';
 import {RetailDashboard} from "./tools/retail";
 import {useCallback} from "react";
 import {useNavigate} from "react-router";
+import {DashboardRoutes} from "./tools/personal-dashboard";
+import {createTheme, ThemeProvider} from "@mui/material";
+import {MusicDashboard} from "./tools/music";
 
+
+const theme = createTheme({
+    palette: {
+        primary: {
+            //light?: string;
+            main: "#1976d2",
+            //dark?: string;
+            contrastText: "#F0F0F0"
+        },
+        secondary: {
+            //light?: string;
+            main: "#237777",
+            //dark?: string;
+            contrastText: "#F0F0F0"
+        },
+    },
+});
 
 const routes = [
+    {
+        component: DashboardRoutes,
+        path: '/tools/personal-dashboard/*'
+    },
     {
         component: PodBrowserPanel,
         path: '/tools/pod-viewer'
@@ -29,7 +52,7 @@ const routes = [
         path: '/tools/retail/colruytdb'
     },
     {
-        component: SpotifyPanel,
+        component: MusicDashboard,
         path: '/tools/spotify'
     }
 
@@ -54,15 +77,16 @@ export const App = () => {
         const host = new URL(url).host;
         const path = url.substring(url.indexOf(host) + host.length);
         navigate(path);
-    }, [history])
+    }, [navigate])
 
     return (
             <SessionProvider restorePreviousSession={true} sessionId="solidbench-app" onSessionRestore={sessionRestoreCb} onError={console.log}>
                 <AppContextProvider>
                     {ctx => (
+                        <ThemeProvider theme={theme}>
                         <div className="mainApp vFlow">
                             <AppNavBar/>
-                            <div className='contentPane vFlow'>
+                            <div className='vFlow'>
                                 <ErrorBoundary>
                                     <Routes>
                                         <Route
@@ -79,6 +103,7 @@ export const App = () => {
                                 </ErrorBoundary>
                             </div>
                         </div>
+                        </ThemeProvider>
                     )}
                 </AppContextProvider>
             </SessionProvider>
