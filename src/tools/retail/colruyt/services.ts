@@ -122,7 +122,7 @@ export async function enrichReceipts(receipts: Receipt[], eanMap: ColruytEanMap,
     const eanMapUpdate: ColruytEanMap = {};
 
     for (const receipt of receipts) {
-        for (const item of receipt.items) {
+        for (const item of (receipt.items || [])) {
             if (!(item.article.vendorId in colruyt_items)) {
                 if (!(item.article.vendorId in eanMap))
                     eanMapUpdate[item.article.vendorId] = {

@@ -14,7 +14,7 @@ export const SpotifyCard = () => {
 
     const spotifyCtx = useSpotifyContext(
         '7ca9684301bc4f62ac837fa96c00c179',
-      new URL('/tools/personal-dashboard/music', window.location.toString()).toString() /* 'https://localhost:8000/tools/spotify' */,
+      new URL('/personal-dashboard/music', window.location.toString()).toString() /* 'https://localhost:8000/tools/spotify' */,
         SCOPES_ALL
     );
 

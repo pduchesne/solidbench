@@ -1,43 +1,46 @@
-import {
-    AccessModes,
-    AclDataset,
-    WithAcp,
-    WithServerResourceInfo
-} from "@inrupt/solid-client";
+import {AccessModes, WithServerResourceInfo} from "@inrupt/solid-client";
+import * as React from "react";
 import {useState} from "react";
 import {Button, Checkbox, FormControlLabel} from "@mui/material";
-import * as React from "react";
 
-import {PromiseStateContainer, usePromiseFn} from "@hilats/react-utils";
-import {getAccessInfo} from "@hilats/solid-utils";
-
+import {PromiseStateContainer} from "@hilats/react-utils";
+import {UniversalAccessForm, useUniversalAccess} from "./access_universal";
+import {AclAccessForm, useAclAccess} from "./access_acl";
+import {AcrAccessForm, useAcrAccess} from "./access_acr";
 
 
 // ACP - ACR
-export const UniversalAccessMetadata = (props: { resourceInfo: WithServerResourceInfo, resourceUrl: string, fetch?: typeof fetch }) => {
+export const UniversalAccessMetadata = (props: {
+    resourceInfo: WithServerResourceInfo,
+    resourceUrl: string,
+    onUpdate: () => void,
+    fetch?: typeof fetch
+}) => {
+    const universalAccess = useUniversalAccess(props.resourceUrl, props.fetch);
 
-    const accessInfo$ = usePromiseFn(
-        async () => {
-            const accInfo = getAccessInfo(props.resourceInfo, {fetch: props.fetch});
-            return accInfo;
-        },
-        [props.resourceInfo, props.fetch]
-    )
+    const aclAccess = useAclAccess(props.resourceUrl, props.fetch);
+    const acrAccess = useAcrAccess(props.resourceUrl, props.fetch);
 
     return (
         <div>
-            <PromiseStateContainer promiseState={accessInfo$}>
-                {(accessInfo: {
-                    acl?: {
-                        resourceAcl?: AclDataset;
-                        fallbackAcl?: AclDataset;
-                    };
-                    acr?: WithAcp;
-                    universal?: Record<string, AccessModes>;
-                }) => <>
-                    {accessInfo.acl ? <AclAccessForm acl={accessInfo.acl}/> : null}
-                    {accessInfo.acr ? <AcrAccessForm acr={accessInfo.acr.internal_acp.acr}/> : null}
-                    {accessInfo.universal ? <UniversalAccessForm accessModes={accessInfo.universal}/> : null}
+            <PromiseStateContainer promiseState={universalAccess.access$}>
+                {(accessInfo) => <UniversalAccessForm public={accessInfo.pub} accessModes={accessInfo.agents}
+                                                      onChangePublic={(access) => universalAccess.setPublic(access)}
+                                                      onChange={(entity, access) => universalAccess.setAccessModes(entity, access)}/>
+                }
+            </PromiseStateContainer>
+            <PromiseStateContainer promiseState={aclAccess.resInfo$}>
+                {(resInfo) =>
+                    resInfo ? <AclAccessForm resInfo={resInfo} onChangePublic={(access) => aclAccess.setPublic(access)}
+                                   onChange={(entity, access) => aclAccess.setAccessModes(entity, access)}/> : null
+
+                }
+            </PromiseStateContainer>
+            <PromiseStateContainer promiseState={acrAccess.resInfo$}>
+                {(resInfo) => <>
+                    <AcrAccessForm resInfo={resInfo}
+                                   onChangePublic={(access) => acrAccess.setPublic(access)}
+                                   onChange={(entity, access) => acrAccess.setAccessModes(entity, access)} />
                 </>
                 }
             </PromiseStateContainer>
@@ -46,54 +49,10 @@ export const UniversalAccessMetadata = (props: { resourceInfo: WithServerResourc
 };
 
 
-export const UniversalAccessForm = (props: { accessModes: Record<string, AccessModes> }) => {
 
-    return (
-        <div>
-            {JSON.stringify(props.accessModes)}
-        </div>
-    );
-};
-
-
-export const AclAccessForm = (props: { acl: {
-        resourceAcl?: AclDataset;
-        fallbackAcl?: AclDataset;
-    } }) => {
-
-    return (
-        <div>
-            {JSON.stringify(props.acl)}
-        </div>
-    );
-};
-
-export const AcrAccessForm = (props: { acr: Object | null }) => {
-
-    return (
-        <div>
-            {JSON.stringify(props.acr)}
-        </div>
-    );
-
-    /*
-    return (
-        <div>
-            {props.acpAccess.publicAccess ?
-                <div>Public : <AccessModesDisplay currentModes={props.acpAccess.publicAccess}/></div> : null}
-            <div>Agents :
-                {props.acpAccess.agentAccess && Object.entries(props.acpAccess.agentAccess).map(([agentUri, modes]) => <div>
-                    {agentUri} : {JSON.stringify(modes)}
-                </div>)}
-            </div>
-        </div>
-    );
-
-     */
-};
-
-
-export const AccessModesDisplay = (props: { currentModes: AccessModes }) => {
+export const AccessModesDisplay = (props: {
+    currentModes: AccessModes
+}) => {
 
     const [isDirty, setIsDirty] = useState(false);
     const [modes, setModes] = useState(props.currentModes);

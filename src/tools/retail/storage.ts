@@ -11,11 +11,23 @@ export const PATH_RETAILER_HISTORY = 'history.json';
 
 export type Preferences = any;
 
+export type ReceiptsMap = Record<string, Receipt[]>;
+
 export class RetailStorage extends PodStorage {
 
     constructor(podUri: string, options?: { fetch?: typeof fetch, podFolder?: string }) {
         const podFolder = options?.podFolder || 'retail/';
         super(podUri + podFolder, options);
+    }
+
+    async listRetailers() {
+        const retailers = await this.listContainerResources(PATH_RETAILER_PREFIX, {fetch: this.fetch})
+            .then(urls =>
+                urls.filter(url => url.endsWith('/'))
+                    .map(url => url.split('/').at(-2))
+                    .filter(name => !!name));
+
+        return retailers as string[];
     }
 
     fetchPreferences() {
@@ -26,12 +38,18 @@ export class RetailStorage extends PodStorage {
         return this.putJSON(PATH_PREFERENCES, preferences);
     }
 
-    fetchHistory(retailer: string) {
-        return this.fetchJSON<Receipt[]>(PATH_RETAILER_PREFIX+retailer+'/'+PATH_RETAILER_HISTORY).catch(_404undefined);
+    async fetchHistory(retailers: string[]) {
+        const histories = await Promise.all(retailers.map(retailer => {
+            return this.fetchJSON<Receipt[]>(PATH_RETAILER_PREFIX + retailer + '/' + PATH_RETAILER_HISTORY).catch(_404undefined).then(res => [retailer, res || []] as [string, Receipt[]]);
+        }));
+        return histories.reduce<ReceiptsMap>((map, [retailer, receipts]) => {
+            map[retailer] = receipts;
+            return map;
+        }, {});
     }
 
     saveHistory(retailer: string, receipts: Receipt[]) {
-        return this.putJSON(PATH_RETAILER_PREFIX+retailer+'/'+PATH_RETAILER_HISTORY, receipts).catch(_404undefined);
+        return this.putJSON(PATH_RETAILER_PREFIX + retailer + '/' + PATH_RETAILER_HISTORY, receipts).catch(_404undefined);
     }
 
     fetchEanCache() {

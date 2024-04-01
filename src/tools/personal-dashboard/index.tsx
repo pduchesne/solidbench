@@ -6,6 +6,9 @@ import {RetailDashboard} from "../retail";
 import {MusicDashboard} from "../music";
 import {Navigate, Route, Routes, useParams} from "react-router-dom";
 import {useNavigate} from "react-router";
+import {useSession} from "@inrupt/solid-ui-react";
+import {useContext} from "react";
+import {AppContext} from "../../appContext";
 
 export const PANELS: Record<string, React.FC> = {
     podbrowser: PodBrowserPanel,
@@ -16,12 +19,15 @@ export const PANELS: Record<string, React.FC> = {
 export const DashboardRoutes = () => {
     return <Routes>
         <Route path="/:panelId/*" element={<PersonalDashboard />} />
-        <Route path="*" element={<Navigate to="/tools/personal-dashboard/podbrowser" />} />
+        <Route path="*" element={<Navigate to="/personal-dashboard/podbrowser" />} />
     </Routes>
 }
 
 
 export const PersonalDashboard = (props: {selectedPanel?: string }) => {
+
+    /*const appContext =*/ useContext(AppContext);
+    /*const {fetch} = */ useSession();
 
     const navigate = useNavigate();
 
@@ -31,7 +37,7 @@ export const PersonalDashboard = (props: {selectedPanel?: string }) => {
     const Panel = PANELS[panelId];
 
     return <div className="hFlow">
-        <Sidenav selectPanel={(panelId: string) => {navigate("/tools/personal-dashboard/"+panelId);}} selected={panelId}/>
+        <Sidenav selectPanel={(panelId: string) => {navigate("/personal-dashboard/"+panelId);}} selected={panelId}/>
         <div className="contentPane">
             <Panel/>
         </div>

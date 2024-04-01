@@ -6,6 +6,10 @@
     "https://localhost:8000/",
     "https://localhost:8000/tools/pod-viewer",
     "${process.env.ROOT_URL}/tools/pod-viewer",
+    "https://localhost:8000/personal-dashboard",
+    "${process.env.ROOT_URL}/personal-dashboard",
+        "https://localhost:8000/personal-dashboard/podbrowser/",
+        "${process.env.ROOT_URL}/personal-dashboard/podbrowser/",
     "${process.env.ROOT_URL}/",
     "${process.env.ROOT_URL}"
   ],

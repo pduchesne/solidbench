@@ -1,8 +1,17 @@
 import * as React from 'react';
-import {useEffect, useMemo, useState} from "react";
+import {useEffect, useMemo, useState} from 'react';
 import {LoginButton} from '@inrupt/solid-ui-react';
 import {Button, MenuItem, Select} from "@mui/material";
-import {getFile, overwriteFile, WithResourceInfo} from "@inrupt/solid-client";
+import {
+    createContainerAt,
+    getContainedResourceUrlAll,
+    getFile,
+    getSolidDataset,
+    overwriteFile, saveFileInContainer,
+    WithResourceInfo
+} from "@inrupt/solid-client";
+import {usePromiseFn} from "@hilats/react-utils";
+import { assert } from '@hilats/utils';
 import {GetFileOptions} from "@inrupt/solid-client/dist/resource/file";
 
 const ISSUERS: Record<string, string> = {
@@ -126,4 +135,39 @@ export function useSolidFile(
 
 
     return container;
+}
+
+
+
+/**
+ * Create a memoized annotation container to perform storage operations on a solid dataset
+ */
+export function useSolidContainer(
+    path: string,
+    fetchFn: typeof fetch = fetch
+) {
+
+    const accessor = usePromiseFn( async () => {
+        const containerDataset = await getSolidDataset(path, {fetch: fetchFn});
+
+        const children = getContainedResourceUrlAll(containerDataset);
+
+        const addContainer = async (name: string) => {
+            if (!name.endsWith('/')) name = name+'/';
+            const result = await createContainerAt(new URL(name, path).toString(), {fetch: fetchFn});
+            accessor.fetch();
+            return result;
+        }
+
+        const saveFile = async (name: string, file: File | Blob, options?: Parameters<typeof saveFileInContainer>[2]) => {
+            assert(! name.endsWith('/'), 'File names must not end with a slash');
+            const result = await saveFileInContainer(new URL(name, path).toString(), file, {fetch: fetchFn, ...options});
+            accessor.fetch();
+            return result;
+        }
+
+        return {containerDataset, children, addContainer, saveFile};
+    }, [path, fetchFn])
+
+    return accessor;
 }

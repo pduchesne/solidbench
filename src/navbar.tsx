@@ -8,7 +8,7 @@ import {LogoutButton, useSession} from "@inrupt/solid-ui-react";
 import {LoginMultiButton} from "./solid";
 import {AppContext} from "./appContext";
 
-const ToolsMenu = () => {
+export const ToolsMenu = () => {
     const popupState = usePopupState({variant: 'popover'})
     return (
         <>
@@ -63,10 +63,13 @@ export const AppNavBar = () => {
             <Toolbar disableGutters>
                 <img src="/images/logo-big.png" height={60}/>
 
+                <Box sx={{flexGrow: 1}} />
+                {/*
                 <Box sx={{flexGrow: 1}}>
                     <Button component={Link} to="/tools/personal-dashboard" variant="contained">Personal Dashboard</Button>
                     <ToolsMenu/>
                 </Box>
+                */ }
 
 
                 <Box sx={{flexGrow: 0, float: 'right'}}>
@@ -86,7 +89,7 @@ export const AppNavBar = () => {
                                         /*, popUp: true */
                                     }
                                 }
-                                redirectUrl={new URL("/tools/pod-viewer", window.location.href).toString()}
+                                redirectUrl={new URL("/personal-dashboard", window.location.href).toString()}
                                 onError={console.log}
                             >
                                 <Button variant="contained" color="primary">

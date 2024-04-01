@@ -52,10 +52,11 @@ function parseReceipt(textItems: Array<TextItem>, startOffset: number): [Receipt
         receiptId,
         date: '',
         items: [],
-        returnedBottles: 0,
+        //returnedBottles: 0,
         storeId: '',
         storeName: '',
-        totalAmount: 0
+        totalAmount: 0,
+        shippingCosts: 0
     }
 
     try {
@@ -88,7 +89,6 @@ function parseReceipt(textItems: Array<TextItem>, startOffset: number): [Receipt
         let currentItem: ReceiptItem = {
             quantity: 0,
             unitPrice: 0,
-            discount: 0,
             amount: 0,
             date: '',
             article: {label: '', vendorId: ''}
@@ -109,7 +109,7 @@ function parseReceipt(textItems: Array<TextItem>, startOffset: number): [Receipt
                     article: {label: '', vendorId: ''},
                     quantity: 0,
                     unitPrice: 0,
-                    discount: 0,
+
                     amount: 0,
                     date: receipt.date
                 };
@@ -144,7 +144,7 @@ function parseReceipt(textItems: Array<TextItem>, startOffset: number): [Receipt
 
             else if (isColumn(currentTextItem, 5))
                 // Coupon
-                currentItem.coupon = currentTextItem.str;
+                {}//TODO currentItem.coupon = currentTextItem.str;
 
             else if (isColumn(currentTextItem, 6))
                 // Quantity
@@ -156,7 +156,7 @@ function parseReceipt(textItems: Array<TextItem>, startOffset: number): [Receipt
 
             else if (isColumn(currentTextItem, 8))
                 // Discount
-                currentItem.discount = parseLocaleNumber(currentTextItem.str);
+                {}//TODO currentItem.discount = parseLocaleNumber(currentTextItem.str);
 
             else if (isColumn(currentTextItem, 9))
                 // Amount
@@ -165,8 +165,8 @@ function parseReceipt(textItems: Array<TextItem>, startOffset: number): [Receipt
 
         assert(textItems[currentOffset].str.toLowerCase().startsWith('reduction publi'), "Unexpected cell: "+textItems[currentOffset].str);
 
-        assert(textItems[++currentOffset].str.toLowerCase().startsWith('vidanges'), "Unexpected cell: "+textItems[currentOffset].str);
-        receipt.returnedBottles = parseLocaleNumber(textItems[currentOffset].str.split(':').pop()!);
+        //assert(textItems[++currentOffset].str.toLowerCase().startsWith('vidanges'), "Unexpected cell: "+textItems[currentOffset].str);
+        //receipt.returnedBottles = parseLocaleNumber(textItems[currentOffset].str.split(':').pop()!);
 
         assert(textItems[++currentOffset].str.toLowerCase().startsWith('facture'), "Unexpected cell: "+textItems[currentOffset].str);
 

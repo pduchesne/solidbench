@@ -1,0 +1,28 @@
+PREFIX :       <http://example.org/>
+PREFIX schema: <http://schema.org/>
+PREFIX xsd:    <http://www.w3.org/2001/XMLSchema#>
+
+:VendorArticle {
+  :label          xsd:string;
+  :vendorId          xsd:string;
+  :ean          xsd:string?;
+}
+
+:ReceiptItem {
+  :date          xsd:string;
+  :quantity          xsd:double;
+  :unitPrice          xsd:double;
+  :amount          xsd:number;
+  :article           @:VendorArticle;
+}
+
+:Receipt {
+  :receiptId          xsd:string;
+  :date          xsd:string;
+  :storeId          xsd:string;
+  :storeName          xsd:string;
+  :totalAmount          xsd:double;
+  :items           @:ReceiptItem*;
+  :shippingCosts xsd:double;
+}
+

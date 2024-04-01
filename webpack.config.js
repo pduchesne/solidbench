@@ -66,15 +66,17 @@ module.exports = {
         extensions: ['.ts', '.tsx', '.js'],
         fallback: {
             "url": false,
-            //"stream": require.resolve("stream-browserify"),
+            "stream": require.resolve("stream-browserify"),
             "crypto": require.resolve("crypto-browserify"),
             //stream: require.resolve('readable-stream'),
+            "buffer": require.resolve("buffer")
         },
         alias: {
             // these are necessary to allow yarn linking of local packages
             // cf https://github.com/facebook/react/issues/14257
             react: path.resolve(__dirname, 'node_modules/react'),
             'react-dom': path.resolve(__dirname, 'node_modules/react-dom'),
+            stream: path.resolve(__dirname, 'node_modules/stream-browserify'),
         }
     },
     target: 'web',
@@ -136,6 +138,9 @@ module.exports = {
     //watch: true,
     // specify the plugins which you are using
     plugins: [
+        new webpack.ProvidePlugin({
+            Buffer: ['buffer', 'Buffer'],
+        }),
         htmlPlugin,
         definePlugin,
         new CopyWebpackPlugin({
