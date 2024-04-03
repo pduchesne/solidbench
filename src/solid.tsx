@@ -7,12 +7,13 @@ import {
     getContainedResourceUrlAll,
     getFile,
     getSolidDataset,
-    overwriteFile, saveFileInContainer,
-    WithResourceInfo
+    overwriteFile, saveFileInContainer, SolidDataset,
+    WithResourceInfo, WithServerResourceInfo
 } from "@inrupt/solid-client";
 import {usePromiseFn} from "@hilats/react-utils";
 import { assert } from '@hilats/utils';
 import {GetFileOptions} from "@inrupt/solid-client/dist/resource/file";
+import {ResourceCache} from "@hilats/solid-utils";
 
 const ISSUERS: Record<string, string> = {
     //"https://openid.sandbox-pod.datanutsbedrijf.be": "DNB Sandbox",
@@ -138,17 +139,23 @@ export function useSolidFile(
 }
 
 
+export type ContainerAccessor = {
+    containerDataset: SolidDataset & WithServerResourceInfo,
+    children: string[],
+    addContainer: (name: string) => Promise<SolidDataset & WithServerResourceInfo>,
+    saveFile: (name: string, file: File | Blob, options?: Parameters<typeof saveFileInContainer>[2]) => Promise<Blob | File & WithServerResourceInfo>};
 
 /**
  * Create a memoized annotation container to perform storage operations on a solid dataset
  */
 export function useSolidContainer(
     path: string,
-    fetchFn: typeof fetch = fetch
+    fetchFn: typeof fetch = fetch,
+    resourceCache?: ResourceCache
 ) {
 
     const accessor = usePromiseFn( async () => {
-        const containerDataset = await getSolidDataset(path, {fetch: fetchFn});
+        const containerDataset = resourceCache ? await resourceCache.getOrFetchContainerDataset(path, fetchFn) : await getSolidDataset(path, {fetch: fetchFn});
 
         const children = getContainedResourceUrlAll(containerDataset);
 
@@ -166,7 +173,7 @@ export function useSolidContainer(
             return result;
         }
 
-        return {containerDataset, children, addContainer, saveFile};
+        return {containerDataset, children, addContainer, saveFile} as ContainerAccessor;
     }, [path, fetchFn])
 
     return accessor;

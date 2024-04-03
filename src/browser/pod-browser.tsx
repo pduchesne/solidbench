@@ -36,6 +36,7 @@ import BasicTabs, {TabDescriptor} from "../ui/tabs";
 import {UniversalAccessMetadata} from "./resourceAccess";
 import {getResourceName} from "@hilats/solid-utils";
 import classNames from "classnames";
+import {FolderOpen} from "@mui/icons-material";
 
 
 export const PodBrowserPanel = () => {
@@ -96,13 +97,14 @@ export const PodBrowser = (props: { rootUrl: string, fetch?: typeof fetch, displ
     return (
         <div className="vFlow fill podbrowser">
             <div className="topbar">
-                <FileBreadcrumbs path={currentUrl} onSelect={setCurrentUrl} style={{display: 'inline-block'}} className='filebreadcrumb'/>
+                <FileBreadcrumbs path={currentUrl} onSelect={setCurrentUrl} style={{display: 'inline-block'}}
+                                 className='filebreadcrumb'/>
                 <FolderSharedIcon sx={{verticalAlign: 'sub', fontSize: '110%'}}
                                   onClick={() => setDisplayMetadata(!displayMetadata)}/>
             </div>
             <div className="podbrowser-body hFlow">
                 <div className="podbrowser-tree">
-                    <PodDirectoryTree folderUrl={props.rootUrl} fetch={props.fetch} onSelectFile={setCurrentUrl}/>
+                    <PodDirectoryTree folderUrl={props.rootUrl} fetch={props.fetch} onSelectFile={setCurrentUrl} selected={currentUrl}/>
                 </div>
                 <div className="podbrowser-resource-viewer vFlow">
                     {
@@ -126,24 +128,52 @@ export const PodDirectoryTree = (props: {
     onSelectFile: (url: string) => void,
     selected?: string
 }) => {
-    const containerAccessor$ = useSolidContainer(
-        props.folderUrl,
-        props.fetch);
-
     return (
         <div className="vFlow">
-            <PromiseStateContainer promiseState={containerAccessor$}>
-                {(container) => <div>
-                    {container.children.map(res => res.endsWith('/') ?
-                        <div key={res} onClick={() => props.onSelectFile(res)}
-                             className={classNames('resource', {selected: props.selected == res})}>
-                            <FolderIcon/>
-                            {res.substring(props.folderUrl.length)}
-                        </div> : null)}
-                </div>}
-            </PromiseStateContainer>
+            <PodDirectorySubTree folderUrl={props.folderUrl} onSelectFile={props.onSelectFile}
+                                 selected={props.selected} fetch={props.fetch}/>
         </div>
     );
+};
+
+
+export const PodDirectorySubTree = (props: {
+    folderUrl: string,
+    fetch?: typeof fetch,
+    onSelectFile: (url: string) => void,
+    selected?: string
+}) => {
+    const appContext = useContext(AppContext);
+
+    const containerAccessor$ = useSolidContainer(
+        props.folderUrl,
+        props.fetch,
+        appContext.cache
+    );
+
+    return <PromiseStateContainer promiseState={containerAccessor$}>
+            {(container) => <>
+                {container.children.filter(res => res.endsWith('/')).map(res =>
+                    <PodDirectoryTreeElement folderUrl={res} onSelectFile={props.onSelectFile} fetch={props.fetch}
+                                             selected={props.selected}/>)}</>}
+        </PromiseStateContainer>
+};
+
+export const PodDirectoryTreeElement = (props: {
+    folderUrl: string,
+    fetch?: typeof fetch,
+    onSelectFile: (url: string) => void,
+    selected?: string
+}) => {
+    const [expanded, setExpanded] = useState(false);
+
+    return <div>
+        <div className={classNames('resource', {selected: props.folderUrl == props.selected})}
+             onClick={() => props.onSelectFile(props.folderUrl)}
+             onDoubleClick={() => setExpanded(!expanded)}>{expanded ? <FolderOpen/> : <FolderIcon/>} {getResourceName(props.folderUrl)}</div>
+        {expanded ? <div className='podbrowser-tree-children'><PodDirectorySubTree folderUrl={props.folderUrl} onSelectFile={props.onSelectFile}
+                                              selected={props.selected} fetch={props.fetch}/></div> : null}
+    </div>
 };
 
 
@@ -192,7 +222,7 @@ export const ContainerViewer = (props: {
         props.fetch);
 
     return <PromiseStateContainer promiseState={containerAccessor$}>
-        {(containerAccessor) => <div className={'container-viewer '+display}>
+        {(containerAccessor) => <div className={'container-viewer ' + display}>
             {containerAccessor.children.map(res =>
                 <div key={res}
                      onClick={() => setSelected(res)}

@@ -1,11 +1,12 @@
 import * as React from "react";
 import {useSession} from "@inrupt/solid-ui-react";
 import {useEffect, useState} from "react";
-import {getPodUrls} from "@hilats/solid-utils";
+import {getPodUrls, ResourceCache} from "@hilats/solid-utils";
 
 export type AppContextType = {
     webId?: string,
     podUrl?: string,
+    cache?: ResourceCache,
     updateCtx: (update: Partial<AppContextType>) => void;
 };
 
@@ -38,7 +39,8 @@ export function AppContextProvider(props: { children: (ctx: AppContextType) => R
             podUrl$.then(podUrl => {
                 appContext.updateCtx({
                     webId: session.info.webId,
-                    podUrl
+                    podUrl,
+                    cache: new ResourceCache()
                 });
             })
         },

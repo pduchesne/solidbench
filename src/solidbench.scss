@@ -230,6 +230,16 @@ body {
       flex: 0.5;
       padding: 8px;
       border-right: 1px solid var(--theme-back2);
+
+      .podbrowser-tree-children {
+        margin-left: 10px;
+      }
+
+      .podbrowser-tree-resource-name {
+        &>* {
+          vertical-align: middle;
+        }
+      }
     }
 
     .podbrowser-resource-viewer {
