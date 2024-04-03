@@ -5,5 +5,5 @@ export type Preferences = {
         webId?: string
     }[],
 
-    theme?: string
+    theme: 'auto' | string
 }

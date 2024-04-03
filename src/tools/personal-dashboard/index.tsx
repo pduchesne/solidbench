@@ -9,11 +9,13 @@ import {useNavigate} from "react-router";
 import {useSession} from "@inrupt/solid-ui-react";
 import {useContext} from "react";
 import {AppContext} from "../../appContext";
+import {PodDashboardSettings} from "./settings";
 
 export const PANELS: Record<string, React.FC> = {
     podbrowser: PodBrowserPanel,
     retail: RetailDashboard,
-    music: MusicDashboard
+    music: MusicDashboard,
+    settings: PodDashboardSettings
 }
 
 export const DashboardRoutes = () => {

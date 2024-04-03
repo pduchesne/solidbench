@@ -15,7 +15,7 @@ import {Receipt, ReceiptItem} from "./model";
 import {RetailStorage} from "./storage";
 import {useSession} from "@inrupt/solid-ui-react";
 import {AppContext} from "../../appContext";
-import {ErrorBoundary, PromiseContainer, useDarkThemeDetector} from "@hilats/react-utils";
+import {ErrorBoundary, PromiseContainer} from "@hilats/react-utils";
 import {ColruytPanel} from "./colruyt/ImportPanel";
 import Dropzone from "react-dropzone";
 import classNames from "classnames";
@@ -243,7 +243,7 @@ export const Dashboard = (props: { receipts: Array<Receipt> }) => {
 }
 
 export const ItemsTable = (props: { receipts: Array<Receipt> }) => {
-    const isDark = useDarkThemeDetector();
+    const ctx = useContext(AppContext);
 
     const [selectedItem, setSelectedItem] = useState(0);
 
@@ -331,7 +331,7 @@ export const ItemsTable = (props: { receipts: Array<Receipt> }) => {
             <div>
                 EAN <Input value={items[selectedItem].ean}/>
             </div>
-            <ReactEcharts theme={isDark ? 'dark' : undefined} option={chartOptions}/>
+            <ReactEcharts theme={ctx.theme == 'dark' ? 'dark' : undefined} option={chartOptions}/>
         </div>
     </div>
 }
@@ -341,7 +341,7 @@ const AVG_SPAN = 4 * 30 * 24 * 60 * 60 * 1000;
 
 export const Expenses = (props: { receipts: Array<ReceiptWithRetailer> }) => {
 
-    const isDark = useDarkThemeDetector();
+    const ctx = useContext(AppContext);
 
     const eChartsRef = React.useRef<any>();
 
@@ -500,7 +500,7 @@ export const Expenses = (props: { receipts: Array<ReceiptWithRetailer> }) => {
     }), []);
 
     return <div>
-        <ReactEcharts theme={isDark ? 'dark' : undefined} option={chartOptions} onEvents={eventHandlers}
+        <ReactEcharts theme={ctx.theme == 'dark' ? 'dark' : undefined} option={chartOptions} onEvents={eventHandlers}
                       ref={eChartsRef}/>
     </div>
 }

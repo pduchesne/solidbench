@@ -1,46 +1,21 @@
 import * as React from 'react';
 import {BrowserRouter, Navigate, Route, Routes} from 'react-router-dom';
 import './solidbench.scss';
-import { SessionProvider} from '@inrupt/solid-ui-react';
+import {SessionProvider} from '@inrupt/solid-ui-react';
 
-import {ErrorBoundary, useDarkThemeDetector} from '@hilats/react-utils';
+import {ErrorBoundary} from '@hilats/react-utils';
 import {PodBrowserPanel} from "./browser/pod-browser";
 import {createRoot} from "react-dom/client";
 import {AppNavBar} from "./navbar";
 import {AppContextProvider} from "./appContext";
-import { ColruytDbPanel } from './tools/retail/colruytdb';
+import {ColruytDbPanel} from './tools/retail/colruytdb';
 import {RetailDashboard} from "./tools/retail";
 import {useCallback} from "react";
 import {useNavigate} from "react-router";
 import {DashboardRoutes, PersonalDashboard} from "./tools/personal-dashboard";
-import {createTheme, ThemeProvider} from "@mui/material";
 import {MusicDashboard} from "./tools/music";
-
-
-
-
-const theme = createTheme({
-    palette: {
-        primary: {
-            //light?: string;
-            main: "#1976d2",
-            //dark?: string;
-            contrastText: "#F0F0F0"
-        },
-        secondary: {
-            //light?: string;
-            main: "#237777",
-            //dark?: string;
-            contrastText: "#F0F0F0"
-        },
-    },
-});
-
-const darkTheme = createTheme({
-    palette: {
-        mode: 'dark',
-    },
-});
+import classNames from "classnames";
+import {AppThemeProvider} from "./theme";
 
 const routes = [
     {
@@ -77,7 +52,7 @@ export const AppRouter = () => {
 
     return (
         <BrowserRouter>
-           <App />
+            <App/>
         </BrowserRouter>
     );
 };
@@ -85,36 +60,37 @@ export const AppRouter = () => {
 export const App = () => {
     const navigate = useNavigate();
 
-    const isDarkTheme = useDarkThemeDetector();
-
     const sessionRestoreCb = useCallback((url: string) => {
         const host = new URL(url).host;
         const path = url.substring(url.indexOf(host) + host.length);
         navigate(path);
-    }, [navigate])
+    }, [navigate]);
 
     return (
-            <SessionProvider restorePreviousSession={true} sessionId="solidbench-app" onSessionRestore={sessionRestoreCb} onError={console.log}>
-                <AppContextProvider>
-                    {ctx => (
-                        <ThemeProvider theme={isDarkTheme ? darkTheme : theme}>
-                        <div className="mainApp vFlow">
+        <SessionProvider restorePreviousSession={true} sessionId="solidbench-app" onSessionRestore={sessionRestoreCb}
+                         onError={console.log}>
+            <AppContextProvider>
+                {ctx => (
+                    <AppThemeProvider>
+                        <div className={classNames("mainApp", "vFlow", {'theme-dark': ctx.theme == 'dark'})}>
                             <AppNavBar/>
                             <div className='vFlow'>
                                 <ErrorBoundary>
                                     <Routes>
                                         {routes.map((route, i) => (
-                                            <Route path={route.path} key={i} element={<ErrorBoundary><route.component/></ErrorBoundary>}/>
+                                            <Route path={route.path} key={i} element={<ErrorBoundary>
+                                                <route.component/>
+                                            </ErrorBoundary>}/>
                                         ))}
-                                        <Route path="*" element={<Navigate to="/personal-dashboard" />} />
+                                        <Route path="*" element={<Navigate to="/personal-dashboard"/>}/>
                                     </Routes>
                                 </ErrorBoundary>
                             </div>
                         </div>
-                        </ThemeProvider>
-                    )}
-                </AppContextProvider>
-            </SessionProvider>
+                    </AppThemeProvider>
+                )}
+            </AppContextProvider>
+        </SessionProvider>
     );
 };
 
