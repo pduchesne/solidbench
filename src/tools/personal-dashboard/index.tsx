@@ -4,7 +4,7 @@ import {Sidenav} from "./sidenav";
 import {PodBrowserPanel} from "../../browser/pod-browser";
 import {RetailDashboard} from "../retail";
 import {MusicDashboard} from "../music";
-import {Navigate, Route, Routes, useParams} from "react-router-dom";
+import {Navigate, Route, Routes, useLocation, useParams} from "react-router-dom";
 import {useNavigate} from "react-router";
 import {useSession} from "@inrupt/solid-ui-react";
 import {useContext} from "react";
@@ -19,9 +19,11 @@ export const PANELS: Record<string, React.FC> = {
 }
 
 export const DashboardRoutes = () => {
+    const {search} = useLocation();
+
     return <Routes>
         <Route path="/:panelId/*" element={<PersonalDashboard />} />
-        <Route path="*" element={<Navigate to="/personal-dashboard/podbrowser" />} />
+        <Route path="*" element={<Navigate to={"/personal-dashboard/podbrowser"+decodeURIComponent(search)} replace={true} />} />
     </Routes>
 }
 

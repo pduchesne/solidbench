@@ -12,14 +12,14 @@ import {ColruytDbPanel} from './tools/retail/colruytdb';
 import {RetailDashboard} from "./tools/retail";
 import {useCallback} from "react";
 import {useNavigate} from "react-router";
-import {DashboardRoutes, PersonalDashboard} from "./tools/personal-dashboard";
+import {DashboardRoutes} from "./tools/personal-dashboard";
 import {MusicDashboard} from "./tools/music";
 import classNames from "classnames";
 import {AppThemeProvider} from "./theme";
 
 const routes = [
     {
-        component: PersonalDashboard,
+        component: DashboardRoutes,
         path: '/personal-dashboard'
     },
     {

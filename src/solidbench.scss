@@ -7,9 +7,12 @@
   --theme-color1-border: #dadada80;
   --theme-color1-hover: #dadadaA0;
   --theme-front1: #333;
-  --theme-back1: #FFF;
-  --theme-back2: #dadada;
+  --theme-back1: #ececec;
+  --theme-back2: #c8c8c8;
+  --theme-border1: #c8c8c8;
+  --theme-border2: #ffffff;
   --theme-selection: #324c8730;
+  --theme-hover: #32497C30;
 
   --resource-icon-size: 80px
 }
@@ -25,7 +28,10 @@
   --theme-front1: #e6e6e6;
   --theme-back1: #222;
   --theme-back2: #444;
-  --theme-selection: #4f75d330
+  --theme-border1: #444;
+  --theme-border2: #2c2c2c;
+  --theme-selection: #4f75d330;
+  --theme-hover: #5072C530;
 }
 
 /* MUI color overrides */
@@ -160,6 +166,9 @@ body {
   }
 }
 
+svg {
+  vertical-align: middle;
+}
 
 .retail {
   .dataproviders {
@@ -222,23 +231,40 @@ body {
   }
 
   .podbrowser-body {
-    .podbrowser-tree {
+    @extend .hFlow;
+
+    .podbrowser-sidenav {
+      @extend .vFlow;
       flex: 0.5;
       padding: 8px;
-      border-right: 1px solid var(--theme-back2);
+      border-right: 1px solid var(--theme-border1);
 
-      .podbrowser-tree-children {
-        margin-left: 10px;
+      .podbrowser-sidenav-quicklinks {
+        &>*:hover {
+          background-color: var(--theme-hover);
+        }
+
+        flex: none;
+        border-bottom: 1px solid var(--theme-border2);
+        padding-bottom: 5px;
+        margin-bottom: 5px;
       }
 
-      .podbrowser-tree-resource-name {
-        &>* {
-          vertical-align: middle;
+      .podbrowser-tree {
+        .podbrowser-tree-children {
+          margin-left: 10px;
+        }
+
+        .podbrowser-tree-resource-name {
+          & > * {
+            vertical-align: middle;
+          }
         }
       }
     }
 
     .podbrowser-resource-viewer {
+      @extend .vFlow;
       flex: 2;
       border-right: 1px solid var(--theme-back2);
 
@@ -282,8 +308,8 @@ body {
   }
 
   .resource {
-    & > * {
-      vertical-align: middle;
+    &:hover {
+      background-color: var(--theme-hover);
     }
 
     &.selected {

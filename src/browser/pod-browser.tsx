@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useContext, useMemo, useState} from 'react';
+import {useCallback, useContext, useMemo, useState} from 'react';
 
 /*
 import 'codemirror/lib/codemirror.css';
@@ -12,19 +12,16 @@ import 'codemirror/mode/javascript/javascript';
 import {useSession} from "@inrupt/solid-ui-react";
 import {DirtyCodemirror} from "./codemirror";
 
-import {
-    PromiseContainer,
-    PromiseStateContainer,
-    usePromiseFn,
-    CachedPromiseState
-} from "@hilats/react-utils";
+import {CachedPromiseState, PromiseContainer, PromiseStateContainer, usePromiseFn} from "@hilats/react-utils";
 import {useSolidContainer, useSolidFile} from "../solid";
 import {
+    acp_ess_2,
     getContentType,
+    getResourceInfo,
     getSourceUrl,
     isRawData,
     WithResourceInfo,
-    getResourceInfo, WithServerResourceInfo, acp_ess_2
+    WithServerResourceInfo
 } from "@inrupt/solid-client";
 import {AppContext} from "../appContext";
 import FolderIcon from '@mui/icons-material/Folder';
@@ -36,7 +33,10 @@ import BasicTabs, {TabDescriptor} from "../ui/tabs";
 import {UniversalAccessMetadata} from "./resourceAccess";
 import {getResourceName} from "@hilats/solid-utils";
 import classNames from "classnames";
-import {FolderOpen} from "@mui/icons-material";
+import {PodDirectoryTree} from "./podTree";
+import RadarIcon from '@mui/icons-material/Radar';
+import {useNavigate} from "react-router";
+import {Route, Routes, useParams} from "react-router-dom";
 
 
 export const PodBrowserPanel = () => {
@@ -45,7 +45,7 @@ export const PodBrowserPanel = () => {
     const appContext = useContext(AppContext);
 
     return appContext.podUrl ?
-        <PodBrowser rootUrl={appContext.podUrl} fetch={fetch}/> :
+        <PodBrowserRoutes rootUrl={appContext.podUrl} fetch={fetch}/> :
         <div> Please login to your Solid pod to use the Pod Browser</div>;
 }
 
@@ -89,27 +89,73 @@ function FileBreadcrumbs(props: { rootUrl?: string, path: string, onSelect: (url
     );
 }
 
+
+export const PodBrowserRoutes = (props: { rootUrl: string, fetch?: typeof fetch, displayMetadata?: boolean }) => {
+    return <Routes>
+        <Route path="/" element={<PodBrowser {...props}/>}/>
+        <Route path="/overview" element={<PodBrowser {...props}/>}/>
+        <Route path="/:ROOT/*" element={<PodBrowser {...props}/>}/>
+    </Routes>
+}
+
+
 export const PodBrowser = (props: { rootUrl: string, fetch?: typeof fetch, displayMetadata?: boolean }) => {
 
-    const [currentUrl, setCurrentUrl] = useState(props.rootUrl);
+    const params = useParams();
+    console.log(JSON.stringify(params));
+    const navigate = useNavigate();
     const [displayMetadata, setDisplayMetadata] = useState(props.displayMetadata);
+
+    /*
+    const [currentUrl, setCurrentUrl] = useState(props.rootUrl);
+    useEffect(() => {
+        // TODO support other roots
+        const path = props.rootUrl + (params['*'] || '');
+        setCurrentUrl(path);
+    }, [props.rootUrl, params['*'], params.ROOT]);
+
+     */
+
+    const navigateToResource = useCallback( (resPath: string) => {
+        const relativePath = resPath.replace(props.rootUrl, '../-/');
+        navigate(relativePath);
+    }, [props.rootUrl, navigate]);
+
+    const currentUrl = useMemo( () => {
+        // TODO support other roots
+        const path = props.rootUrl + (params['*'] || '');
+        return path;
+    }, [props.rootUrl, params['*'], params.ROOT])
 
     return (
         <div className="vFlow fill podbrowser">
             <div className="topbar">
-                <FileBreadcrumbs path={currentUrl} onSelect={setCurrentUrl} style={{display: 'inline-block'}}
+                <FileBreadcrumbs path={currentUrl} onSelect={navigateToResource} style={{display: 'inline-block'}}
                                  className='filebreadcrumb'/>
                 <FolderSharedIcon sx={{verticalAlign: 'sub', fontSize: '110%'}}
                                   onClick={() => setDisplayMetadata(!displayMetadata)}/>
             </div>
-            <div className="podbrowser-body hFlow">
-                <div className="podbrowser-tree">
-                    <PodDirectoryTree folderUrl={props.rootUrl} fetch={props.fetch} onSelectFile={setCurrentUrl} selected={currentUrl}/>
+            <div className="podbrowser-body">
+                <div className="podbrowser-sidenav">
+                    <div className="podbrowser-sidenav-quicklinks">
+                        <div onClick={() => navigate('../overview', {relative: 'route', replace: false})}>
+                            <RadarIcon/> overview
+                        </div>
+                    </div>
+                    <div className="podbrowser-tree">
+                        <PodDirectoryTree folderUrl={props.rootUrl} fetch={props.fetch}
+                                          onSelectFile={(path) => navigate(path.replace(props.rootUrl, '../-/'), {
+                                              relative: 'route',
+                                              replace: false
+                                          })}
+                                          selected={currentUrl}/>
+                    </div>
                 </div>
-                <div className="podbrowser-resource-viewer vFlow">
+
+                <div className="podbrowser-resource-viewer">
                     {
                         currentUrl.endsWith('/') ?
-                            <ContainerViewer uri={currentUrl} fetch={props.fetch} onSelectResource={setCurrentUrl}/> :
+                            <ContainerViewer uri={currentUrl} fetch={props.fetch} onSelectResource={navigateToResource}/> :
                             <FileViewer uri={currentUrl} fetch={props.fetch}/>
                     }
 
@@ -120,60 +166,6 @@ export const PodBrowser = (props: { rootUrl: string, fetch?: typeof fetch, displ
             </div>
         </div>
     );
-};
-
-export const PodDirectoryTree = (props: {
-    folderUrl: string,
-    fetch?: typeof fetch,
-    onSelectFile: (url: string) => void,
-    selected?: string
-}) => {
-    return (
-        <div className="vFlow">
-            <PodDirectorySubTree folderUrl={props.folderUrl} onSelectFile={props.onSelectFile}
-                                 selected={props.selected} fetch={props.fetch}/>
-        </div>
-    );
-};
-
-
-export const PodDirectorySubTree = (props: {
-    folderUrl: string,
-    fetch?: typeof fetch,
-    onSelectFile: (url: string) => void,
-    selected?: string
-}) => {
-    const appContext = useContext(AppContext);
-
-    const containerAccessor$ = useSolidContainer(
-        props.folderUrl,
-        props.fetch,
-        appContext.cache
-    );
-
-    return <PromiseStateContainer promiseState={containerAccessor$}>
-            {(container) => <>
-                {container.children.filter(res => res.endsWith('/')).map(res =>
-                    <PodDirectoryTreeElement folderUrl={res} onSelectFile={props.onSelectFile} fetch={props.fetch}
-                                             selected={props.selected}/>)}</>}
-        </PromiseStateContainer>
-};
-
-export const PodDirectoryTreeElement = (props: {
-    folderUrl: string,
-    fetch?: typeof fetch,
-    onSelectFile: (url: string) => void,
-    selected?: string
-}) => {
-    const [expanded, setExpanded] = useState(false);
-
-    return <div>
-        <div className={classNames('resource', {selected: props.folderUrl == props.selected})}
-             onClick={() => props.onSelectFile(props.folderUrl)}
-             onDoubleClick={() => setExpanded(!expanded)}>{expanded ? <FolderOpen/> : <FolderIcon/>} {getResourceName(props.folderUrl)}</div>
-        {expanded ? <div className='podbrowser-tree-children'><PodDirectorySubTree folderUrl={props.folderUrl} onSelectFile={props.onSelectFile}
-                                              selected={props.selected} fetch={props.fetch}/></div> : null}
-    </div>
 };
 
 
