@@ -39,8 +39,7 @@ export const UniversalAccessMetadata = (props: {
             <PromiseStateContainer promiseState={acrAccess.resInfo$}>
                 {(resInfo) => <>
                     <AcrAccessForm resInfo={resInfo}
-                                   onChangePublic={(access) => acrAccess.setPublic(access)}
-                                   onChange={(entity, access) => acrAccess.setAccessModes(entity, access)} />
+                                   onChange={(acr) => acrAccess.setAcr(acr)} />
                 </>
                 }
             </PromiseStateContainer>

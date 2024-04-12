@@ -41,7 +41,6 @@ function injectEnv(buffer) {
     return strValue.replaceAll('${process.env.ROOT_URL}', process.env.ROOT_URL)
 }
 
-
 module.exports = {
     mode: dev ? 'development' : 'production',
     optimization: {minimize: !dev},
@@ -69,7 +68,8 @@ module.exports = {
             "stream": require.resolve("stream-browserify"),
             "crypto": require.resolve("crypto-browserify"),
             //stream: require.resolve('readable-stream'),
-            "buffer": require.resolve("buffer")
+            "buffer": require.resolve("buffer"),
+
         },
         alias: {
             // these are necessary to allow yarn linking of local packages
@@ -77,7 +77,36 @@ module.exports = {
             react: path.resolve(__dirname, 'node_modules/react'),
             'react-dom': path.resolve(__dirname, 'node_modules/react-dom'),
             stream: path.resolve(__dirname, 'node_modules/stream-browserify'),
-        }
+
+
+            /*
+             WARN !!!
+             The following has to be added in the @inrupt/solid-client/package.json#exports :
+
+                    "./dist/acp/util/getAgentAccessAll": {
+                      "types": "./dist/acp/util/getAgentAccessAll.d.ts",
+                      "import": "./dist/acp/util/getAgentAccessAll.mjs"
+                    },
+                    "./dist/acl/acl.internal": {
+                      "types": "./dist/acl/acl.internal.d.ts",
+                      "import": "./dist/acl/acl.internal.mjs"
+                    },
+                    "./dist/acl/agent": {
+                      "types": "./dist/acl/agent.d.ts",
+                      "import": "./dist/acl/agent.mjs"
+                    },
+
+              to get webpack to find these toolkit-ts dependencies
+
+             */
+
+
+            //'@hilats/solid-utils': path.resolve(__dirname, '../toolkit-ts/solid-utils'),
+            //'@inrupt/solid-client/dist/acp/util/getAgentAccessAll': path.resolve(__dirname, 'node_modules/@inrupt/solid-client/dist/acp/util/getAgentAccessAll'),
+            //'@inrupt/solid-client/dist': path.resolve(__dirname, 'node_modules/@inrupt/solid-client/dist'),
+        },
+        //modules: ['node_modules', '../node_modules'],
+        symlinks: false
     },
     target: 'web',
     devtool: 'source-map',

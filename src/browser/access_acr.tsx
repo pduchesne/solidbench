@@ -1,8 +1,7 @@
 import {
-    Access,
     AccessModes,
     WithServerResourceInfo,
-    acp_ess_2, WithAcp
+    acp_ess_2, WithAcp, WithAccessibleAcr, asUrl, ThingPersisted, saveSolidDatasetAt, getSourceUrl
 } from "@inrupt/solid-client";
 import * as React from "react";
 import {useCallback} from "react";
@@ -10,9 +9,11 @@ import {usePromiseFn} from "@hilats/react-utils";
 import {Checkbox} from "@mui/material";
 import {ResourcePolicy} from "@inrupt/solid-client/dist/acp/policy";
 import {ResourceMatcher} from "@inrupt/solid-client/dist/acp/matcher";
+import {PolicyAllowModes} from "@hilats/solid-utils/dist/cjs/acp";
+
+
+
 export function useAcrAccess(resUri: string, fetchFn: typeof fetch = fetch) {
-
-
     const resInfo$ = usePromiseFn(async () => {
         // 1. Fetch the SolidDataset with its Access Control Resource (ACR).
         const resInfo = await acp_ess_2.getResourceInfoWithAcr(
@@ -33,7 +34,12 @@ export function useAcrAccess(resUri: string, fetchFn: typeof fetch = fetch) {
         return resInfo
     }, [resUri, fetchFn])
 
-    const setPublic = useCallback((access: Access) => {
+    const setAcr = useCallback(async (acr: WithAccessibleAcr['internal_acp']['acr']) => {
+        await saveSolidDatasetAt(getSourceUrl(acr), acr, {fetch: fetchFn});
+        resInfo$.fetch();
+    }, [resInfo$]);
+
+    const setPublic = useCallback((access: AccessModes) => {
         /* TODO
         const res = resInfo$.fetch()
         setPublicResourceAccess(aclDataset, access);
@@ -62,14 +68,15 @@ export function useAcrAccess(resUri: string, fetchFn: typeof fetch = fetch) {
     return {
         resInfo$,
         setPublic,
-        setAccessModes
+        setAccessModes,
+        setAcr
     };
 }
 
 export const AcrAccessCheckbox = (props: {
-    mode: keyof Access,
-    accessModes: Access,
-    onChange?: (access: Access) => void
+    mode: keyof PolicyAllowModes,
+    accessModes: PolicyAllowModes,
+    onChange?: (access: PolicyAllowModes) => void
 }) => {
     return <Checkbox checked={props.accessModes[props.mode]} disabled={!props.onChange}
                      onChange={(event, checked) => props.onChange!({
@@ -79,8 +86,7 @@ export const AcrAccessCheckbox = (props: {
 }
 export const AcrAccessForm = (props: {
     resInfo: WithAcp & WithServerResourceInfo,
-    onChangePublic: (access: Access) => void,
-    onChange: (entity: string, access: Access) => void
+    onChange: (acr: WithAccessibleAcr['internal_acp']['acr']) => void
 }) => {
 
     const {resInfo} = props;
@@ -89,6 +95,21 @@ export const AcrAccessForm = (props: {
     // 3a. Get all policies from the ACR to process policies.
     const policies = hasAcr ? acp_ess_2.getResourcePolicyAll(resInfo) : null;
 
+    const member_policies = hasAcr ? acp_ess_2.getMemberPolicyUrlAll(resInfo) : null;
+
+    //@ts-ignore
+    const setMemberPolicy = useCallback( (policy: ThingPersisted) => {
+        if (hasAcr) {
+            const updatedAcr = acp_ess_2.addMemberPolicyUrl(
+                resInfo,
+                asUrl(policy),
+            );
+            // Save to the dataset
+            props.onChange(updatedAcr.internal_acp.acr);
+        }
+    }, [resInfo])
+
+
     // 4a. Get all matchers from the ACR to process matchers.
     const matchers = hasAcr ? acp_ess_2.getResourceMatcherAll(resInfo) : null;
 
@@ -96,19 +117,19 @@ export const AcrAccessForm = (props: {
         <div>
             <h4>ACP</h4>
             <h5>Policies</h5>
-            {policies?.map((policy: ResourcePolicy) => {
-                const allMatchers = acp_ess_2.getAllOfMatcherUrlAll(policy);
-                const anyMatchers = acp_ess_2.getAnyOfMatcherUrlAll(policy);
-                const noneMatchers = acp_ess_2.getNoneOfMatcherUrlAll(policy);
-                const modes = acp_ess_2.getAllowModes(policy);
-                return <div>
-                    <div>Policy {policy.url}</div>
-                    <div>Modes {JSON.stringify(modes)}</div>
-                    <div>All of {allMatchers.join(',')}</div>
-                    <div>Any of {anyMatchers.join(',')}</div>
-                    <div>None of {noneMatchers.join(',')}</div>
-                </div>
-            })}
+            <table>
+                <tbody>
+                <tr>
+                    <th>name</th>
+                    <th>R</th>
+                    <th>W</th>
+                    <th>A</th>
+                    <th>Inh</th>
+                </tr>
+                {policies?.map((policy: ResourcePolicy) => <AcrPolicy policy={policy} memberPolicies={member_policies || []}/>)}
+                </tbody>
+            </table>
+
             <h5>Matchers</h5>
             {matchers?.map((matcher: ResourceMatcher) => {
                 const name = matcher.url;
@@ -118,9 +139,9 @@ export const AcrAccessForm = (props: {
                 const hasAuthenticated = acp_ess_2.hasAuthenticated(matcher);
                 return <div>
                     Matcher {name}
-                    <div>Public {""+hasPublic}</div>
-                    <div>Creator {""+hasCreator}</div>
-                    <div>Authenticated {""+hasAuthenticated}</div>
+                    <div>Public {"" + hasPublic}</div>
+                    <div>Creator {"" + hasCreator}</div>
+                    <div>Authenticated {"" + hasAuthenticated}</div>
                     <div>Agents {agentMatchers.join(',')}</div>
                 </div>
             })}
@@ -128,3 +149,27 @@ export const AcrAccessForm = (props: {
         </div>
     );
 };
+
+
+export function AcrPolicy({policy, memberPolicies}: { policy: ResourcePolicy, memberPolicies: string[] }) {
+    const allMatchers = acp_ess_2.getAllOfMatcherUrlAll(policy);
+    const anyMatchers = acp_ess_2.getAnyOfMatcherUrlAll(policy);
+    const noneMatchers = acp_ess_2.getNoneOfMatcherUrlAll(policy);
+    const modes = acp_ess_2.getAllowModes(policy);
+
+    return <><tr>
+        <td title={policy.url}>{new URL(policy.url).hash}</td>
+        <td><AcrAccessCheckbox accessModes={modes} mode="read"/></td>
+        <td><AcrAccessCheckbox accessModes={modes} mode="write"/></td>
+        <td><AcrAccessCheckbox accessModes={modes} mode="append"/></td>
+        <td>{memberPolicies.indexOf(policy.url) >= 0}</td>
+    </tr>
+    <tr>
+        <td></td>
+        <td colSpan={4}>
+            <div>All of {allMatchers.map(m => new URL(m).hash).join(',')}</div>
+            <div>Any of {anyMatchers.map(m => new URL(m).hash).join(',')}</div>
+            <div>None of {noneMatchers.map(m => new URL(m).hash).join(',')}</div>
+        </td>
+    </tr></>;
+}

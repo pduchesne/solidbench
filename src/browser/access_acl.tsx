@@ -11,10 +11,12 @@ import {
     WithAcl,
     WithServerResourceInfo
 } from "@inrupt/solid-client";
+
 import * as React from "react";
 import {useCallback} from "react";
 import {usePromiseFn} from "@hilats/react-utils";
 import {Checkbox} from "@mui/material";
+import { wac } from "@hilats/solid-utils";
 
 export function useAclAccess(resUri: string, fetchFn: typeof fetch = fetch) {
 
@@ -28,30 +30,18 @@ export function useAclAccess(resUri: string, fetchFn: typeof fetch = fetch) {
         return (resourceAcl || fallbackAcl) ? resInfo : null;
     }, [resUri, fetchFn])
 
-    const setPublic = useCallback((access: Access) => {
-        /* TODO
-        const res = resInfo$.fetch()
-        setPublicResourceAccess(aclDataset, access);
-        saveAclFor();
-        universalAccess
-            .setPublicAccess(resUri, accessModes, {fetch: fetchFn})
-            .then(res => {
-                access$.fetch();
-                return res;
-            })
-
-         */
+    const setPublic = useCallback(async (access: Access) => {
+        if (resInfo$.result) {
+            await wac.setWacPublicResourceAccess(resInfo$.result, wac.aclAccessToUniversal(access), {fetch});
+            resInfo$.fetch();
+        }
     }, [resInfo$]);
 
-    const setAccessModes = useCallback((webId: string, accessModes: Partial<AccessModes>) => {
-        /* TODO
-        universalAccess
-            .setAgentAccess(resUri, webId, accessModes, {fetch: fetchFn})
-            .then(res => {
-                access$.fetch();
-                return res;
-            })
-        */
+    const setAccessModes = useCallback(async (webId: string, accessModes: Partial<AccessModes>) => {
+        if (resInfo$.result) {
+            await wac.setWacAgentResourceAccess(resInfo$.result, webId, accessModes as AccessModes, {fetch});
+            resInfo$.fetch();
+        }
     }, [resInfo$]);
 
     return {
