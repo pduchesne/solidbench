@@ -10,9 +10,9 @@ PREFIX xsd:    <http://www.w3.org/2001/XMLSchema#>
 
 :ReceiptItem {
   :date          xsd:string;
-  :quantity          xsd:double;
-  :unitPrice          xsd:double;
-  :amount          xsd:number;
+  :quantity          xsd:integer;
+  :unitPrice          xsd:integer;
+  :amount          xsd:integer;
   :article           @:VendorArticle;
 }
 
@@ -21,8 +21,8 @@ PREFIX xsd:    <http://www.w3.org/2001/XMLSchema#>
   :date          xsd:string;
   :storeId          xsd:string;
   :storeName          xsd:string;
-  :totalAmount          xsd:double;
+  :totalAmount          xsd:integer;
   :items           @:ReceiptItem*;
-  :shippingCosts xsd:double;
+  :shippingCosts xsd:integer;
 }
 

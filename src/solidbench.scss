@@ -305,6 +305,33 @@ svg {
 
       }
     }
+
+    .acrPolicies {
+      font-size: 80%;
+
+      th {
+        text-align: center;
+      }
+
+      td {
+
+        max-width: 2em;
+      }
+
+      .MuiCheckbox-root {
+        padding: 0;
+      }
+
+      .policyName {
+        max-width: 100px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .policyMatchers {
+        padding-left: 15px;
+      }
+    }
   }
 
   .resource {

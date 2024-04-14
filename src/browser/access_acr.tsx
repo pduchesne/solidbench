@@ -117,7 +117,7 @@ export const AcrAccessForm = (props: {
         <div>
             <h4>ACP</h4>
             <h5>Policies</h5>
-            <table>
+            <table className="acrPolicies">
                 <tbody>
                 <tr>
                     <th>name</th>
@@ -158,15 +158,14 @@ export function AcrPolicy({policy, memberPolicies}: { policy: ResourcePolicy, me
     const modes = acp_ess_2.getAllowModes(policy);
 
     return <><tr>
-        <td title={policy.url}>{new URL(policy.url).hash}</td>
+        <td title={policy.url} className="policyName">{new URL(policy.url).hash}</td>
         <td><AcrAccessCheckbox accessModes={modes} mode="read"/></td>
         <td><AcrAccessCheckbox accessModes={modes} mode="write"/></td>
         <td><AcrAccessCheckbox accessModes={modes} mode="append"/></td>
         <td>{memberPolicies.indexOf(policy.url) >= 0}</td>
     </tr>
     <tr>
-        <td></td>
-        <td colSpan={4}>
+        <td colSpan={5} className="policyMatchers">
             <div>All of {allMatchers.map(m => new URL(m).hash).join(',')}</div>
             <div>Any of {anyMatchers.map(m => new URL(m).hash).join(',')}</div>
             <div>None of {noneMatchers.map(m => new URL(m).hash).join(',')}</div>
