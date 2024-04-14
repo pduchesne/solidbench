@@ -162,7 +162,7 @@ export function AcrPolicy({policy, memberPolicies}: { policy: ResourcePolicy, me
         <td><AcrAccessCheckbox accessModes={modes} mode="read"/></td>
         <td><AcrAccessCheckbox accessModes={modes} mode="write"/></td>
         <td><AcrAccessCheckbox accessModes={modes} mode="append"/></td>
-        <td>{memberPolicies.indexOf(policy.url) >= 0}</td>
+        <td>{memberPolicies.indexOf(policy.url) >= 0 ? '✓' : null}</td>
     </tr>
     <tr>
         <td colSpan={5} className="policyMatchers">
