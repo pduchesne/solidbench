@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useEffect, useMemo, useState} from 'react';
+import {useCallback, useState} from 'react';
 import {LoginButton} from '@inrupt/solid-ui-react';
 import {Button, MenuItem, Select} from "@mui/material";
 import {
@@ -10,7 +10,7 @@ import {
     overwriteFile, saveFileInContainer, SolidDataset,
     WithResourceInfo, WithServerResourceInfo
 } from "@inrupt/solid-client";
-import {usePromiseFn} from "@hilats/react-utils";
+import {CachedPromiseState, usePromiseFn} from "@hilats/react-utils";
 import { assert } from '@hilats/utils';
 import {GetFileOptions} from "@inrupt/solid-client/dist/resource/file";
 import {ResourceCache} from "@hilats/solid-utils";
@@ -50,7 +50,7 @@ export const LoginMultiButton = (props: Omit<Parameters<typeof LoginButton>[0], 
 };
 
 export type SolidFile = {
-    file: Promise<Blob & WithResourceInfo>,
+    file$: CachedPromiseState<Blob & WithResourceInfo>,
     saveRawContent: (rawContent: string | Blob) => Promise<void>
 }
 
@@ -106,8 +106,9 @@ export async function getFileWithHeaders(path: string, options?: GetFileOptions)
 export function useSolidFile(
     path: string,
     fetchFn: typeof fetch = fetch
-): SolidFile | undefined {
+): SolidFile {
 
+    /*
     const [file, setFile] = useState<Promise<Blob & WithResourceInfo> | undefined>(undefined);
 
     useEffect(() => {
@@ -117,25 +118,25 @@ export function useSolidFile(
         ))
     }, [path, fetchFn]);
 
-    const container = useMemo(() => {
+     */
 
-        const saveRawContent = async (rawContent: string | Blob) => {
-            const blob: Blob = typeof rawContent == 'string' ? new Blob([rawContent], {
-                type: file ? (await file).type : undefined
-            }) : rawContent;
-            const newFile = overwriteFile(path, blob, {fetch: fetchFn});
-            setFile(newFile);
-        };
+    const file$ = usePromiseFn(() => getFile(
+        path,               // File in Pod to Read
+        {fetch: fetchFn}       // fetch from authenticated session
+    ), [path, fetchFn]);
 
-        return file ? {
-            file,
-            saveRawContent
-        } : undefined;
+    const saveRawContent = useCallback( async (rawContent: string | Blob) => {
+        const blob: Blob = typeof rawContent == 'string' ? new Blob([rawContent], {
+            type: (await file$.promise)?.type || undefined
+        }) : rawContent;
+        const newFile = overwriteFile(path, blob, {fetch: fetchFn}) as Promise<Blob & WithServerResourceInfo>;
+        file$.setPromise(newFile);
+    }, [path, fetchFn, file$]);
 
-    }, [path, fetchFn, file]);
-
-
-    return container;
+    return {
+        file$,
+        saveRawContent
+    };
 }
 
 
@@ -143,7 +144,7 @@ export type ContainerAccessor = {
     containerDataset: SolidDataset & WithServerResourceInfo,
     children: string[],
     addContainer: (name: string) => Promise<SolidDataset & WithServerResourceInfo>,
-    saveFile: (name: string, file: File | Blob, options?: Parameters<typeof saveFileInContainer>[2]) => Promise<Blob | File & WithServerResourceInfo>};
+    saveFile: (name: string, file: File | Blob | string, options?: Parameters<typeof saveFileInContainer>[2]) => Promise<(Blob | File) & WithServerResourceInfo>};
 
 /**
  * Create a memoized annotation container to perform storage operations on a solid dataset
@@ -166,9 +167,11 @@ export function useSolidContainer(
             return result;
         }
 
-        const saveFile = async (name: string, file: File | Blob, options?: Parameters<typeof saveFileInContainer>[2]) => {
+        const saveFile = async (name: string, file: File | Blob | string, options?: Parameters<typeof saveFileInContainer>[2]) => {
             assert(! name.endsWith('/'), 'File names must not end with a slash');
-            const result = await saveFileInContainer(new URL(name, path).toString(), file, {fetch: fetchFn, ...options});
+
+            if (typeof file == 'string') file = new Blob([file]);
+            const result = await saveFileInContainer(path, file, {fetch: fetchFn, ...options});
             accessor.fetch();
             return result;
         }

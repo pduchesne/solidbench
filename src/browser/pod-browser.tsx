@@ -12,7 +12,7 @@ import 'codemirror/mode/javascript/javascript';
 import {useSession} from "@inrupt/solid-ui-react";
 import {DirtyCodemirror} from "./codemirror";
 
-import {CachedPromiseState, PromiseContainer, PromiseStateContainer, usePromiseFn} from "@hilats/react-utils";
+import {CachedPromiseState, PromiseStateContainer, usePromiseFn} from "@hilats/react-utils";
 import {useSolidContainer, useSolidFile} from "../solid";
 import {
     acp_ess_2,
@@ -37,6 +37,7 @@ import {PodDirectoryTree} from "./podTree";
 import RadarIcon from '@mui/icons-material/Radar';
 import {useNavigate} from "react-router";
 import {Route, Routes, useParams} from "react-router-dom";
+import {PodOverview} from "./overview";
 
 
 export const PodBrowserPanel = () => {
@@ -116,12 +117,12 @@ export const PodBrowser = (props: { rootUrl: string, fetch?: typeof fetch, displ
 
      */
 
-    const navigateToResource = useCallback( (resPath: string) => {
+    const navigateToResource = useCallback((resPath: string) => {
         const relativePath = resPath.replace(props.rootUrl, '../-/');
         navigate(relativePath);
     }, [props.rootUrl, navigate]);
 
-    const currentUrl = useMemo( () => {
+    const currentUrl = useMemo(() => {
         // TODO support other roots
         const path = props.rootUrl + (params['*'] || '');
         return path;
@@ -152,17 +153,22 @@ export const PodBrowser = (props: { rootUrl: string, fetch?: typeof fetch, displ
                     </div>
                 </div>
 
-                <div className="podbrowser-resource-viewer">
-                    {
-                        currentUrl.endsWith('/') ?
-                            <ContainerViewer uri={currentUrl} fetch={props.fetch} onSelectResource={navigateToResource}/> :
-                            <FileViewer uri={currentUrl} fetch={props.fetch}/>
-                    }
+                {currentUrl.endsWith('/overview') ?
+                    <PodOverview folderUrl={props.rootUrl} fetch={props.fetch}/> :
+                    <>
+                        <div className="podbrowser-resource-viewer">
+                            {
+                                currentUrl.endsWith('/') ?
+                                    <ContainerViewer uri={currentUrl} fetch={props.fetch}
+                                                     onSelectResource={navigateToResource}/> :
+                                    <FileViewer uri={currentUrl} fetch={props.fetch}/>
+                            }
 
-                </div>
-                {displayMetadata ? <div className="vFlow">
-                    <ResourceMetadata resourceUrl={currentUrl} fetch={props.fetch}/>
-                </div> : null}
+                        </div>
+                        {displayMetadata ? <div className="vFlow">
+                            <ResourceMetadata resourceUrl={currentUrl} fetch={props.fetch}/>
+                        </div> : null}
+                    </>}
             </div>
         </div>
     );
@@ -174,18 +180,10 @@ export const FileViewer = (props: { uri: string, fetch?: typeof fetch }) => {
         props.uri,
         props.fetch);
 
-    const fileBlob$ = useMemo(async () => {
-        if (currentFile?.file) {
-            const file = await currentFile.file;
-            const content = await file.text();
-            return content;
-        } else {
-            return undefined;
-        }
-    }, [currentFile?.file])
+    const fileBlob$ = currentFile.file$.then(file => file.text());
 
     return fileBlob$ ?
-        <PromiseContainer promise={fileBlob$}>
+        <PromiseStateContainer promiseState={fileBlob$}>
             {(fileContent) => <DirtyCodemirror
                 value={fileContent}
                 options={{
@@ -196,7 +194,7 @@ export const FileViewer = (props: { uri: string, fetch?: typeof fetch }) => {
                     currentFile?.saveRawContent(value)
                 })}
             />}
-        </PromiseContainer> : <div>No file content</div>
+        </PromiseStateContainer> : <div>No file content</div>
 }
 
 

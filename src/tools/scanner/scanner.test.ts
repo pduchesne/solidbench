@@ -27,3 +27,19 @@ test('Scan folder - no shapes', async () => {
 
     metadata.name;
 });
+
+
+const testShapes = {bookTest:
+        `
+start = @<Book>
+
+<Book> {
+  <http://schema.org/name> . ;
+}
+`}
+
+test('Scan folder - shapes', async () => {
+    const metadata = await scanResource(TEST_FOLDER, {shapes: testShapes});
+
+    metadata.name;
+});
