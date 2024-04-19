@@ -2,27 +2,27 @@ import {useMemo, useState} from "react";
 import {PromiseContainer} from "@hilats/react-utils";
 import {Box, Button, Pagination, Switch, Tab} from "@mui/material";
 import * as React from "react";
-import {Receipt, VendorArticle} from "../model";
-import {parseZipExport} from "./parser";
+import {Receipt, VendorArticle} from "../../model";
 import {TabContext, TabList, TabPanel} from "@mui/lab";
+import {parseXlsxExport} from "./parser";
 
-export const AmazonPanel = (props: { blob: Blob , onImport: (receipts: Receipt[]) => void}) => {
+export const DelhaizePanel = (props: { blob: Blob , onImport: (receipts: Receipt[]) => void}) => {
 
     const zipContent$ = useMemo(() => {
-        return parseZipExport(props.blob);
+        return parseXlsxExport(props.blob);
     }, [
         props.blob
     ]);
 
     return <>
-        <h3>Amazon Import</h3>
+        <h3>Delhaize Import</h3>
         <PromiseContainer promise={zipContent$}>
-            {(receipts) => <AmazonImportResult receipts={receipts} onImport={props.onImport}/>}
+            {(receipts) => <DelhaizeImportResult receipts={receipts} onImport={props.onImport}/>}
         </PromiseContainer>
     </>
 }
 
-export const AmazonImportResult = (props: { receipts: Receipt[], onImport: (receipts: Receipt[]) => void}) => {
+export const DelhaizeImportResult = (props: { receipts: Receipt[], onImport: (receipts: Receipt[]) => void}) => {
 
     const [tab, setTab] = useState('0');
 
@@ -53,13 +53,13 @@ export const AmazonImportResult = (props: { receipts: Receipt[], onImport: (rece
                     <Tab label="Items" value="1"/>
                 </TabList>
             </Box>
-            <TabPanel value="0" className='vFlow'><AmazonReceiptsTable receipts={props.receipts}/></TabPanel>
-            <TabPanel value="1" className='vFlow'><AmazonArticlesTable articles={uniqueItems}/></TabPanel>
+            <TabPanel value="0" className='vFlow'><DelhaizeReceiptsTable receipts={props.receipts}/></TabPanel>
+            <TabPanel value="1" className='vFlow'><DelhaizeArticlesTable articles={uniqueItems}/></TabPanel>
         </TabContext>
     </Box>
 }
 
-export const AmazonReceiptsTable = (props: { receipts: Array<Receipt>, lastUpdate?: number }) => {
+export const DelhaizeReceiptsTable = (props: { receipts: Array<Receipt>, lastUpdate?: number }) => {
 
     const [onlyNew, setOnlyNew] = useState(false);
 
@@ -88,7 +88,7 @@ export const AmazonReceiptsTable = (props: { receipts: Array<Receipt>, lastUpdat
 }
 
 
-export const AmazonArticlesTable = (props: { articles: Record<string, VendorArticle> }) => {
+export const DelhaizeArticlesTable = (props: { articles: Record<string, VendorArticle> }) => {
 
     const [filterMissingEan, setFilterMissingEan] = useState(false);
     const [page, setPage] = useState(1);

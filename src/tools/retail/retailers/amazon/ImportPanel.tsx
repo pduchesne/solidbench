@@ -1,30 +1,28 @@
-import {useCallback, useMemo, useState} from "react";
-import {parsePdfData, reduceItems} from "./parser";
+import {useMemo, useState} from "react";
 import {PromiseContainer} from "@hilats/react-utils";
-import {TextItem} from "pdfjs-dist/types/src/display/api";
 import {Box, Button, Pagination, Switch, Tab} from "@mui/material";
 import * as React from "react";
-import {Receipt, VendorArticle} from "../model";
+import {Receipt, VendorArticle} from "../../model";
+import {parseZipExport} from "./parser";
 import {TabContext, TabList, TabPanel} from "@mui/lab";
-import {enrichArticlesFromCache} from "./services";
 
-export const ColruytPanel = (props: { blob: Blob , onImport: (receipts: Receipt[]) => void}) => {
+export const AmazonPanel = (props: { blob: Blob , onImport: (receipts: Receipt[]) => void}) => {
 
-    const pdf$ = useMemo(() => {
-        return parsePdfData(props.blob);
+    const zipContent$ = useMemo(() => {
+        return parseZipExport(props.blob);
     }, [
         props.blob
     ]);
 
     return <>
-        <h3>Colruyt Import</h3>
-        <PromiseContainer promise={pdf$}>
-            {(pdf) => <ColruytImportResult receipts={pdf.receipts} onImport={props.onImport}/>}
+        <h3>Amazon Import</h3>
+        <PromiseContainer promise={zipContent$}>
+            {(receipts) => <AmazonImportResult receipts={receipts} onImport={props.onImport}/>}
         </PromiseContainer>
     </>
 }
 
-export const ColruytImportResult = (props: { receipts: Receipt[], onImport: (receipts: Receipt[]) => void}) => {
+export const AmazonImportResult = (props: { receipts: Receipt[], onImport: (receipts: Receipt[]) => void}) => {
 
     const [tab, setTab] = useState('0');
 
@@ -38,8 +36,6 @@ export const ColruytImportResult = (props: { receipts: Receipt[], onImport: (rec
                 }
             })
         })
-
-        enrichArticlesFromCache(Object.values(items));
 
         return items;
     }, [
@@ -57,13 +53,13 @@ export const ColruytImportResult = (props: { receipts: Receipt[], onImport: (rec
                     <Tab label="Items" value="1"/>
                 </TabList>
             </Box>
-            <TabPanel value="0" className='vFlow'><ColruytReceiptsTable receipts={props.receipts}/></TabPanel>
-            <TabPanel value="1" className='vFlow'><ColruytArticlesTable articles={uniqueItems}/></TabPanel>
+            <TabPanel value="0" className='vFlow'><AmazonReceiptsTable receipts={props.receipts}/></TabPanel>
+            <TabPanel value="1" className='vFlow'><AmazonArticlesTable articles={uniqueItems}/></TabPanel>
         </TabContext>
     </Box>
 }
 
-export const ColruytReceiptsTable = (props: { receipts: Array<Receipt>, lastUpdate?: number }) => {
+export const AmazonReceiptsTable = (props: { receipts: Array<Receipt>, lastUpdate?: number }) => {
 
     const [onlyNew, setOnlyNew] = useState(false);
 
@@ -92,7 +88,7 @@ export const ColruytReceiptsTable = (props: { receipts: Array<Receipt>, lastUpda
 }
 
 
-export const ColruytArticlesTable = (props: { articles: Record<string, VendorArticle> }) => {
+export const AmazonArticlesTable = (props: { articles: Record<string, VendorArticle> }) => {
 
     const [filterMissingEan, setFilterMissingEan] = useState(false);
     const [page, setPage] = useState(1);
@@ -101,15 +97,8 @@ export const ColruytArticlesTable = (props: { articles: Record<string, VendorArt
 
     const showedArticles = filteredArticles.slice( (page-1) * 25, (page) * 25);
 
-    const enrichArticlesCb = useCallback(async () => {
-        enrichArticlesFromCache(filteredArticles);
-       // const {eanMapUpdate} = await enrichArticles(showedArticles, {});
-       // for (let vendorId in eanMapUpdate) props.articles[vendorId].ean = eanMapUpdate[vendorId].ean;
-    }, [])
-
     return <div>
         <div>
-            <Button onClick={enrichArticlesCb}>Enrich</Button>
             <Switch checked={filterMissingEan} onChange={(e) => setFilterMissingEan(e.target.checked)}/>
         </div>
         <Pagination count={filteredArticles.length / 25} siblingCount={1} boundaryCount={1}
@@ -123,40 +112,5 @@ export const ColruytArticlesTable = (props: { articles: Record<string, VendorArt
                 </tr>)}
             </table>
         </div>
-    </div>
-}
-
-export const PdfItemsTable = (props: { items: Array<TextItem> }) => {
-
-    const [reduce, setReduce] = useState<boolean>(false)
-    const items = useMemo(() => {
-        return reduce ? reduceItems(props.items, true) : props.items
-    }, [props.items, reduce])
-
-    const [page, setPage] = useState(1);
-
-    return <div>
-        <Switch onChange={(e) => setReduce(e.target.checked)} checked={reduce}/>
-        <Pagination count={items.length % 100} siblingCount={1} boundaryCount={1}
-                    onChange={(e, value) => setPage(value)}/>
-        <div style={{padding: 10}}>
-            <table>
-                <tbody>
-                {items.slice((page - 1) * 100, (page) * 100).map(item => (
-                    <tr>{Object.entries(item).map(([key, value]) => <td>{JSON.stringify(value)}</td>)}</tr>
-                ))}
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-
-    return <div>
-        <Switch onChange={(e) => setReduce(e.target.checked)} checked={reduce}/>
-        <table>
-            {(reduce ? reduceItems(props.items, true) : props.items).map(item => (
-                <tr>{Object.entries(item).map(([key, value]) => <td>{JSON.stringify(value)}</td>)}</tr>
-            ))}
-        </table>
     </div>
 }

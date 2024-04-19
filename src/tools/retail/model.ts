@@ -12,3 +12,7 @@ export type Article = {
 }
 
 export {VendorArticle, ReceiptItem, Receipt} from "../../ldo/retail.typings";
+
+import {Receipt} from "../../ldo/retail.typings";
+
+export type ReceiptWithRetailer = Receipt & { retailer: string };

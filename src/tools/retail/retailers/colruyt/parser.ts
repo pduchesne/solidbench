@@ -1,7 +1,7 @@
 import {TextItem, TextMarkedContent, TypedArray} from "pdfjs-dist/types/src/display/api";
 import {assert} from "@hilats/utils";
 import {getDocument, PDFDocumentProxy} from "pdfjs-dist";
-import {Receipt, ReceiptItem} from "../model";
+import {Receipt, ReceiptItem} from "../../model";
 
 function findNextReceiptIdx(items: Array<TextItem>, offset: number = 0) {
     return items.findIndex((i, idx) => idx >= offset && i.str.startsWith('Ticket de caisse '));

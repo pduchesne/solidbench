@@ -1,6 +1,6 @@
 import * as cheerio from 'cheerio';
-import {fetchFoodFacts} from "../off";
-import {Receipt, VendorArticle} from "../model";
+import {fetchFoodFacts} from "../../off";
+import {Receipt, VendorArticle} from "../../model";
 import {ColruytEanMap} from "../colruytdb/storage";
 import {proxify_url, throwOnHttpStatus} from "@hilats/utils";
 

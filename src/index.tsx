@@ -8,7 +8,7 @@ import {PodBrowserPanel} from "./browser/pod-browser";
 import {createRoot} from "react-dom/client";
 import {AppNavBar} from "./navbar";
 import {AppContextProvider} from "./appContext";
-import {ColruytDbPanel} from './tools/retail/colruytdb';
+import {ColruytDbPanel} from './tools/retail/retailers/colruytdb';
 import {RetailDashboard} from "./tools/retail";
 import {useCallback} from "react";
 import {useNavigate} from "react-router";
@@ -16,6 +16,12 @@ import {DashboardRoutes} from "./tools/personal-dashboard";
 import {MusicDashboard} from "./tools/music";
 import classNames from "classnames";
 import {AppThemeProvider} from "./theme";
+
+// register the echarts dark theme for use throughout the app
+import echartsDarkTheme from './echarts_dark.json';
+import {registerTheme} from 'echarts';
+registerTheme('dark', echartsDarkTheme)
+
 
 const routes = [
     {

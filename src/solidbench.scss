@@ -7,6 +7,7 @@
   --theme-color1-border: #dadada80;
   --theme-color1-hover: #dadadaA0;
   --theme-front1: #333;
+  --theme-front2: #494949;
   --theme-back1: #ececec;
   --theme-back2: #c8c8c8;
   --theme-border1: #c8c8c8;
@@ -14,7 +15,15 @@
   --theme-selection: #324c8730;
   --theme-hover: #32497C30;
 
-  --resource-icon-size: 80px
+  --scrollbar-color-thumb: #afafaf;
+  --scrollbar-color-track: #ececec;
+
+  --link-color: #0942b3;
+  --link-hover-color: #0749cc;
+
+  --resource-icon-size: 80px;
+
+
 }
 
 
@@ -26,12 +35,19 @@
   --theme-color1-border: rgba(181, 181, 181, 0.5);
   --theme-color1-hover: #FFFFFF30;
   --theme-front1: #e6e6e6;
+  --theme-front2: #afafaf;
   --theme-back1: #222;
   --theme-back2: #444;
   --theme-border1: #444;
   --theme-border2: #2c2c2c;
   --theme-selection: #4f75d330;
   --theme-hover: #5072C530;
+
+  --scrollbar-color-thumb: #6a6a6a;
+  --scrollbar-color-track: #292929;
+
+  --link-color: #4478cc;
+  --link-hover-color: #1e63ff;
 }
 
 /* MUI color overrides */
@@ -56,22 +72,6 @@
  */
 
 
-.MuiInputBase-root {
-  background-color: var(--theme-color1-button);
-  color: var(--theme-color1-front);
-}
-
-.MuiButtonGroup-root {
-  & > .MuiInputBase-root:not(:first-child) {
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-  }
-
-  & > .MuiInputBase-root:not(:last-child) {
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-  }
-}
 
 
 $primary: var(--theme-color1-back);
@@ -88,14 +88,60 @@ body {
 
   background: var(--theme-back1);
   color: var(--theme-front1);
+
+  scrollbar-color: var(--scrollbar-color-thumb) var(--scrollbar-color-track);
+  scrollbar-width: thin;
+
+  a {
+    &:link { color: var(--link-color); text-decoration: none;}
+    &:visited { color: var(--link-color); }
+    &:hover { color: var(--link-hover-color); text-decoration: underline;}
+    &:active { color: var(--link-hover-color); }
+  }
+
+
+  /**
+  Material UI overrides
+  */
+
+  .MuiInputBase-root {
+    background-color: var(--theme-color1-button);
+    color: var(--theme-color1-front);
+  }
+
+  .MuiButtonGroup-root {
+    & > .MuiInputBase-root:not(:first-child) {
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+    }
+
+    & > .MuiInputBase-root:not(:last-child) {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+  }
+
+  // Let's remove the padding altogether, and put itt back on a per case basis
+  .MuiTabPanel-root {
+    padding: 0;
+  }
+
+
 }
 
 .contentPane {
   //padding: 10px;
+  &>* {
+    height: 100%;
+  }
 }
 
 .navbar {
   padding: 5px;
+}
+
+.paddedPanel {
+  padding: 15px;
 }
 
 .fill {
@@ -189,8 +235,10 @@ svg {
 }
 
 .retail {
+  @extend .vFlow;
+
   .dataproviders {
-    flex: 0;
+    flex: none;
     height: 100px;
 
     .providerCard {
@@ -377,6 +425,54 @@ svg {
       background-color: var(--theme-selection);
     }
   }
+}
 
 
+.itemsTable {
+  @extend .hFlow;
+
+  .itemsList {
+    @extend .paddedPanel;
+    flex: 1;
+
+    &>div {
+      text-wrap: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+
+      &:hover {
+        background-color: var(--theme-hover);
+      }
+
+      &.selected {
+        background-color: var(--theme-selection)
+      }
+    }
+  }
+
+  .itemsDetails {
+    @extend .paddedPanel;
+    flex: 3;
+  }
+}
+
+.frequencyBar {
+  display: inline-block;
+  border: 1px solid var(--theme-border1);
+  position: relative;
+  vertical-align: middle;
+  margin: 2px 5px;
+
+  &>div {
+    display: inline-block;
+    background-color: green;
+    height: 100%;
+  }
+}
+
+.itemDate {
+  display: inline-block;
+  font-size: 90%;
+  color: var(--theme-front2);
+  margin: 2px 5px;
 }

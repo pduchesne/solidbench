@@ -1,6 +1,6 @@
 import {BlobReader, TextWriter, ZipReader} from "@zip.js/zip.js";
 import {parse} from "csv-parse/browser/esm/sync";
-import {Receipt, ReceiptItem} from "../../../ldo/retail.typings";
+import {Receipt, ReceiptItem} from "../../model";
 
 export async function parseZipExport(data: Blob) {
 

@@ -1,4 +1,4 @@
-import {Receipt, ReceiptItem} from "../../../ldo/retail.typings";
+import {Receipt, ReceiptItem} from "../../model";
 
 import officeCrypto from "officecrypto-tool";
 import readXlsxFile, {Row} from "read-excel-file";
