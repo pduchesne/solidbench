@@ -306,7 +306,7 @@ svg {
       }
     }
 
-    .acrPolicies {
+    .acrPolicies, .acrMatchers {
       font-size: 80%;
 
       th {
@@ -326,10 +326,20 @@ svg {
         max-width: 100px;
         overflow: hidden;
         text-overflow: ellipsis;
+        text-wrap: nowrap;
       }
 
       .policyMatchers {
         padding-left: 15px;
+      }
+
+      .matcherName {
+        display: inline-block;
+        max-width: 100px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        vertical-align: bottom;
+        text-wrap: nowrap;
       }
     }
   }

@@ -126,49 +126,77 @@ export const AcrAccessForm = (props: {
                     <th>A</th>
                     <th>Inh</th>
                 </tr>
-                {policies?.map((policy: ResourcePolicy) => <AcrPolicy policy={policy} memberPolicies={member_policies || []}/>)}
+                {policies?.map((policy: ResourcePolicy) => <AcrPolicy key={policy.url} policy={policy}
+                                                                      memberPolicies={member_policies || []}/>)}
                 </tbody>
             </table>
 
             <h5>Matchers</h5>
-            {matchers?.map((matcher: ResourceMatcher) => {
-                const name = matcher.url;
-                const agentMatchers = acp_ess_2.getAgentAll(matcher);
-                const hasPublic = acp_ess_2.hasPublic(matcher);
-                const hasCreator = acp_ess_2.hasCreator(matcher);
-                const hasAuthenticated = acp_ess_2.hasAuthenticated(matcher);
-                return <div>
-                    Matcher {name}
-                    <div>Public {"" + hasPublic}</div>
-                    <div>Creator {"" + hasCreator}</div>
-                    <div>Authenticated {"" + hasAuthenticated}</div>
-                    <div>Agents {agentMatchers.join(',')}</div>
-                </div>
-            })}
+            <table className="acrMatchers">
+                <tbody>
+                <tr>
+                    <th></th>
+                    <th>Pub</th>
+                    <th>Cre</th>
+                    <th>Auth</th>
+                </tr>
+                {matchers?.map((matcher: ResourceMatcher) => <AcrMatcher matcher={matcher} key={matcher.url}/>)}
+                </tbody></table>
 
         </div>
-    );
+);
 };
 
 
-export function AcrPolicy({policy, memberPolicies}: { policy: ResourcePolicy, memberPolicies: string[] }) {
+export function AcrPolicy({
+    policy, memberPolicies
+}: {
+    policy: ResourcePolicy, memberPolicies
+:
+    string[]
+}) {
     const allMatchers = acp_ess_2.getAllOfMatcherUrlAll(policy);
     const anyMatchers = acp_ess_2.getAnyOfMatcherUrlAll(policy);
     const noneMatchers = acp_ess_2.getNoneOfMatcherUrlAll(policy);
     const modes = acp_ess_2.getAllowModes(policy);
 
+    return <>
+        <tr>
+            <td title={policy.url} className="policyName">{new URL(policy.url).hash}</td>
+            <td><AcrAccessCheckbox accessModes={modes} mode="read"/></td>
+            <td><AcrAccessCheckbox accessModes={modes} mode="append"/></td>
+            <td><AcrAccessCheckbox accessModes={modes} mode="write"/></td>
+            <td>{memberPolicies.indexOf(policy.url) >= 0 ? '✓' : null}</td>
+        </tr>
+        <tr>
+            <td colSpan={5} className="policyMatchers">
+                {allMatchers.length ? <div>All of {allMatchers.map(m => <div title={m} className="matcherName" key={m}>{new URL(m).hash}</div>)}</div> : null}
+                {anyMatchers.length ? <div>Any of {anyMatchers.map(m => <div title={m} key={m}
+                    className="matcherName">{new URL(m).hash}</div>)}</div> : null}
+                {noneMatchers.length ? <div>None of {noneMatchers.map(m => <div title={m} key={m}
+                    className="matcherName">{new URL(m).hash}</div>)}</div> : null}
+
+            </td>
+        </tr>
+    </>;
+}
+
+export function AcrMatcher({matcher}: { matcher: ResourceMatcher }) {
+    const name = matcher.url;
+    const agentMatchers = acp_ess_2.getAgentAll(matcher);
+    const hasPublic = acp_ess_2.hasPublic(matcher);
+    const hasCreator = acp_ess_2.hasCreator(matcher);
+    const hasAuthenticated = acp_ess_2.hasAuthenticated(matcher);
     return <><tr>
-        <td title={policy.url} className="policyName">{new URL(policy.url).hash}</td>
-        <td><AcrAccessCheckbox accessModes={modes} mode="read"/></td>
-        <td><AcrAccessCheckbox accessModes={modes} mode="write"/></td>
-        <td><AcrAccessCheckbox accessModes={modes} mode="append"/></td>
-        <td>{memberPolicies.indexOf(policy.url) >= 0 ? '✓' : null}</td>
+        <td className="matcherName" title={name}>{name}</td>
+        <td>{hasPublic ? '✓' : ''}</td>
+        <td>{hasCreator ? '✓' : ''}</td>
+        <td>{hasAuthenticated ? '✓' : ''}</td>
     </tr>
-    <tr>
-        <td colSpan={5} className="policyMatchers">
-            <div>All of {allMatchers.map(m => new URL(m).hash).join(',')}</div>
-            <div>Any of {anyMatchers.map(m => new URL(m).hash).join(',')}</div>
-            <div>None of {noneMatchers.map(m => new URL(m).hash).join(',')}</div>
-        </td>
-    </tr></>;
+        {agentMatchers.map(a =>
+                <tr>
+                    <td colSpan={4}>{a}</td>
+                </tr>
+            )}
+    </>
 }
