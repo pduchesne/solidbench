@@ -12,10 +12,10 @@ import 'codemirror/mode/javascript/javascript';
 import {useSession} from "@inrupt/solid-ui-react";
 import {DirtyCodemirror} from "./codemirror";
 
-import {CachedPromiseState, PromiseContainer, PromiseStateContainer, usePromiseFn} from "@hilats/react-utils";
+import {CachedPromiseState, PromiseStateContainer, usePromiseFn} from "@hilats/react-utils";
 import {useSolidContainer, useSolidFile} from "../solid";
 import {
-    acp_ess_2,
+    acp_ess_2, getContainedResourceUrlAll,
     getContentType,
     getResourceInfo,
     getSourceUrl,
@@ -29,6 +29,7 @@ import DescriptionIcon from '@mui/icons-material/Description';
 import {Breadcrumbs, Link} from "@mui/material";
 import {CommonProps} from "@mui/material/OverridableComponent";
 import FolderSharedIcon from '@mui/icons-material/FolderShared';
+import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 import BasicTabs, {TabDescriptor} from "../ui/tabs";
 import {UniversalAccessMetadata} from "./resourceAccess";
 import {getResourceName} from "@hilats/solid-utils";
@@ -37,6 +38,7 @@ import {PodDirectoryTree} from "./podTree";
 import RadarIcon from '@mui/icons-material/Radar';
 import {useNavigate} from "react-router";
 import {Route, Routes, useParams} from "react-router-dom";
+import {PodOverview} from "./overview";
 
 
 export const PodBrowserPanel = () => {
@@ -116,24 +118,32 @@ export const PodBrowser = (props: { rootUrl: string, fetch?: typeof fetch, displ
 
      */
 
-    const navigateToResource = useCallback( (resPath: string) => {
+    const navigateToResource = useCallback((resPath: string) => {
         const relativePath = resPath.replace(props.rootUrl, '../-/');
         navigate(relativePath);
     }, [props.rootUrl, navigate]);
 
-    const currentUrl = useMemo( () => {
+    const currentUrl = useMemo(() => {
         // TODO support other roots
         const path = props.rootUrl + (params['*'] || '');
         return path;
     }, [props.rootUrl, params['*'], params.ROOT])
 
+    // TODO not very clean way
+    const isOverview = currentUrl.endsWith('/overview');
+    const isFolder = currentUrl.endsWith('/');
+
     return (
         <div className="vFlow fill podbrowser">
             <div className="topbar">
-                <FileBreadcrumbs path={currentUrl} onSelect={navigateToResource} style={{display: 'inline-block'}}
+                <FileBreadcrumbs path={currentUrl} onSelect={navigateToResource}
                                  className='filebreadcrumb'/>
-                <FolderSharedIcon sx={{verticalAlign: 'sub', fontSize: '110%'}}
-                                  onClick={() => setDisplayMetadata(!displayMetadata)}/>
+                <div className='file_actions'>
+                    {isFolder ? <CreateNewFolderIcon /> : null}
+                    <FolderSharedIcon sx={{verticalAlign: 'sub', fontSize: '110%'}}
+                                      onClick={() => setDisplayMetadata(!displayMetadata)}/>
+                </div>
+
             </div>
             <div className="podbrowser-body">
                 <div className="podbrowser-sidenav">
@@ -152,17 +162,22 @@ export const PodBrowser = (props: { rootUrl: string, fetch?: typeof fetch, displ
                     </div>
                 </div>
 
-                <div className="podbrowser-resource-viewer">
-                    {
-                        currentUrl.endsWith('/') ?
-                            <ContainerViewer uri={currentUrl} fetch={props.fetch} onSelectResource={navigateToResource}/> :
-                            <FileViewer uri={currentUrl} fetch={props.fetch}/>
-                    }
+                {isOverview ?
+                    <PodOverview folderUrl={props.rootUrl} fetch={props.fetch}/> :
+                    <>
+                        <div className="podbrowser-resource-viewer">
+                            {
+                                isFolder ?
+                                    <ContainerViewer uri={currentUrl} fetch={props.fetch}
+                                                     onSelectResource={navigateToResource}/> :
+                                    <FileViewer uri={currentUrl} fetch={props.fetch}/>
+                            }
 
-                </div>
-                {displayMetadata ? <div className="vFlow">
-                    <ResourceMetadata resourceUrl={currentUrl} fetch={props.fetch}/>
-                </div> : null}
+                        </div>
+                        {displayMetadata ? <div className="vFlow">
+                            <ResourceMetadata resourceUrl={currentUrl} fetch={props.fetch}/>
+                        </div> : null}
+                    </>}
             </div>
         </div>
     );
@@ -174,18 +189,10 @@ export const FileViewer = (props: { uri: string, fetch?: typeof fetch }) => {
         props.uri,
         props.fetch);
 
-    const fileBlob$ = useMemo(async () => {
-        if (currentFile?.file) {
-            const file = await currentFile.file;
-            const content = await file.text();
-            return content;
-        } else {
-            return undefined;
-        }
-    }, [currentFile?.file])
+    const fileBlob$ = currentFile.file$.promise && currentFile.file$.then(file => file.text());
 
     return fileBlob$ ?
-        <PromiseContainer promise={fileBlob$}>
+        <PromiseStateContainer promiseState={fileBlob$}>
             {(fileContent) => <DirtyCodemirror
                 value={fileContent}
                 options={{
@@ -196,7 +203,7 @@ export const FileViewer = (props: { uri: string, fetch?: typeof fetch }) => {
                     currentFile?.saveRawContent(value)
                 })}
             />}
-        </PromiseContainer> : <div>No file content</div>
+        </PromiseStateContainer> : <div>No file content</div>
 }
 
 
@@ -206,16 +213,19 @@ export const ContainerViewer = (props: {
     display?: 'grid' | 'details',
     onSelectResource: (url: string) => void
 }) => {
+    const appContext = useContext(AppContext);
+
     const {display = 'grid'} = props;
     const [selected, setSelected] = useState<string>();
 
-    const containerAccessor$ = useSolidContainer(
+    const containerAccessor = useSolidContainer(
         props.uri,
-        props.fetch);
+        props.fetch,
+        appContext.cache);
 
-    return <PromiseStateContainer promiseState={containerAccessor$}>
-        {(containerAccessor) => <div className={'container-viewer ' + display}>
-            {containerAccessor.children.map(res =>
+    return <PromiseStateContainer promiseState={containerAccessor.container$}>
+        {(container) => <div className={'container-viewer ' + display}>
+            {getContainedResourceUrlAll(container).map(res =>
                 <div key={res}
                      onClick={() => setSelected(res)}
                      onDoubleClick={() => props.onSelectResource(res)}

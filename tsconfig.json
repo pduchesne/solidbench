@@ -1,9 +1,9 @@
 {
     "compilerOptions": {
         "module": "commonjs",
-        "target": "ES2019",
+        "target": "es2021",
         "esModuleInterop": true,
-        "lib": ["ES2019", "dom", "dom.iterable"],
+        "lib": ["es2021", "dom", "dom.iterable"],
 
         "declaration": true, // required to include definition files in output
         "sourceMap": true,

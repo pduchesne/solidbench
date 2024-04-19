@@ -7,6 +7,7 @@ import {getResourceName} from "@hilats/solid-utils";
 import {AppContext} from "../appContext";
 import {useSolidContainer} from "../solid";
 import {PromiseStateContainer} from "@hilats/react-utils";
+import {getContainedResourceUrlAll} from "@inrupt/solid-client";
 
 export const PodDirectoryTree = (props: {
     folderUrl: string,
@@ -29,15 +30,15 @@ export const PodDirectorySubTree = (props: {
 }) => {
     const appContext = useContext(AppContext);
 
-    const containerAccessor$ = useSolidContainer(
+    const containerAccessor= useSolidContainer(
         props.folderUrl,
         props.fetch,
         appContext.cache
     );
 
-    return <PromiseStateContainer promiseState={containerAccessor$}>
+    return <PromiseStateContainer promiseState={containerAccessor.container$}>
         {(container) => <>
-            {container.children.filter(res => res.endsWith('/')).map(res =>
+            {getContainedResourceUrlAll(container).filter(res => res.endsWith('/')).map(res =>
                 <PodDirectoryTreeElement folderUrl={res} onSelectFile={props.onSelectFile} fetch={props.fetch}
                                          selected={props.selected}/>)}</>}
     </PromiseStateContainer>

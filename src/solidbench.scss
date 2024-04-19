@@ -221,12 +221,18 @@ svg {
     border-bottom: 1px solid var(--theme-back2);
 
     .filebreadcrumb {
+      display: inline-block;
       color: var(--theme-front1);
       border-radius: 2px;
       background-color: var(--theme-back2);
       border: 1px solid var(--theme-back2);
       margin: 3px;
       padding: 0px 3px;
+    }
+
+    .file_actions {
+      display: inline-block;
+      float: right;
     }
   }
 
