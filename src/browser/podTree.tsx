@@ -39,7 +39,7 @@ export const PodDirectorySubTree = (props: {
     return <PromiseStateContainer promiseState={containerAccessor.container$}>
         {(container) => <>
             {getContainedResourceUrlAll(container).filter(res => res.endsWith('/')).map(res =>
-                <PodDirectoryTreeElement folderUrl={res} onSelectFile={props.onSelectFile} fetch={props.fetch}
+                <PodDirectoryTreeElement key={res} folderUrl={res} onSelectFile={props.onSelectFile} fetch={props.fetch}
                                          selected={props.selected}/>)}</>}
     </PromiseStateContainer>
 };

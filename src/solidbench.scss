@@ -56,6 +56,24 @@
  */
 
 
+.MuiInputBase-root {
+  background-color: var(--theme-color1-button);
+  color: var(--theme-color1-front);
+}
+
+.MuiButtonGroup-root {
+  & > .MuiInputBase-root:not(:first-child) {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+
+  & > .MuiInputBase-root:not(:last-child) {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+}
+
+
 $primary: var(--theme-color1-back);
 
 body {
@@ -246,7 +264,7 @@ svg {
       border-right: 1px solid var(--theme-border1);
 
       .podbrowser-sidenav-quicklinks {
-        &>*:hover {
+        & > *:hover {
           background-color: var(--theme-hover);
         }
 

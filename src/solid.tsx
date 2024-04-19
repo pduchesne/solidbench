@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {useCallback, useMemo, useState} from 'react';
 import {LoginButton} from '@inrupt/solid-ui-react';
-import {Button, MenuItem, Select} from "@mui/material";
+import {Button, ButtonGroup, MenuItem, Select} from "@mui/material";
 import {
     createContainerAt,
     getFile,
@@ -30,9 +30,11 @@ export const LoginMultiButton = (props: Omit<Parameters<typeof LoginButton>[0], 
 
     return (
         <LoginButton {...props} oidcIssuer={issuer}>
-            <Button variant="contained" color="primary">
-                Log in with&nbsp;
-                <Select
+            <ButtonGroup variant="contained">
+                <Button variant="contained" color="primary">
+                    Log in with&nbsp;
+                </Button>
+                <Select color="primary"
                     sx={{'& .MuiSelect-select': {padding: "5px 6px"}}}
                     value={issuer}
                     onClick={(e) => e.stopPropagation()}
@@ -43,7 +45,8 @@ export const LoginMultiButton = (props: Omit<Parameters<typeof LoginButton>[0], 
                 >
                     {Object.keys(ISSUERS).map(uri => <MenuItem value={uri} key={uri}>{ISSUERS[uri]}</MenuItem>)}
                 </Select>
-            </Button>
+            </ButtonGroup>
+
         </LoginButton>
     );
 };

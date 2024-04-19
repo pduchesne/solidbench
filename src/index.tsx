@@ -20,10 +20,6 @@ import {AppThemeProvider} from "./theme";
 const routes = [
     {
         component: DashboardRoutes,
-        path: '/personal-dashboard'
-    },
-    {
-        component: DashboardRoutes,
         path: '/personal-dashboard/*'
     },
     {
