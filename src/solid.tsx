@@ -1,17 +1,16 @@
 import * as React from 'react';
-import {useCallback, useState} from 'react';
+import {useCallback, useMemo, useState} from 'react';
 import {LoginButton} from '@inrupt/solid-ui-react';
 import {Button, MenuItem, Select} from "@mui/material";
 import {
     createContainerAt,
-    getContainedResourceUrlAll,
     getFile,
     getSolidDataset,
     overwriteFile, saveFileInContainer, SolidDataset,
     WithResourceInfo, WithServerResourceInfo
 } from "@inrupt/solid-client";
-import {CachedPromiseState, usePromiseFn} from "@hilats/react-utils";
-import { assert } from '@hilats/utils';
+import {CachedPromiseState, UpdatablePromiseState, usePromiseFn} from "@hilats/react-utils";
+import {assert} from '@hilats/utils';
 import {GetFileOptions} from "@inrupt/solid-client/dist/resource/file";
 import {ResourceCache} from "@hilats/solid-utils";
 
@@ -34,7 +33,7 @@ export const LoginMultiButton = (props: Omit<Parameters<typeof LoginButton>[0], 
             <Button variant="contained" color="primary">
                 Log in with&nbsp;
                 <Select
-                    sx={{ '& .MuiSelect-select': {padding: "5px 6px"}}}
+                    sx={{'& .MuiSelect-select': {padding: "5px 6px"}}}
                     value={issuer}
                     onClick={(e) => e.stopPropagation()}
                     onChange={(e) => {
@@ -125,7 +124,7 @@ export function useSolidFile(
         {fetch: fetchFn}       // fetch from authenticated session
     ), [path, fetchFn]);
 
-    const saveRawContent = useCallback( async (rawContent: string | Blob) => {
+    const saveRawContent = useCallback(async (rawContent: string | Blob) => {
         const blob: Blob = typeof rawContent == 'string' ? new Blob([rawContent], {
             type: (await file$.promise)?.type || undefined
         }) : rawContent;
@@ -141,10 +140,10 @@ export function useSolidFile(
 
 
 export type ContainerAccessor = {
-    containerDataset: SolidDataset & WithServerResourceInfo,
-    children: string[],
+    container$: UpdatablePromiseState<SolidDataset & WithResourceInfo>,
     addContainer: (name: string) => Promise<SolidDataset & WithServerResourceInfo>,
-    saveFile: (name: string, file: File | Blob | string, options?: Parameters<typeof saveFileInContainer>[2]) => Promise<(Blob | File) & WithServerResourceInfo>};
+    saveFile: (name: string, file: File | Blob | string, options?: Parameters<typeof saveFileInContainer>[2]) => Promise<(Blob | File) & WithResourceInfo>
+};
 
 /**
  * Create a memoized annotation container to perform storage operations on a solid dataset
@@ -155,29 +154,32 @@ export function useSolidContainer(
     resourceCache?: ResourceCache
 ) {
 
-    const accessor = usePromiseFn( async () => {
-        const containerDataset = resourceCache ? await resourceCache.getOrFetchContainerDataset(path, fetchFn) : await getSolidDataset(path, {fetch: fetchFn});
+    const container$ = usePromiseFn(async () => {
+        const containerDataset = resourceCache ?
+            await resourceCache.getOrFetchContainerDataset(path, fetchFn) :
+            await getSolidDataset(path, {fetch: fetchFn});
+        return containerDataset;
+    }, [path, fetchFn], true);
 
-        const children = getContainedResourceUrlAll(containerDataset);
-
+    const accessors = useMemo(() => {
         const addContainer = async (name: string) => {
-            if (!name.endsWith('/')) name = name+'/';
+            if (!name.endsWith('/')) name = name + '/';
             const result = await createContainerAt(new URL(name, path).toString(), {fetch: fetchFn});
-            accessor.fetch();
+            container$.fetch();
             return result;
         }
 
         const saveFile = async (name: string, file: File | Blob | string, options?: Parameters<typeof saveFileInContainer>[2]) => {
-            assert(! name.endsWith('/'), 'File names must not end with a slash');
+            assert(!name.endsWith('/'), 'File names must not end with a slash');
 
             if (typeof file == 'string') file = new Blob([file]);
             const result = await saveFileInContainer(path, file, {fetch: fetchFn, ...options});
-            accessor.fetch();
+            container$.fetch();
             return result;
         }
 
-        return {containerDataset, children, addContainer, saveFile} as ContainerAccessor;
-    }, [path, fetchFn])
+        return {container$, addContainer, saveFile}
+    }, [resourceCache, path, fetchFn, container$])
 
-    return accessor;
+    return accessors as ContainerAccessor;
 }

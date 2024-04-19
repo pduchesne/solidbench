@@ -9,7 +9,7 @@ import {Button} from "@mui/material";
 export function PodOverview(props: { folderUrl: string, fetch?: typeof fetch }) {
     const appContext = useContext(AppContext);
 
-    const containerAccessor$ = useSolidContainer(
+    const containerAccessor = useSolidContainer(
         props.folderUrl,
         props.fetch,
         appContext.cache
@@ -19,11 +19,10 @@ export function PodOverview(props: { folderUrl: string, fetch?: typeof fetch }) 
 
     const performScan = useCallback(async () => {
         const scanResult = await scanResource(props.folderUrl, {fetch: props.fetch});
-        if (containerAccessor$.result) {
-            const updatedFile = containerAccessor$.result.saveFile('.scan.json', JSON.stringify(scanResult, undefined, 4));
-            scanResults$.file$.setPromise(updatedFile);
-        }
-    }, [props.folderUrl, containerAccessor$.result])
+        const updatedFile = containerAccessor.saveFile('.scan.json', JSON.stringify(scanResult, undefined, 4));
+        scanResults$.file$.setPromise(updatedFile);
+
+    }, [props.folderUrl, containerAccessor])
 
     return <div>
         <div><Button onClick={performScan}>Scan</Button></div>
