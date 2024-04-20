@@ -1,10 +1,12 @@
 import {Receipt, ReceiptItem} from "../model";
-import {useContext, useMemo, useState} from "react";
+import {useContext, useMemo} from "react";
 import {AppContext} from "../../../appContext";
 import {EChartsOption} from "echarts";
 import ReactEcharts from "echarts-for-react";
 import * as React from "react";
 import {FrequencyBar} from "./Overview";
+import {Route, Routes, useParams} from "react-router-dom";
+import {useNavigate} from "react-router";
 
 type ItemWithHistory = {
     id: string,
@@ -13,8 +15,18 @@ type ItemWithHistory = {
     history: ReceiptItem[]
 }
 
+
+export const ItemsTableRoutes = (props: { receipts: Array<Receipt> }) => {
+    return <Routes>
+        <Route path="/:itemId" element={<ItemsTable {...props} />} />
+        <Route path="*" element={<ItemsTable {...props} />} />
+    </Routes>
+}
+
+
 export const ItemsTable = (props: { receipts: Array<Receipt> }) => {
-    const [selectedItem, setSelectedItem] = useState(0);
+    let { itemId } = useParams();
+    const navigate = useNavigate();
 
     const [items, sortedReceipts] = useMemo(() => {
         const items: Record<string, ItemWithHistory> = {};
@@ -39,17 +51,19 @@ export const ItemsTable = (props: { receipts: Array<Receipt> }) => {
         ]
     }, [props.receipts]);
 
-
+    //const [selectedItem, setSelectedItem] = useState(items[0].id);
+    const selectedItem = items.find(i => i.id == itemId);
+    function setSelectedItem(id: string) {id && navigate((itemId? '../' : '') + id)};
 
     return <div className='itemsTable'>
         <div className='itemsList'>
             {items.map((i, idx) =>
-                <div key={i.id} onClick={() => setSelectedItem(idx)} className={selectedItem == idx ? "selected" : undefined}>
+                <div key={i.id} onClick={() => setSelectedItem(i.id)} className={selectedItem?.id == i.id ? "selected" : undefined}>
                     <FrequencyBar width='3em' freq={i.history.length} maxFreq={items[0].history.length}/>
                     {i.label} {i.ean ? 'EAN' : null}
                 </div>)}
         </div>
-        <ItemDetails item={items[selectedItem]} dateRange={[sortedReceipts[0].date, sortedReceipts[props.receipts.length - 1].date]}/>
+        {selectedItem ? <ItemDetails item={selectedItem} dateRange={[sortedReceipts[0].date, sortedReceipts[props.receipts.length - 1].date]}/> : null}
 
     </div>
 }
@@ -129,4 +143,4 @@ function ItemDetails(props:{item: ItemWithHistory, dateRange: [string, string]})
     </div>
 }
 
-export default ItemsTable;
+export default ItemsTableRoutes;

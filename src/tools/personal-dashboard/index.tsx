@@ -2,7 +2,7 @@ import * as React from "react";
 
 import {Sidenav} from "./sidenav";
 import {PodBrowserPanel} from "../../browser/pod-browser";
-import {RetailDashboard} from "../retail";
+import {RetailDashboardRoutes} from "../retail";
 import {MusicDashboard} from "../music";
 import {Navigate, Route, Routes, useLocation, useParams} from "react-router-dom";
 import {useNavigate} from "react-router";
@@ -13,7 +13,7 @@ import {PodDashboardSettings} from "./settings";
 
 export const PANELS: Record<string, React.FC> = {
     podbrowser: PodBrowserPanel,
-    retail: RetailDashboard,
+    retail: RetailDashboardRoutes,
     music: MusicDashboard,
     settings: PodDashboardSettings
 }

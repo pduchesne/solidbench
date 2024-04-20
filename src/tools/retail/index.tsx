@@ -24,6 +24,8 @@ import ExpensesChart from "./components/ExpensesChart";
 import ItemsTable from "./components/ItemsTable";
 import ReceiptsTable from "./components/ReceiptsTable";
 import Overview from "./components/Overview";
+import {Navigate, Route, Routes, useLocation, useParams} from "react-router-dom";
+import {useNavigate} from "react-router";
 
 /**
  * Import UI components for specific retailers
@@ -44,6 +46,17 @@ const RETAILERS: Record<string, {
         label: "Amazon",
         comp: AmazonPanel
     }
+}
+
+
+export const RetailDashboardRoutes = () => {
+
+    const {search} = useLocation();
+
+    return <Routes>
+        <Route path="/:panelId/*" element={<RetailDashboard />} />
+        <Route path="*" element={<Navigate to={"overview"+decodeURIComponent(search)} replace={true} />} />
+    </Routes>
 }
 
 export const RetailDashboard = () => {
@@ -128,7 +141,11 @@ export const ShoppingDashboardContainer = (props: { retailStorage: RetailStorage
 
 export const ShoppingDashboard = (props: { receipts: Array<ReceiptWithRetailer>, retailers: string[] }) => {
 
-    const [tab, setTab] = useState('0');
+    const navigate = useNavigate();
+    let { panelId } = useParams();
+    const tab = panelId || 'overview';
+
+    //const [tab, setTab] = useState('overview');
 
     const [selectedRetailers, setSelectedRetailers] = useState<string[]>(props.retailers);
 
@@ -140,11 +157,11 @@ export const ShoppingDashboard = (props: { receipts: Array<ReceiptWithRetailer>,
         <Box className="vFlow">
             <TabContext value={tab}>
                 <Box sx={{borderBottom: 1, borderColor: 'divider', flex: 'none'}}>
-                    <TabList style={{display: 'inline-flex'}} onChange={(e, value) => setTab(value)} aria-label="lab API tabs example">
-                        <Tab label="Dashboard" value="0"/>
-                        <Tab label="Receipts" value="1"/>
-                        <Tab label="Frequent Items" value="2"/>
-                        <Tab label="Expenses" value="3"/>
+                    <TabList style={{display: 'inline-flex'}} onChange={(e, value) => navigate('../'+value)} aria-label="lab API tabs example">
+                        <Tab label="Overview" value="overview"/>
+                        <Tab label="Receipts" value="receipts"/>
+                        <Tab label="Frequent Items" value="frequent"/>
+                        <Tab label="Expenses" value="expenses"/>
                     </TabList>
                     <Select
                         sx={{'& .MuiSelect-select': {padding: "5px 6px"}}}
@@ -176,10 +193,10 @@ export const ShoppingDashboard = (props: { receipts: Array<ReceiptWithRetailer>,
                     </Select>
 
                 </Box>
-                <TabPanel value="0" className='vFlow'><Overview receipts={receipts}/></TabPanel>
-                <TabPanel value="1" className='vFlow'><ReceiptsTable receipts={receipts}/></TabPanel>
-                <TabPanel value="2" className='vFlow'><ItemsTable receipts={receipts}/></TabPanel>
-                <TabPanel value="3" className='vFlow'><ExpensesChart receipts={receipts}/></TabPanel>
+                <TabPanel value="overview" className='vFlow'><Overview receipts={receipts}/></TabPanel>
+                <TabPanel value="receipts" className='vFlow'><ReceiptsTable receipts={receipts}/></TabPanel>
+                <TabPanel value="frequent" className='vFlow'><ItemsTable receipts={receipts}/></TabPanel>
+                <TabPanel value="expenses" className='vFlow'><ExpensesChart receipts={receipts}/></TabPanel>
             </TabContext>
         </Box></>
 
