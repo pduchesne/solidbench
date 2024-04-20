@@ -189,10 +189,9 @@ export const FileViewer = (props: { uri: string, fetch?: typeof fetch }) => {
         props.uri,
         props.fetch);
 
-    const fileBlob$ = currentFile.file$.promise && currentFile.file$.then(file => file.text());
+    const fileBlob$ = currentFile.file$.useThen(file => file.text());
 
-    return fileBlob$ ?
-        <PromiseStateContainer promiseState={fileBlob$}>
+    return <PromiseStateContainer promiseState={fileBlob$}>
             {(fileContent) => <DirtyCodemirror
                 value={fileContent}
                 options={{
@@ -203,7 +202,7 @@ export const FileViewer = (props: { uri: string, fetch?: typeof fetch }) => {
                     currentFile?.saveRawContent(value)
                 })}
             />}
-        </PromiseStateContainer> : <div>No file content</div>
+        </PromiseStateContainer>
 }
 
 
