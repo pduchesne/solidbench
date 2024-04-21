@@ -1,6 +1,5 @@
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
-import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import React from "react";
 
@@ -21,11 +20,7 @@ function CustomTabPanel(props: TabPanelProps) {
             aria-labelledby={`simple-tab-${index}`}
             {...other}
         >
-            {value === index && (
-                <Box sx={{p: 3}}>
-                    <Typography>{children}</Typography>
-                </Box>
-            )}
+            {value === index ? children : null}
         </div>
     );
 }
@@ -59,7 +54,7 @@ export default function BasicTabs<T extends Record<string, any>>(props: { tabs: 
             {props.tabs.map((t, idx) => {
                 const Comp: React.FC<T> = t.Comp;
                 return (
-                    <CustomTabPanel value={value} index={idx}>
+                    <CustomTabPanel value={value} index={idx} key={idx}>
                         <Comp {...props.tabProps}/>
                     </CustomTabPanel>
                 )

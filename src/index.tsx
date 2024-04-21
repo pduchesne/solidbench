@@ -1,4 +1,4 @@
-import './wdyr';
+//import './wdyr';
 
 import * as React from 'react';
 import {BrowserRouter, Navigate, Route, Routes} from 'react-router-dom';
@@ -9,10 +9,10 @@ import {ErrorBoundary} from '@hilats/react-utils';
 import {PodBrowserPanel} from "./browser/pod-browser";
 import {createRoot} from "react-dom/client";
 import {AppNavBar} from "./navbar";
-import {AppContextProvider} from "./appContext";
+import {AppContext, AppContextProvider} from "./appContext";
 import {ColruytDbPanel} from './tools/retail/retailers/colruytdb';
 import {RetailDashboard} from "./tools/retail";
-import {useCallback} from "react";
+import {memo, useCallback, useContext} from "react";
 import {useNavigate} from "react-router";
 import {DashboardRoutes} from "./tools/personal-dashboard";
 import {MusicDashboard} from "./tools/music";
@@ -61,42 +61,52 @@ export const AppRouter = () => {
     );
 };
 
-export const App = () => {
+
+const MemoSessionProvider = memo(SessionProvider);
+
+export const AppWithContext = memo(() => {
+
+    const ctx = useContext(AppContext);
+
+    return <AppThemeProvider>
+        <div className={classNames("mainApp", "vFlow", {'theme-dark': ctx.theme == 'dark'})}>
+            <AppNavBar/>
+            <div className='vFlow'>
+                <ErrorBoundary>
+                    <Routes>
+                        {routes.map((route, i) => (
+                            <Route path={route.path} key={i} element={<ErrorBoundary>
+                                <route.component/>
+                            </ErrorBoundary>}/>
+                        ))}
+                        <Route path="*" element={<Navigate to="/personal-dashboard"/>}/>
+                    </Routes>
+                </ErrorBoundary>
+            </div>
+        </div>
+    </AppThemeProvider>
+})
+
+export const App = memo(() => {
     const navigate = useNavigate();
 
     const sessionRestoreCb = useCallback((url: string) => {
         const host = new URL(url).host;
         const path = url.substring(url.indexOf(host) + host.length);
         navigate(path);
-    }, [navigate]);
+        // See this issue for navigate : https://github.com/remix-run/react-router/issues/7634
+    }, [ /* navigate TODO WARN this means the navigate function will never get updated, and therefore cannot be used for relative navigation*/ ]);
 
     return (
-        <SessionProvider restorePreviousSession={true} sessionId="solidbench-app" onSessionRestore={sessionRestoreCb}
+        <MemoSessionProvider restorePreviousSession={true} sessionId="solidbench-app" onSessionRestore={sessionRestoreCb}
                          onError={console.log}>
             <AppContextProvider>
-                {ctx => (
-                    <AppThemeProvider>
-                        <div className={classNames("mainApp", "vFlow", {'theme-dark': ctx.theme == 'dark'})}>
-                            <AppNavBar/>
-                            <div className='vFlow'>
-                                <ErrorBoundary>
-                                    <Routes>
-                                        {routes.map((route, i) => (
-                                            <Route path={route.path} key={i} element={<ErrorBoundary>
-                                                <route.component/>
-                                            </ErrorBoundary>}/>
-                                        ))}
-                                        <Route path="*" element={<Navigate to="/personal-dashboard"/>}/>
-                                    </Routes>
-                                </ErrorBoundary>
-                            </div>
-                        </div>
-                    </AppThemeProvider>
-                )}
+                <AppWithContext />
             </AppContextProvider>
-        </SessionProvider>
+        </MemoSessionProvider>
     );
-};
+});
+
 
 const container = document.getElementById('index');
 const root = createRoot(container!);

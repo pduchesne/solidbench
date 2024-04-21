@@ -43,7 +43,7 @@ export const Overview = (props: { receipts: Array<Receipt> }) => {
 }
 
 export function FrequencyBar(props: {freq: number, maxFreq: number, width?: string | number, height?: string | number}) {
-    return <div className="frequencyBar" style={{width: props.width, height: props.height || '1em'}}>
+    return <div title={""+props.freq}  className="frequencyBar" style={{width: props.width, height: props.height || '1em'}}>
         <div style={{width: (100*props.freq/props.maxFreq)+'%'}}/>
     </div>
 }

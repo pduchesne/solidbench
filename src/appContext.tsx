@@ -1,6 +1,6 @@
 import * as React from "react";
 import {useSession} from "@inrupt/solid-ui-react";
-import {useEffect, useState} from "react";
+import {memo, useEffect, useState} from "react";
 import {getPodUrls, ResourceCache} from "@hilats/solid-utils";
 import {Preferences} from "./tools/personal-dashboard/preferences";
 import {useDarkThemeDetector} from "@hilats/react-utils";
@@ -26,7 +26,7 @@ function createInitAppContext(updateAppContextFn: (update: Partial<AppContextTyp
 
 export const AppContext = React.createContext<AppContextType>(createInitAppContext(() => null));
 
-export function AppContextProvider(props: { children: (ctx: AppContextType) => React.ReactNode }) {
+export const AppContextProvider = memo((props: { children?: React.ReactNode }) => {
     const {session} = useSession();
 
     //const params = new URLSearchParams(query);
@@ -70,5 +70,5 @@ export function AppContextProvider(props: { children: (ctx: AppContextType) => R
         [appContext.preferences, isDarkTheme]
     );
 
-    return <AppContext.Provider value={appContext}>{props.children(appContext)}</AppContext.Provider>;
-}
+    return <AppContext.Provider value={appContext}>{props.children}</AppContext.Provider>;
+})

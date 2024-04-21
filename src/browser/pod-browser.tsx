@@ -104,7 +104,6 @@ export const PodBrowserRoutes = (props: { rootUrl: string, fetch?: typeof fetch,
 export const PodBrowser = (props: { rootUrl: string, fetch?: typeof fetch, displayMetadata?: boolean }) => {
 
     const params = useParams();
-    console.log(JSON.stringify(params));
     const navigate = useNavigate();
     const [displayMetadata, setDisplayMetadata] = useState(props.displayMetadata);
 

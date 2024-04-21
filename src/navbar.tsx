@@ -1,7 +1,7 @@
 import {bindMenu, bindTrigger, usePopupState} from "material-ui-popup-state/hooks";
 import {AppBar, Box, Button, IconButton, Menu, MenuItem, Toolbar, Tooltip} from "@mui/material";
 import {Link} from "react-router-dom";
-import {useContext} from "react";
+import {memo, useContext} from "react";
 import * as React from "react";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import {LogoutButton, useSession} from "@inrupt/solid-ui-react";
@@ -54,7 +54,7 @@ const ProfileMenu = () => {
 }
 
 
-export const AppNavBar = () => {
+export const AppNavBar = memo(() => {
     const {session} = useSession();
 
     return (
@@ -103,4 +103,4 @@ export const AppNavBar = () => {
         </AppBar>
 
     );
-};
+});

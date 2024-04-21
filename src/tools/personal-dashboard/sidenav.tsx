@@ -23,5 +23,5 @@ export const Sidenav = (props: {selected: string, selectPanel: (id: string) => v
 }
 
 export const NavButton = (props: {selected: string, selectPanel: (id: string) => void, icon: any, id: string}) => {
-    return <IconButton aria-selected={props.selected == props.id}><props.icon onClick={() => props.selectPanel(props.id)} /></IconButton>
+    return <IconButton aria-selected={props.selected == props.id} onClick={() => props.selectPanel(props.id)}><props.icon/></IconButton>
 }
