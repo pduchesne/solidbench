@@ -1,20 +1,13 @@
-import {Receipt, ReceiptItem} from "../model";
-import {useContext, useMemo} from "react";
+import {ItemWithHistory, Receipt} from "../model";
+import {useContext, useEffect, useMemo, useRef} from "react";
 import {AppContext} from "../../../appContext";
 import {EChartsOption} from "echarts";
 import ReactEcharts from "echarts-for-react";
 import * as React from "react";
 import {FrequencyBar} from "./Overview";
-import {Route, Routes, useParams} from "react-router-dom";
+import {Route, Routes, useLocation, useParams} from "react-router-dom";
 import {useNavigate} from "react-router";
-
-type ItemWithHistory = {
-    id: string,
-    label: string,
-    ean?: string,
-    history: ReceiptItem[]
-}
-
+import {OptionSourceData} from "echarts/types/src/util/types";
 
 export const ItemsTableRoutes = (props: { receipts: Array<Receipt> }) => {
     return <Routes>
@@ -23,8 +16,10 @@ export const ItemsTableRoutes = (props: { receipts: Array<Receipt> }) => {
     </Routes>
 }
 
-
 export const ItemsTable = (props: { receipts: Array<Receipt> }) => {
+    const { state } = useLocation();
+    const { noscroll } = state || {};
+
     let { itemId } = useParams();
     const navigate = useNavigate();
 
@@ -33,13 +28,13 @@ export const ItemsTable = (props: { receipts: Array<Receipt> }) => {
         props.receipts.forEach(r => {
             r.items?.forEach(i => {
                 if (i.article.vendorId in items) {
-                    items[i.article.vendorId].history.push(i);
+                    items[i.article.vendorId].history.push({...i, receiptId: r.receiptId});
                 } else {
                     items[i.article.vendorId] = {
                         id: i.article.vendorId,
                         label: i.article.label,
                         ean: i.article.ean,
-                        history: [i]
+                        history: [{...i, receiptId: r.receiptId}]
                     }
                 }
             })
@@ -53,12 +48,19 @@ export const ItemsTable = (props: { receipts: Array<Receipt> }) => {
 
     //const [selectedItem, setSelectedItem] = useState(items[0].id);
     const selectedItem = items.find(i => i.id == itemId);
-    function setSelectedItem(id: string) {id && navigate((itemId? '../' : '') + id)};
+    function setSelectedItem(id: string) {id && navigate((itemId? '../' : '') + id, {state: {noscroll: true}})};
 
+    const selectedRef = useRef<HTMLDivElement>(null);
+    useEffect(() => {
+        if (!noscroll && selectedRef.current)
+            selectedRef.current.scrollIntoView({behavior: 'smooth'})
+    }, [!noscroll && selectedRef.current]);
     return <div className='itemsTable'>
         <div className='itemsList'>
             {items.map((i, idx) =>
-                <div key={i.id} onClick={() => setSelectedItem(i.id)} className={selectedItem?.id == i.id ? "selected" : undefined}>
+                <div key={i.id} onClick={() => setSelectedItem(i.id)}
+                     className={selectedItem?.id == i.id ? "selected" : undefined}
+                     ref={selectedItem?.id == i.id ? selectedRef : undefined}>
                     <FrequencyBar width='3em' freq={i.history.length} maxFreq={items[0].history.length}/>
                     {i.label} {i.ean ? 'EAN' : null}
                 </div>)}
@@ -71,6 +73,8 @@ export const ItemsTable = (props: { receipts: Array<Receipt> }) => {
 
 function ItemDetails(props:{item: ItemWithHistory, dateRange: [string, string]}) {
 
+    const navigate = useNavigate();
+
     const ctx = useContext(AppContext);
     const {item, dateRange} = props;
 
@@ -79,6 +83,10 @@ function ItemDetails(props:{item: ItemWithHistory, dateRange: [string, string]})
             legend: {},
             tooltip: {
                 trigger: 'axis',
+            },
+            dataset: {
+                dimensions: ['date', 'quantity', 'unitPrice'],
+                source: item.history as OptionSourceData
             },
             xAxis: {
                 type: 'time',
@@ -109,13 +117,22 @@ function ItemDetails(props:{item: ItemWithHistory, dateRange: [string, string]})
                     type: 'line',
                     //smooth: true,
                     symbol: 'none',
-                    data: item.history.map(h => [h.date, h.unitPrice])
+                    //data: item.history.map(h => [h.date, h.unitPrice])
+                    dimensions: [
+                        'date',
+                        'unitPrice'
+                    ]
                 },
                 {
+                    id: 'purchases',
                     name: 'Purchases',
                     type: 'bar',
                     yAxisIndex: 0,
-                    data: item.history.map(h => [h.date, h.quantity])
+                    //data: item.history.map(h => [h.date, h.quantity])
+                    dimensions: [
+                        'date',
+                        'quantity'
+                    ]
                 }
             ]
         };
@@ -123,6 +140,14 @@ function ItemDetails(props:{item: ItemWithHistory, dateRange: [string, string]})
         return options;
     }, [item]);
 
+    const eventHandlers = useMemo(() => ({
+        'click': (evt: any) => {
+            if (evt.seriesId == 'purchases') {
+                navigate('../../receipts/'+evt.value.receiptId)
+            }
+            //console.log(JSON.stringify(evt, getCircularReplacer()));
+        }
+    }), []);
 
 
     return <div className='itemsDetails'>
@@ -139,7 +164,7 @@ function ItemDetails(props:{item: ItemWithHistory, dateRange: [string, string]})
             </tr>
             </tbody>
         </table>
-        <ReactEcharts theme={ctx.theme == 'dark' ? 'dark' : undefined} option={chartOptions}/>
+        <ReactEcharts theme={ctx.theme == 'dark' ? 'dark' : undefined} option={chartOptions} onEvents={eventHandlers}/>
     </div>
 }
 

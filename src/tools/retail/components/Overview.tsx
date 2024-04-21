@@ -1,20 +1,20 @@
-import {Receipt, ReceiptItem} from "../model";
+import {ItemWithHistory, Receipt} from "../model";
 import {useMemo} from "react";
 import * as React from "react";
 
 export const Overview = (props: { receipts: Array<Receipt> }) => {
 
     const items = useMemo(() => {
-        const items: Record<string, { id: string, label: string, history: ReceiptItem[] }> = {};
+        const items: Record<string, ItemWithHistory> = {};
         props.receipts.forEach(r => {
             r.items?.forEach(i => {
                 if (i.article.vendorId in items) {
-                    items[i.article.vendorId].history.push(i);
+                    items[i.article.vendorId].history.push({...i, receiptId: r.receiptId});
                 } else {
                     items[i.article.vendorId] = {
                         id: i.article.vendorId,
                         label: i.article.label,
-                        history: [i]
+                        history: [{...i, receiptId: r.receiptId}]
                     }
                 }
             })
@@ -35,7 +35,7 @@ export const Overview = (props: { receipts: Array<Receipt> }) => {
                 {oldfavorites.slice(0, 10).map(i => (
                     <div key={i.id}>
                         <FrequencyBar width='3em' freq={i.history.length} maxFreq={oldfavorites[0].history.length}/>
-                        <ItemDate item={i} />
+                        <FormattedDate isoDate={i.history.at(-1)!.date} />
                         {i.label} </div>))}
             </div>
         </div> : null}
@@ -48,9 +48,9 @@ export function FrequencyBar(props: {freq: number, maxFreq: number, width?: stri
     </div>
 }
 
-export function ItemDate(props: {item: { id: string, label: string, history: ReceiptItem[] }}) {
+export function FormattedDate(props: {isoDate: string}) {
     return <div className="itemDate">
-        [{new Date(props.item.history[props.item.history.length - 1].date).toLocaleDateString()}]
+        [{new Date(props.isoDate).toLocaleDateString()}]
     </div>
 }
 

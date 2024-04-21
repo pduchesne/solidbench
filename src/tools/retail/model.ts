@@ -13,6 +13,17 @@ export type Article = {
 
 export {VendorArticle, ReceiptItem, Receipt} from "../../ldo/retail.typings";
 
-import {Receipt} from "../../ldo/retail.typings";
+import {Receipt, ReceiptItem} from "../../ldo/retail.typings";
 
 export type ReceiptWithRetailer = Receipt & { retailer: string };
+
+export type ReceiptItemWithReceipt = ReceiptItem & {
+    receiptId: string
+}
+
+export type ItemWithHistory = {
+    id: string,
+    label: string,
+    ean?: string,
+    history: ReceiptItemWithReceipt[]
+}

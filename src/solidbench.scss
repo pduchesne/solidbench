@@ -460,6 +460,11 @@ svg {
   }
 }
 
+
+.receiptsTable {
+  @extend .paddedPanel;
+}
+
 .frequencyBar {
   display: inline-block;
   border: 1px solid var(--theme-border1);
