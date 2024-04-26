@@ -4,15 +4,18 @@ import * as React from "react";
 import {EChartsOption} from "echarts";
 import ReactEcharts from "echarts-for-react";
 import {ReceiptWithRetailer} from "../model";
+import {useNavigate} from "react-router";
 
-
-const AVG_SPAN = 4 * 30 * 24 * 60 * 60 * 1000;
+const AVG_SPAN_WEEKS = 4;
+const AVG_SPAN = AVG_SPAN_WEEKS * 7 * 24 * 60 * 60 * 1000;
 
 export const ExpensesChart = (props: { receipts: Array<ReceiptWithRetailer> }) => {
 
+    const navigate = useNavigate();
+
     const ctx = useContext(AppContext);
 
-    const eChartsRef = React.useRef<any>();
+    const eChartsRef = React.useRef<ReactEcharts>(null);
 
     const chartOptions = useMemo(() => {
         const options: EChartsOption = {
@@ -76,13 +79,14 @@ export const ExpensesChart = (props: { receipts: Array<ReceiptWithRetailer> }) =
                     total += sortedReceipts[idx - count].totalAmount;
                 }
 
-                return [r.date, total / 16];
+                return [r.date, total / AVG_SPAN_WEEKS];
             }
         )
-        mvgAvg
+
         const weeklySumsPerRetailer = sortedReceipts.reduce((sumsPerRetailer: Record<string, {
             start: number,
-            sum: number
+            sum: number,
+            receipts: string[]
         }[]>, receipt, idx) => {
             const retailer = receipt.retailer;
 
@@ -94,6 +98,7 @@ export const ExpensesChart = (props: { receipts: Array<ReceiptWithRetailer> }) =
 
             if (lastWeek && receiptDate.getTime() < lastWeek.start + 7 * 24 * 60 * 60 * 1000) {
                 lastWeek.sum += receipt.totalAmount;
+                lastWeek.receipts.push(receipt.receiptId);
             } else {
                 const weekStart = new Date(receipt.date);
                 weekStart.setHours(0);
@@ -104,14 +109,31 @@ export const ExpensesChart = (props: { receipts: Array<ReceiptWithRetailer> }) =
                 weekStart.setTime(weekStart.getTime() - diff);
                 retailerSum.push({
                     start: weekStart.getTime(),
-                    sum: receipt.totalAmount
+                    sum: receipt.totalAmount,
+                    receipts: [receipt.receiptId]
                 })
             }
             return sumsPerRetailer;
         }, {});
 
+
+        /*
+        const weeklySumsPerRetailerFlat = Object.entries(weeklySumsPerRetailer)
+            .reduce<{retailerId: string, start: number, sum: number}[]>(
+                (result, [retailerId, retailerSums]) => {
+                    retailerSums.forEach(sum => result.push({...sum, retailerId}))
+            return result;
+        }, []);
+
+         */
+
         if (eChartsRef && eChartsRef.current)
             eChartsRef.current?.getEchartsInstance().setOption({
+                    dataset: Object.entries(weeklySumsPerRetailer).map(([retailer, sums]) => ({
+                        id: retailer,
+                        dimensions: ['retailerId', 'start', 'sum'],
+                        source: sums
+                    })),
                     series: [
                         /*
                         {
@@ -126,29 +148,38 @@ export const ExpensesChart = (props: { receipts: Array<ReceiptWithRetailer> }) =
     */
                         {
                             tooltip: {},
-                            name: '4-months Avg',
+                            name: 'Weekly Avg',
                             type: 'line',
                             smooth: true,
                             //symbol: 'none',
                             data: mvgAvg
                         },
 
-
-                        ...Object.entries(weeklySumsPerRetailer).map(([retailer, sum]) => (
+                        ...Object.keys(weeklySumsPerRetailer).map(retailerId => (
                             {
+                                datasetId: retailerId,
                                 tooltip: {},
-                                name: 'Weekly Sum ' + retailer,
+                                name: 'Weekly Sum ' + retailerId,
                                 type: 'bar',
                                 barGap: 0,
                                 //barWidth: 10,
                                 stack: 'weeklysum',
                                 //symbol: 'none',
-                                data: sum.map(w => [w.start, w.sum])
+                                encode: {
+                                    // Map "amount" column to x-axis.
+                                    x: 'start',
+                                    // Map "product" row to y-axis.
+                                    y: 'sum',
+                                    itemId: [0,1],
+                                    //itemName: [0, 1],
+                                    //seriesName: 'retailerId',
+                                }
                             }
                         ))
 
+
                     ]
-                },
+                } as EChartsOption,
                 // see https://github.com/apache/echarts/issues/6202#issuecomment-974761211
                 {replaceMerge: ['series']});
 
@@ -163,8 +194,11 @@ export const ExpensesChart = (props: { receipts: Array<ReceiptWithRetailer> }) =
     }, [props.receipts, chartOptions, eChartsRef.current]);
 
     const eventHandlers = useMemo(() => ({
-        'dataZoom': (evt: any) => {
-            console.log(JSON.stringify(evt));
+        'click': (evt: any) => {
+            if (evt.value.receipts) {
+                navigate('../receipts/'+evt.value.receipts[0])
+            }
+            //console.log(JSON.stringify(evt, getCircularReplacer()));
         }
     }), []);
 
