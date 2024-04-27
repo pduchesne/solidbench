@@ -165,7 +165,7 @@ function parseReceipt(textItems: Array<TextItem>, startOffset: number): [Receipt
 
         assert(textItems[currentOffset].str.toLowerCase().startsWith('reduction publi'), "Unexpected cell: "+textItems[currentOffset].str);
 
-        //assert(textItems[++currentOffset].str.toLowerCase().startsWith('vidanges'), "Unexpected cell: "+textItems[currentOffset].str);
+        assert(textItems[++currentOffset].str.toLowerCase().startsWith('vidanges'), "Unexpected cell: "+textItems[currentOffset].str);
         //receipt.returnedBottles = parseLocaleNumber(textItems[currentOffset].str.split(':').pop()!);
 
         assert(textItems[++currentOffset].str.toLowerCase().startsWith('facture'), "Unexpected cell: "+textItems[currentOffset].str);

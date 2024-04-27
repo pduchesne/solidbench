@@ -121,7 +121,7 @@ export const ShoppingDashboardContainer = (props: { retailStorage: RetailStorage
     // TODO const history$ = useMemo(async () => selectedRetailers.length ? Promise.all(selectedRetailers.map(retailer => props.retailStorage.fetchHistory(retailer))) : [] as Receipt[][], [props.retailStorage, selectedRetailers]);
     const histories$ = useMemo(async () => {
             const retailers = await props.retailStorage.listRetailers();
-            const histories = await props.retailStorage.fetchHistory(retailers)
+            const histories = await props.retailStorage.fetchHistories(retailers)
                 .then(receiptMap => Object.entries(receiptMap).reduce<ReceiptWithRetailer[]>((result, [retailer, receipts]) => {
                     result.push(...receipts.map<ReceiptWithRetailer>(r => ({...r, retailer})));
                     return result;

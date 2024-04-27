@@ -67,7 +67,7 @@ export const retailSchema: Schema = {
               predicate: "http://example.org/quantity",
               valueExpr: {
                 type: "NodeConstraint",
-                datatype: "http://www.w3.org/2001/XMLSchema#double",
+                datatype: "http://www.w3.org/2001/XMLSchema#float",
               },
             },
             {
@@ -75,7 +75,7 @@ export const retailSchema: Schema = {
               predicate: "http://example.org/unitPrice",
               valueExpr: {
                 type: "NodeConstraint",
-                datatype: "http://www.w3.org/2001/XMLSchema#double",
+                datatype: "http://www.w3.org/2001/XMLSchema#float",
               },
             },
             {
@@ -83,7 +83,7 @@ export const retailSchema: Schema = {
               predicate: "http://example.org/amount",
               valueExpr: {
                 type: "NodeConstraint",
-                datatype: "http://www.w3.org/2001/XMLSchema#number",
+                datatype: "http://www.w3.org/2001/XMLSchema#float",
               },
             },
             {
@@ -140,7 +140,7 @@ export const retailSchema: Schema = {
               predicate: "http://example.org/totalAmount",
               valueExpr: {
                 type: "NodeConstraint",
-                datatype: "http://www.w3.org/2001/XMLSchema#double",
+                datatype: "http://www.w3.org/2001/XMLSchema#float",
               },
             },
             {
@@ -149,6 +149,14 @@ export const retailSchema: Schema = {
               valueExpr: "http://example.org/ReceiptItem",
               min: 0,
               max: -1,
+            },
+            {
+              type: "TripleConstraint",
+              predicate: "http://example.org/shippingCosts",
+              valueExpr: {
+                type: "NodeConstraint",
+                datatype: "http://www.w3.org/2001/XMLSchema#integer",
+              },
             },
           ],
         },

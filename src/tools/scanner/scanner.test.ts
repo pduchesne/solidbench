@@ -29,12 +29,19 @@ test('Scan folder - no shapes', async () => {
 });
 
 
-const testShapes = {bookTest:
+const testShapes = {bookTest1:
         `
 start = @<Book>
 
 <Book> {
   <http://schema.org/name> . ;
+}
+`, bookTest2:
+        `
+start = @<Book>
+
+<Book> {
+  a [<https://schema.org/Book>] ;
 }
 `}
 

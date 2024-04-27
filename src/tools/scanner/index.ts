@@ -19,18 +19,27 @@ export function getResourceName(uri: string) {
 }
 
 
-export type ScanMetadata = {
-    name?: string
+export type ScanMetadata<T extends ('file' | 'container') = 'file' | 'container'> = {
+    name?: string,
+    shapes: Record<string, number>,
+    size: number,
+    type: T,
 } & ({
     type: 'file',
-    size: number,
-    contentType: string | undefined,
-    shapeMatches?: Record<string, number>
+    contentType: string | undefined
 } | {
     type: 'container',
-    resourceCount: number,
+    types: Record<string, number>,
     resources: ScanMetadata[]
 })
+
+function sumNumberRecords(records1: Record<string, number>, records2: Record<string, number>) {
+    const result = {...records1};
+
+    Object.entries(records2).forEach( ([key, value]) => key in result ? (result[key] += value) : (result[key] = value));
+
+    return result;
+}
 
 export async function scanContainer(containerUri: string, options?: {
     fetch?: typeof fetch,
@@ -48,8 +57,14 @@ export async function scanContainer(containerUri: string, options?: {
     return {
         type: 'container',
         name: getResourceName(containerUri),
-        resourceCount: subResources.length,
-        resources: subResourcesMetadata
+        size: subResourcesMetadata.reduce((size, res) => size + res.size, 0),
+        resources: subResourcesMetadata,
+        types: subResourcesMetadata.reduce<Record<string, number>>(
+            (types, res) =>
+                sumNumberRecords(types, res.type == 'container' ? res.types : {[res.contentType || 'undefined'] : 1}), {}),
+        shapes: subResourcesMetadata.reduce<Record<string, number>>(
+            (shapes, res) =>
+                sumNumberRecords(shapes, res.shapes), {}),
     }
 
 }
@@ -67,17 +82,19 @@ export async function scanResource(resourceUri: string, options?: {
     else if (isRawData(resourceInfo)) {
         return {
             type: 'file',
-            size: parseInt(response.headers.get('content-length') || 'NaN'),
+            size: parseInt(response.headers.get('content-length') || '0'),
             contentType: getContentType(resourceInfo) || undefined,
-            name: getResourceName(resourceUri)
+            name: getResourceName(resourceUri),
+            shapes: {}
         }
     } else {
 
         const result: ScanMetadata = {
             type: 'file',
-            size: parseInt(response.headers.get('content-length') || 'NaN'),
+            size: parseInt(response.headers.get('content-length') || '0'),
             contentType: getContentType(resourceInfo) || undefined,
-            name: getResourceName(resourceUri)
+            name: getResourceName(resourceUri),
+            shapes: {}
         }
 
         if (options?.shapes && result.contentType?.startsWith('text/turtle')) {
@@ -88,12 +105,18 @@ export async function scanResource(resourceUri: string, options?: {
             const shapeMatches = options?.shapes &&
                 Object.entries(options.shapes).reduce<Record<string, number>>(
                     (result, [id, shape]) => {
-                        const matches = findMatches(shape, turtleStr);
-                        result[id] = matches.filter(m => m.status == 'conformant').length;
-                        return result;
+                        try {
+                            const matches = findMatches(shape, turtleStr);
+                            result[id] = matches.filter(m => m.status == 'conformant').length;
+                            return result;
+                        } catch (err) {
+                            console.warn("Failed to scan resource for shape");
+                            console.warn(err);
+                            return result;
+                        }
                     }, {});
 
-            result.shapeMatches = shapeMatches;
+            result.shapes = shapeMatches;
         }
 
         return result;

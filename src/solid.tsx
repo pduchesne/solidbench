@@ -10,7 +10,7 @@ import {
     WithResourceInfo, WithServerResourceInfo
 } from "@inrupt/solid-client";
 import {CachedPromiseState, UpdatablePromiseState, usePromiseFn} from "@hilats/react-utils";
-import {assert} from '@hilats/utils';
+import {_404undefined, assert} from '@hilats/utils';
 import {GetFileOptions} from "@inrupt/solid-client/dist/resource/file";
 import {ResourceCache} from "@hilats/solid-utils";
 
@@ -52,7 +52,7 @@ export const LoginMultiButton = (props: Omit<Parameters<typeof LoginButton>[0], 
 };
 
 export type SolidFile = {
-    file$: CachedPromiseState<Blob & WithResourceInfo>,
+    file$: CachedPromiseState<Blob & WithResourceInfo | undefined>,
     saveRawContent: (rawContent: string | Blob) => Promise<void>
 }
 
@@ -125,7 +125,7 @@ export function useSolidFile(
     const file$ = usePromiseFn(() => getFile(
         path,               // File in Pod to Read
         {fetch: fetchFn}       // fetch from authenticated session
-    ), [path, fetchFn]);
+    ).catch(_404undefined), [path, fetchFn]);
 
     const saveRawContent = useCallback(async (rawContent: string | Blob) => {
         const blob: Blob = typeof rawContent == 'string' ? new Blob([rawContent], {
@@ -176,7 +176,10 @@ export function useSolidContainer(
             assert(!name.endsWith('/'), 'File names must not end with a slash');
 
             if (typeof file == 'string') file = new Blob([file]);
-            const result = await saveFileInContainer(path, file, {fetch: fetchFn, ...options});
+
+            // const result = await saveFileInContainer(path, file, {fetch: fetchFn, ...options});
+            const result = await overwriteFile(new URL(name, path).toString(), file, {fetch: fetchFn, ...options});
+
             container$.fetch();
             return result;
         }

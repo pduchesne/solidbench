@@ -188,10 +188,10 @@ export const FileViewer = (props: { uri: string, fetch?: typeof fetch }) => {
         props.uri,
         props.fetch);
 
-    const fileBlob$ = currentFile.file$.useThen(file => file.text());
+    const fileBlob$ = currentFile.file$.useThen(async file => file && file.text());
 
     return <PromiseStateContainer promiseState={fileBlob$}>
-            {(fileContent) => <DirtyCodemirror
+            {(fileContent) => fileContent !== undefined ? <DirtyCodemirror
                 value={fileContent}
                 options={{
                     theme: 'material',
@@ -200,7 +200,9 @@ export const FileViewer = (props: { uri: string, fetch?: typeof fetch }) => {
                 onChange={((editor, data, value) => {
                     currentFile?.saveRawContent(value)
                 })}
-            />}
+            /> : <div>
+                File not found
+            </div>}
         </PromiseStateContainer>
 }
 

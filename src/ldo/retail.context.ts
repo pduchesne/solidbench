@@ -24,15 +24,15 @@ export const retailContext: ContextDefinition = {
   },
   quantity: {
     "@id": "http://example.org/quantity",
-    "@type": "http://www.w3.org/2001/XMLSchema#double",
+    "@type": "http://www.w3.org/2001/XMLSchema#float",
   },
   unitPrice: {
     "@id": "http://example.org/unitPrice",
-    "@type": "http://www.w3.org/2001/XMLSchema#double",
+    "@type": "http://www.w3.org/2001/XMLSchema#float",
   },
   amount: {
     "@id": "http://example.org/amount",
-    "@type": "http://www.w3.org/2001/XMLSchema#number",
+    "@type": "http://www.w3.org/2001/XMLSchema#float",
   },
   article: {
     "@id": "http://example.org/article",
@@ -52,11 +52,15 @@ export const retailContext: ContextDefinition = {
   },
   totalAmount: {
     "@id": "http://example.org/totalAmount",
-    "@type": "http://www.w3.org/2001/XMLSchema#double",
+    "@type": "http://www.w3.org/2001/XMLSchema#float",
   },
   items: {
     "@id": "http://example.org/items",
     "@type": "@id",
     "@container": "@set",
+  },
+  shippingCosts: {
+    "@id": "http://example.org/shippingCosts",
+    "@type": "http://www.w3.org/2001/XMLSchema#integer",
   },
 };
