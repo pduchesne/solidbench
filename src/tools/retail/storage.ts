@@ -16,7 +16,7 @@ export type Preferences = any;
 
 export type ReceiptsMap = Record<string, Receipt[]>;
 
-const USE_LDO = true;
+const USE_LDO = false;
 
 export class RetailStorage extends PodStorage {
 

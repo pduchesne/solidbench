@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useCallback, useContext, useMemo, useState} from 'react';
+import {useCallback, useContext, useEffect, useMemo, useState} from 'react';
 
 /*
 import 'codemirror/lib/codemirror.css';
@@ -15,30 +15,34 @@ import {DirtyCodemirror} from "./codemirror";
 import {CachedPromiseState, PromiseStateContainer, usePromiseFn} from "@hilats/react-utils";
 import {useSolidContainer, useSolidFile} from "../solid";
 import {
-    acp_ess_2, getContainedResourceUrlAll,
+    acp_ess_2, deleteFile, getContainedResourceUrlAll,
     getContentType,
     getResourceInfo,
     getSourceUrl,
-    isRawData,
+    isRawData, overwriteFile,
     WithResourceInfo,
     WithServerResourceInfo
 } from "@inrupt/solid-client";
 import {AppContext} from "../appContext";
 import FolderIcon from '@mui/icons-material/Folder';
 import DescriptionIcon from '@mui/icons-material/Description';
-import {Breadcrumbs, Link} from "@mui/material";
+import DeleteIcon from '@mui/icons-material/Delete';
+import NoteAddIcon from '@mui/icons-material/NoteAdd';
+import {Breadcrumbs, Input, Link} from "@mui/material";
 import {CommonProps} from "@mui/material/OverridableComponent";
-import FolderSharedIcon from '@mui/icons-material/FolderShared';
 import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
+import InfoIcon from '@mui/icons-material/Info';
+import HomeIcon from '@mui/icons-material/Home';
 import BasicTabs, {TabDescriptor} from "../ui/tabs";
 import {UniversalAccessMetadata} from "./resourceAccess";
-import {getResourceName} from "@hilats/solid-utils";
+import {getResourceName, sanitizeResourceName} from "@hilats/solid-utils";
 import classNames from "classnames";
 import {PodDirectoryTree} from "./podTree";
 import RadarIcon from '@mui/icons-material/Radar';
 import {useNavigate} from "react-router";
 import {Route, Routes, useParams} from "react-router-dom";
 import {PodOverview} from "./overview";
+import {ModalComponent, useModal} from "../ui/modal";
 
 
 export const PodBrowserPanel = () => {
@@ -77,7 +81,14 @@ function FileBreadcrumbs(props: { rootUrl?: string, path: string, onSelect: (url
 
     return (
         <Breadcrumbs aria-label="breadcrumb" {...commonProps}>
-            {subpaths.map((path) => (
+            <Link
+                title={computedRoot}
+            key={computedRoot}
+            underline="hover"
+            color="inherit"
+            onClick={() => props.onSelect(computedRoot)}><HomeIcon /></Link>
+
+            {subpaths.slice(1).map((path) => (
                     <Link
                         key={path}
                         underline="hover"
@@ -101,11 +112,78 @@ export const PodBrowserRoutes = (props: { rootUrl: string, fetch?: typeof fetch,
 }
 
 
+export const CreateResourceDialog: ModalComponent<{resourceName: string}> = (props) => {
+    return <div>
+        <Input placeholder="Name"
+               value={props.values.resourceName}
+               onChange={(e) => {props.onChange({...props.values, resourceName: e.target.value})} }/>
+    </div>
+}
+
 export const PodBrowser = (props: { rootUrl: string, fetch?: typeof fetch, displayMetadata?: boolean }) => {
 
+    const [selectedResource, setSelectedResource] = useState<string | undefined>();
     const params = useParams();
     const navigate = useNavigate();
     const [displayMetadata, setDisplayMetadata] = useState(props.displayMetadata);
+
+    const appContext = useContext(AppContext);
+
+    const [modal, openModal] = useModal();
+
+    const deleteResourceCb = useCallback( async (uri: string) => {
+        openModal({
+            title: "Delete " + uri,
+            description: "Are you sure you want to delete this resource ?",
+            onOk: async () => {
+                await deleteFile(uri, {fetch: props.fetch});
+                appContext.cache?.invalidate(uri);
+
+                const parentUri = new URL('./', uri).toString();
+                appContext.cache?.invalidate(parentUri);
+                //  let's go to the parent
+                navigateToResource(parentUri);
+            }
+        })
+
+    }, [props.fetch, appContext.cache]);
+
+    const addResourceCb = useCallback( async (containerUri: string) => {
+        const onOk = (async (values: {resourceName: string}) => {
+            const newUri = new URL(sanitizeResourceName(values.resourceName), containerUri).toString();
+            await overwriteFile(newUri, new Blob([""]), {fetch: props.fetch});
+
+            // let's open the new resource
+            navigateToResource(newUri);
+            appContext.cache?.invalidate(containerUri);
+        });
+        openModal({
+            title: "Create resource",
+            component: CreateResourceDialog,
+            initValue: {resourceName: "NewFile.txt"},
+            onOk
+        })
+
+    }, [props.fetch, appContext.cache]);
+
+
+    const addContainerCb = useCallback( async (containerUri: string) => {
+        const onOk = (async (values: {resourceName: string}) => {
+            const newUri = new URL(sanitizeResourceName(values.resourceName)+"/", containerUri).toString();
+            await overwriteFile(newUri, new Blob([""], {type: "text/turtle"}), {fetch: props.fetch});
+
+            // let's open the new resource
+            navigateToResource(newUri);
+            appContext.cache?.invalidate(containerUri);
+        });
+        openModal({
+            title: "Create folder",
+            component: CreateResourceDialog,
+            initValue: {resourceName: "NewFolder"},
+            onOk
+        })
+
+    }, [props.fetch, appContext.cache]);
 
     /*
     const [currentUrl, setCurrentUrl] = useState(props.rootUrl);
@@ -128,6 +206,13 @@ export const PodBrowser = (props: { rootUrl: string, fetch?: typeof fetch, displ
         return path;
     }, [props.rootUrl, params['*'], params.ROOT])
 
+    useEffect( () => {
+        if (currentUrl.endsWith('/'))
+            setSelectedResource(undefined);
+        else
+            setSelectedResource(currentUrl);
+    }, [currentUrl]);
+
     // TODO not very clean way
     const isOverview = currentUrl.endsWith('/overview');
     const isFolder = currentUrl.endsWith('/');
@@ -135,11 +220,15 @@ export const PodBrowser = (props: { rootUrl: string, fetch?: typeof fetch, displ
     return (
         <div className="vFlow fill podbrowser">
             <div className="topbar">
-                <FileBreadcrumbs path={currentUrl} onSelect={navigateToResource}
+                <FileBreadcrumbs path={currentUrl} onSelect={navigateToResource} rootUrl={props.rootUrl}
                                  className='filebreadcrumb'/>
                 <div className='file_actions'>
-                    {isFolder ? <CreateNewFolderIcon /> : null}
-                    <FolderSharedIcon sx={{verticalAlign: 'sub', fontSize: '110%'}}
+                    {selectedResource ? <DeleteIcon titleAccess="Delete Resource" onClick={() => deleteResourceCb(selectedResource)}/> : null}
+                    {isFolder ? <>
+                        <CreateNewFolderIcon titleAccess="Create Folder" onClick={() => addContainerCb(currentUrl)}  />
+                        <NoteAddIcon titleAccess="Create File"  onClick={() => addResourceCb(currentUrl)} />
+                    </> : null}
+                    <InfoIcon titleAccess="Display Metadata"  sx={{verticalAlign: 'sub', fontSize: '110%'}}
                                       onClick={() => setDisplayMetadata(!displayMetadata)}/>
                 </div>
 
@@ -153,7 +242,7 @@ export const PodBrowser = (props: { rootUrl: string, fetch?: typeof fetch, displ
                     </div>
                     <div className="podbrowser-tree">
                         <PodDirectoryTree folderUrl={props.rootUrl} fetch={props.fetch}
-                                          onSelectFile={(path) => navigate(path.replace(props.rootUrl, '../-/'), {
+                                          onNavigateToResource={(path) => navigate(path.replace(props.rootUrl, '../-/'), {
                                               relative: 'route',
                                               replace: false
                                           })}
@@ -168,7 +257,8 @@ export const PodBrowser = (props: { rootUrl: string, fetch?: typeof fetch, displ
                             {
                                 isFolder ?
                                     <ContainerViewer uri={currentUrl} fetch={props.fetch}
-                                                     onSelectResource={navigateToResource}/> :
+                                                     onNavigateToResource={navigateToResource}
+                                                     onSelectResource={setSelectedResource}/> :
                                     <FileViewer uri={currentUrl} fetch={props.fetch}/>
                             }
 
@@ -178,6 +268,7 @@ export const PodBrowser = (props: { rootUrl: string, fetch?: typeof fetch, displ
                         </div> : null}
                     </>}
             </div>
+            {modal}
         </div>
     );
 };
@@ -207,11 +298,15 @@ export const FileViewer = (props: { uri: string, fetch?: typeof fetch }) => {
 }
 
 
-export const ContainerViewer = (props: {
+export type ResourceViewerProps = {
     uri: string,
     fetch?: typeof fetch,
-    display?: 'grid' | 'details',
-    onSelectResource: (url: string) => void
+    onNavigateToResource: (url: string) => void,
+    onSelectResource: (url?: string) => void,
+};
+
+export const ContainerViewer = (props: ResourceViewerProps & {
+    display?: 'grid' | 'details'
 }) => {
     const appContext = useContext(AppContext);
 
@@ -224,11 +319,11 @@ export const ContainerViewer = (props: {
         appContext.cache);
 
     return <PromiseStateContainer promiseState={containerAccessor.container$}>
-        {(container) => <div className={'container-viewer ' + display}>
+        {(container) => <div className={'container-viewer ' + display} onClick={() => { setSelected(undefined); props.onSelectResource(undefined) }}>
             {getContainedResourceUrlAll(container).map(res =>
                 <div key={res}
-                     onClick={() => setSelected(res)}
-                     onDoubleClick={() => props.onSelectResource(res)}
+                     onClick={(e) => { setSelected(res); props.onSelectResource(res); e.stopPropagation(); }}
+                     onDoubleClick={() => props.onNavigateToResource(res)}
                      className={classNames('resource', {selected: selected == res})}>
                     {res.endsWith('/') ? <FolderIcon/> : <DescriptionIcon/>}
                     <div>{getResourceName(res)}</div>

@@ -9,10 +9,10 @@ import {ErrorBoundary} from '@hilats/react-utils';
 import {PodBrowserPanel} from "./browser/pod-browser";
 import {createRoot} from "react-dom/client";
 import {AppNavBar} from "./navbar";
-import {AppContext, AppContextProvider} from "./appContext";
+import {AppContextProvider} from "./appContext";
 import {ColruytDbPanel} from './tools/retail/retailers/colruytdb';
 import {RetailDashboard} from "./tools/retail";
-import {memo, useCallback, useContext} from "react";
+import {memo, useCallback} from "react";
 import {useNavigate} from "react-router";
 import {DashboardRoutes} from "./tools/personal-dashboard";
 import {MusicDashboard} from "./tools/music";
@@ -66,10 +66,8 @@ const MemoSessionProvider = memo(SessionProvider);
 
 export const AppWithContext = memo(() => {
 
-    const ctx = useContext(AppContext);
-
     return <AppThemeProvider>
-        <div className={classNames("mainApp", "vFlow", {'theme-dark': ctx.theme == 'dark'})}>
+        <div className={classNames("mainApp", "vFlow")}>
             <AppNavBar/>
             <div className='vFlow'>
                 <ErrorBoundary>

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useCallback, useMemo, useState} from 'react';
+import {useCallback, useEffect, useMemo, useState} from 'react';
 import {LoginButton} from '@inrupt/solid-ui-react';
 import {Button, ButtonGroup, MenuItem, Select} from "@mui/material";
 import {
@@ -162,7 +162,21 @@ export function useSolidContainer(
             await resourceCache.getOrFetchContainerDataset(path, fetchFn) :
             await getSolidDataset(path, {fetch: fetchFn});
         return containerDataset;
-    }, [path, fetchFn], true);
+    }, [path, fetchFn], false);
+
+    useEffect( () => {
+        if (resourceCache) {
+            const listener = () => {
+                container$.setPromise( undefined);
+            };
+            resourceCache.addListener(path, listener);
+
+            return () => {
+                resourceCache.removeListener(path, listener);
+            }
+        }
+        return
+    }, [path, container$.setPromise])
 
     const accessors = useMemo(() => {
         const addContainer = async (name: string) => {

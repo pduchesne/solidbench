@@ -1,7 +1,7 @@
 import * as React from "react";
 import {createTheme, Theme, ThemeProvider} from "@mui/material";
 import {AppContext} from "./appContext";
-import {useContext} from "react";
+import {useContext, useEffect} from "react";
 
 
 const THEMES: Record<string, Theme> = {
@@ -33,6 +33,15 @@ export const AppThemeProvider = (props: { children?: React.ReactNode }) => {
     const ctx = useContext(AppContext);
 
     const theme= ctx.theme ? THEMES[ctx.theme] : THEMES.light;
+
+    useEffect( () => {
+        if (ctx.theme == 'dark') {
+            document.body.classList.add('theme-dark');
+        } else {
+            document.body.classList.remove('theme-dark');
+        }
+
+    }, [theme])
 
     return <ThemeProvider
         theme={theme}>
