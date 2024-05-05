@@ -14,7 +14,7 @@
     "${process.env.ROOT_URL}"
   ],
   "client_uri": "${process.env.ROOT_URL}",
-  "logo_uri": "https://annotations.highlatitud.es/logo.png",
+  "logo_uri": "${process.env.ROOT_URL}/images/logo-big.png",
   "tos_uri": "https://annotations.highlatitud.es/tos",
   "scope": "openid offline_access webid",
   "grant_types": [
