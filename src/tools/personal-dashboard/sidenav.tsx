@@ -7,21 +7,24 @@ import MovieIcon from '@mui/icons-material/Movie';
 import SettingsIcon from '@mui/icons-material/Settings';
 import IconButton from "@mui/material/IconButton";
 import Divider from "@mui/material/Divider";
+import CommentIcon from '@mui/icons-material/Comment';
+import {PANEL_ID} from "./index";
 
-export const Sidenav = (props: {selected: string, selectPanel: (id: string) => void}) => {
+export const Sidenav = (props: {selected: PANEL_ID, selectPanel: (id: PANEL_ID) => void}) => {
 
     return <div className="sidenav">
-        <NavButton icon={FolderSharedIcon} id='podbrowser' {...props}/>
+        <NavButton label="Pod Browser" icon={FolderSharedIcon} id='podbrowser' {...props}/>
         <Divider className='sidenav-divider'/>
-        <NavButton icon={LocalGroceryStoreIcon} id='retail' {...props}/>
-        <NavButton icon={LibraryMusicIcon} id='music' {...props}/>
-        <NavButton icon={MovieIcon} id='movies' {...props}/>
-        <NavButton icon={MonitorHeartIcon} id='health' {...props}/>
+        <NavButton label="Retail" icon={LocalGroceryStoreIcon} id='retail' {...props}/>
+        <NavButton label="Annotations" icon={CommentIcon} id='annotations' {...props}/>
+        <NavButton label="Music" icon={LibraryMusicIcon} id='music' {...props}/>
+        <NavButton label="Movies" icon={MovieIcon} id='movies' {...props}/>
+        <NavButton label="Health" icon={MonitorHeartIcon} id='health' {...props}/>
         <Divider className='sidenav-divider'/>
-        <NavButton icon={SettingsIcon} id='settings' {...props}/>
+        <NavButton label="Settings" icon={SettingsIcon} id='settings' {...props}/>
     </div>
 }
 
-export const NavButton = (props: {selected: string, selectPanel: (id: string) => void, icon: any, id: string}) => {
-    return <IconButton aria-selected={props.selected == props.id} onClick={() => props.selectPanel(props.id)}><props.icon/></IconButton>
+export const NavButton = (props: {label: string, selected: PANEL_ID, selectPanel: (id: PANEL_ID) => void, icon: any, id: PANEL_ID}) => {
+    return <IconButton title={props.label} aria-selected={props.selected == props.id} onClick={() => props.selectPanel(props.id)}><props.icon/></IconButton>
 }

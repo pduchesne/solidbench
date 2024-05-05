@@ -10,13 +10,20 @@ import {useSession} from "@inrupt/solid-ui-react";
 import {useContext} from "react";
 import {AppContext} from "../../appContext";
 import {PodDashboardSettings} from "./settings";
+import {AnnotationsDashboard} from "../annotations";
+import {MoviesDashboard} from "../movies";
+import {HealthDashboard} from "../health";
 
-export const PANELS: Record<string, React.FC> = {
+export const PANELS = {
     podbrowser: PodBrowserPanel,
     retail: RetailDashboardRoutes,
     music: MusicDashboard,
-    settings: PodDashboardSettings
+    settings: PodDashboardSettings,
+    annotations: AnnotationsDashboard,
+    movies: MoviesDashboard,
+    health: HealthDashboard
 }
+export type PANEL_ID = keyof typeof PANELS;
 
 export const DashboardRoutes = () => {
     const {search} = useLocation();
@@ -35,8 +42,8 @@ export const PersonalDashboard = (props: {selectedPanel?: string }) => {
 
     const navigate = useNavigate();
 
-    let { panelId } = useParams();
-    panelId = props.selectedPanel || panelId || 'podbrowser';
+    const params = useParams();
+    const panelId = (props.selectedPanel || params.panelId || 'podbrowser') as PANEL_ID;
     //const [panelId, setPanelId] = useState<keyof typeof PANELS>(props.selectedPanel || panelId || 'podbrowser');
     const Panel = PANELS[panelId];
 
