@@ -45,6 +45,8 @@ import {PodOverview} from "./overview";
 import {ModalComponent, useModal} from "../ui/modal";
 import {GenericViewer} from "./viewers/GenericViewer";
 import {GenericEditor} from "./viewers/GenericEditor";
+import Dropzone from "react-dropzone";
+import {getParentUrl} from "@hilats/utils";
 
 
 export const PodBrowserPanel = () => {
@@ -142,12 +144,10 @@ export const PodBrowser = (props: { rootUrl: string, fetch?: typeof fetch, displ
             description: "Are you sure you want to delete this resource ?",
             onOk: async () => {
                 await deleteFile(uri, {fetch: props.fetch});
-                appContext.cache?.invalidate(uri);
+                appContext.cache?.invalidate(uri, true);
 
-                const parentUri = new URL('./', uri).toString();
-                appContext.cache?.invalidate(parentUri);
                 //  let's go to the parent
-                navigateToResource(parentUri);
+                navigateToResource(getParentUrl(uri));
             }
         })
 
@@ -319,24 +319,33 @@ export const ContainerViewer = (props: ResourceViewerProps & {
         appContext.cache);
 
     return <PromiseStateContainer promiseState={containerAccessor.container$}>
-        {(container) => <div className={'container-viewer ' + display} onClick={() => {
-            setSelected(undefined);
-            props.onSelectResource(undefined)
-        }}>
-            {getContainedResourceUrlAll(container).map(res =>
-                <div key={res}
-                     onClick={(e) => {
-                         setSelected(res);
-                         props.onSelectResource(res);
-                         e.stopPropagation();
-                     }}
-                     onDoubleClick={() => props.onNavigateToResource(res)}
-                     className={classNames('resource', {selected: selected == res})}>
-                    {res.endsWith('/') ? <FolderIcon/> : <DescriptionIcon/>}
-                    <div>{getResourceName(res)}</div>
-                </div>)}
-        </div>}
-    </PromiseStateContainer>
+        {(container) =>
+            <Dropzone noClick={true} onDrop={acceptedFiles => acceptedFiles.forEach(f => containerAccessor.saveFile(f.name, f))}>
+                {({getRootProps, getInputProps}) => (
+                    <div {...getRootProps()} className="hFlow">
+                        <input {...getInputProps()} />
+                        <div
+                            className={'container-viewer ' + display} onClick={() => {
+                            setSelected(undefined);
+                            props.onSelectResource(undefined)
+                        }}>
+                            {getContainedResourceUrlAll(container).map(res =>
+                                <div key={res}
+                                     onClick={(e) => {
+                                         setSelected(res);
+                                         props.onSelectResource(res);
+                                         e.stopPropagation();
+                                     }}
+                                     onDoubleClick={() => props.onNavigateToResource(res)}
+                                     className={classNames('resource', {selected: selected == res})}>
+                                    {res.endsWith('/') ? <FolderIcon/> : <DescriptionIcon/>}
+                                    <div>{getResourceName(res)}</div>
+                                </div>)}
+                        </div>
+                    </div>)
+                }
+            </Dropzone>}
+</PromiseStateContainer>
 }
 
 

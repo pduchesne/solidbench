@@ -194,10 +194,12 @@ export function useSolidContainer(
 
             if (typeof file == 'string') file = new Blob([file]);
 
-            // const result = await saveFileInContainer(path, file, {fetch: fetchFn, ...options});
-            const result = await overwriteFile(new URL(name, path).toString(), file, {fetch: fetchFn, ...options});
+            const filepath = new URL(name, path).toString();
 
-            container$.fetch();
+            // const result = await saveFileInContainer(path, file, {fetch: fetchFn, ...options});
+            const result = await overwriteFile(filepath, file, {fetch: fetchFn, ...options});
+
+            resourceCache ? resourceCache.invalidate(path) : container$.fetch();
             return result;
         }
 
