@@ -164,6 +164,8 @@ export function useSolidContainer(
         return containerDataset;
     }, [path, fetchFn], false);
 
+    // Add listener to the cache, to reset the promise state when
+    // the cache is invalidated
     useEffect( () => {
         if (resourceCache) {
             const listener = () => {
@@ -171,6 +173,7 @@ export function useSolidContainer(
             };
             resourceCache.addListener(path, listener);
 
+            // make sure the listener gets detroyed on exit
             return () => {
                 resourceCache.removeListener(path, listener);
             }

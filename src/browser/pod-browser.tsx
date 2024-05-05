@@ -10,7 +10,6 @@ import 'codemirror/mode/javascript/javascript';
 
  */
 import {useSession} from "@inrupt/solid-ui-react";
-import {DirtyCodemirror} from "./codemirror";
 
 import {CachedPromiseState, PromiseStateContainer, usePromiseFn} from "@hilats/react-utils";
 import {useSolidContainer, useSolidFile} from "../solid";
@@ -33,6 +32,7 @@ import {CommonProps} from "@mui/material/OverridableComponent";
 import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 import InfoIcon from '@mui/icons-material/Info';
 import HomeIcon from '@mui/icons-material/Home';
+import EditIcon from '@mui/icons-material/Edit';
 import BasicTabs, {TabDescriptor} from "../ui/tabs";
 import {UniversalAccessMetadata} from "./resourceAccess";
 import {getResourceName, sanitizeResourceName} from "@hilats/solid-utils";
@@ -43,6 +43,8 @@ import {useNavigate} from "react-router";
 import {Route, Routes, useParams} from "react-router-dom";
 import {PodOverview} from "./overview";
 import {ModalComponent, useModal} from "../ui/modal";
+import {GenericViewer} from "./viewers/GenericViewer";
+import {GenericEditor} from "./viewers/GenericEditor";
 
 
 export const PodBrowserPanel = () => {
@@ -83,10 +85,10 @@ function FileBreadcrumbs(props: { rootUrl?: string, path: string, onSelect: (url
         <Breadcrumbs aria-label="breadcrumb" {...commonProps}>
             <Link
                 title={computedRoot}
-            key={computedRoot}
-            underline="hover"
-            color="inherit"
-            onClick={() => props.onSelect(computedRoot)}><HomeIcon /></Link>
+                key={computedRoot}
+                underline="hover"
+                color="inherit"
+                onClick={() => props.onSelect(computedRoot)}><HomeIcon/></Link>
 
             {subpaths.slice(1).map((path) => (
                     <Link
@@ -112,16 +114,19 @@ export const PodBrowserRoutes = (props: { rootUrl: string, fetch?: typeof fetch,
 }
 
 
-export const CreateResourceDialog: ModalComponent<{resourceName: string}> = (props) => {
+export const CreateResourceDialog: ModalComponent<{ resourceName: string }> = (props) => {
     return <div>
         <Input placeholder="Name"
                value={props.values.resourceName}
-               onChange={(e) => {props.onChange({...props.values, resourceName: e.target.value})} }/>
+               onChange={(e) => {
+                   props.onChange({...props.values, resourceName: e.target.value})
+               }}/>
     </div>
 }
 
 export const PodBrowser = (props: { rootUrl: string, fetch?: typeof fetch, displayMetadata?: boolean }) => {
 
+    const [editionMode, setEditionMode] = useState(false);
     const [selectedResource, setSelectedResource] = useState<string | undefined>();
     const params = useParams();
     const navigate = useNavigate();
@@ -131,7 +136,7 @@ export const PodBrowser = (props: { rootUrl: string, fetch?: typeof fetch, displ
 
     const [modal, openModal] = useModal();
 
-    const deleteResourceCb = useCallback( async (uri: string) => {
+    const deleteResourceCb = useCallback(async (uri: string) => {
         openModal({
             title: "Delete " + uri,
             description: "Are you sure you want to delete this resource ?",
@@ -148,8 +153,8 @@ export const PodBrowser = (props: { rootUrl: string, fetch?: typeof fetch, displ
 
     }, [props.fetch, appContext.cache]);
 
-    const addResourceCb = useCallback( async (containerUri: string) => {
-        const onOk = (async (values: {resourceName: string}) => {
+    const addResourceCb = useCallback(async (containerUri: string) => {
+        const onOk = (async (values: { resourceName: string }) => {
             const newUri = new URL(sanitizeResourceName(values.resourceName), containerUri).toString();
             await overwriteFile(newUri, new Blob([""]), {fetch: props.fetch});
 
@@ -167,9 +172,9 @@ export const PodBrowser = (props: { rootUrl: string, fetch?: typeof fetch, displ
     }, [props.fetch, appContext.cache]);
 
 
-    const addContainerCb = useCallback( async (containerUri: string) => {
-        const onOk = (async (values: {resourceName: string}) => {
-            const newUri = new URL(sanitizeResourceName(values.resourceName)+"/", containerUri).toString();
+    const addContainerCb = useCallback(async (containerUri: string) => {
+        const onOk = (async (values: { resourceName: string }) => {
+            const newUri = new URL(sanitizeResourceName(values.resourceName) + "/", containerUri).toString();
             await overwriteFile(newUri, new Blob([""], {type: "text/turtle"}), {fetch: props.fetch});
 
             // let's open the new resource
@@ -206,7 +211,7 @@ export const PodBrowser = (props: { rootUrl: string, fetch?: typeof fetch, displ
         return path;
     }, [props.rootUrl, params['*'], params.ROOT])
 
-    useEffect( () => {
+    useEffect(() => {
         if (currentUrl.endsWith('/'))
             setSelectedResource(undefined);
         else
@@ -223,13 +228,16 @@ export const PodBrowser = (props: { rootUrl: string, fetch?: typeof fetch, displ
                 <FileBreadcrumbs path={currentUrl} onSelect={navigateToResource} rootUrl={props.rootUrl}
                                  className='filebreadcrumb'/>
                 <div className='file_actions'>
-                    {selectedResource ? <DeleteIcon titleAccess="Delete Resource" onClick={() => deleteResourceCb(selectedResource)}/> : null}
+                    {selectedResource ? <DeleteIcon titleAccess="Delete Resource"
+                                                    onClick={() => deleteResourceCb(selectedResource)}/> : null}
                     {isFolder ? <>
-                        <CreateNewFolderIcon titleAccess="Create Folder" onClick={() => addContainerCb(currentUrl)}  />
-                        <NoteAddIcon titleAccess="Create File"  onClick={() => addResourceCb(currentUrl)} />
-                    </> : null}
-                    <InfoIcon titleAccess="Display Metadata"  sx={{verticalAlign: 'sub', fontSize: '110%'}}
-                                      onClick={() => setDisplayMetadata(!displayMetadata)}/>
+                        <CreateNewFolderIcon titleAccess="Create Folder" onClick={() => addContainerCb(currentUrl)}/>
+                        <NoteAddIcon titleAccess="Create File" onClick={() => addResourceCb(currentUrl)}/>
+                    </> : <>
+                        <EditIcon onClick={() => setEditionMode(!editionMode)}/>
+                    </>}
+                    <InfoIcon titleAccess="Display Metadata" sx={{verticalAlign: 'sub', fontSize: '110%'}}
+                              onClick={() => setDisplayMetadata(!displayMetadata)}/>
                 </div>
 
             </div>
@@ -259,7 +267,7 @@ export const PodBrowser = (props: { rootUrl: string, fetch?: typeof fetch, displ
                                     <ContainerViewer uri={currentUrl} fetch={props.fetch}
                                                      onNavigateToResource={navigateToResource}
                                                      onSelectResource={setSelectedResource}/> :
-                                    <FileViewer uri={currentUrl} fetch={props.fetch}/>
+                                    <FileViewer uri={currentUrl} fetch={props.fetch} edition={editionMode}/>
                             }
 
                         </div>
@@ -274,29 +282,21 @@ export const PodBrowser = (props: { rootUrl: string, fetch?: typeof fetch, displ
 };
 
 
-export const FileViewer = (props: { uri: string, fetch?: typeof fetch }) => {
+export const FileViewer = (props: { uri: string, fetch?: typeof fetch, edition?: boolean }) => {
     const currentFile = useSolidFile(
         props.uri,
         props.fetch);
 
-    const fileBlob$ = currentFile.file$.useThen(async file => file && file.text());
+    const onSave = useCallback((content: string | Blob) => currentFile?.saveRawContent(content), [currentFile]);
 
-    return <PromiseStateContainer promiseState={fileBlob$}>
-            {(fileContent) => fileContent !== undefined ? <DirtyCodemirror
-                value={fileContent}
-                options={{
-                    theme: 'material',
-                    lineNumbers: true
-                }}
-                onChange={((editor, data, value) => {
-                    currentFile?.saveRawContent(value)
-                })}
-            /> : <div>
-                File not found
+    return <PromiseStateContainer promiseState={currentFile.file$}>
+        {(blob) => blob ?
+            (props.edition ? <GenericEditor content={blob} onSave={onSave}/> : <GenericViewer content={blob}/>) :
+            <div>
+                Resource not found
             </div>}
-        </PromiseStateContainer>
+    </PromiseStateContainer>
 }
-
 
 export type ResourceViewerProps = {
     uri: string,
@@ -319,10 +319,17 @@ export const ContainerViewer = (props: ResourceViewerProps & {
         appContext.cache);
 
     return <PromiseStateContainer promiseState={containerAccessor.container$}>
-        {(container) => <div className={'container-viewer ' + display} onClick={() => { setSelected(undefined); props.onSelectResource(undefined) }}>
+        {(container) => <div className={'container-viewer ' + display} onClick={() => {
+            setSelected(undefined);
+            props.onSelectResource(undefined)
+        }}>
             {getContainedResourceUrlAll(container).map(res =>
                 <div key={res}
-                     onClick={(e) => { setSelected(res); props.onSelectResource(res); e.stopPropagation(); }}
+                     onClick={(e) => {
+                         setSelected(res);
+                         props.onSelectResource(res);
+                         e.stopPropagation();
+                     }}
                      onDoubleClick={() => props.onNavigateToResource(res)}
                      className={classNames('resource', {selected: selected == res})}>
                     {res.endsWith('/') ? <FolderIcon/> : <DescriptionIcon/>}
