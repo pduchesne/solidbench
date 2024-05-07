@@ -1,0 +1,16 @@
+@prefix : <./> .
+@prefix schema: <http://schema.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:001
+    a schema:MusicPlaylist ;
+    schema:name "A Test Playlist"^^xsd:string ;
+    #schema:numTracks 1 ;
+    schema:track [
+          a schema:MusicRecording ;
+          schema:byArtist "Bob Dylan"^^xsd:string ;
+          schema:inAlbum "The Freewheelin' Bob Dylan"^^xsd:string ;
+          schema:name "Blowin' in the Wind"^^xsd:string ;
+          schema:spotifyId "18GiV1BaXzPVYpp9rmOg0E"^^xsd:string ;
+          schema:wikidataId "Q89268524"^^xsd:string ;
+      ].
