@@ -30,9 +30,9 @@ export const LoginMultiButton = (props: Omit<Parameters<typeof LoginButton>[0], 
 
     return (
         <LoginButton {...props} oidcIssuer={issuer}>
-            <ButtonGroup variant="contained">
+            <ButtonGroup variant="contained" className="solid-login-multi">
                 <Button variant="contained" color="primary">
-                    Log in with&nbsp;
+                    Log in &nbsp;
                 </Button>
                 <Select color="primary"
                     sx={{'& .MuiSelect-select': {padding: "5px 6px"}}}

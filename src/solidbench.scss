@@ -148,7 +148,38 @@ body {
     padding: 0;
   }
 
+  .navbar {
+    padding: 5px;
+    background-color: var(--theme-color1-back);
+    background-image: none;
 
+    .app-logo {
+      width: 44px;
+
+      @media (max-width: 500px) {
+        width: 30px;
+      }
+    }
+
+    .MuiToolbar-root {
+      min-height: 0px;
+
+      div[role='button'] {
+        display: flex;
+      }
+
+      .solid-login-multi {
+        font-size: 80%;
+        text-wrap: nowrap;
+        overflow: hidden;
+
+        .MuiInputBase-root {
+          overflow: hidden;
+        }
+      }
+
+    }
+  }
 }
 
 .contentPane {
@@ -156,10 +187,6 @@ body {
   &>* {
     height: 100%;
   }
-}
-
-.navbar {
-  padding: 5px;
 }
 
 .paddedPanel {
@@ -241,6 +268,10 @@ body {
     border-radius: 10%;
     margin: 1px;
     color: var(--theme-color1-front);
+
+    @media (max-width: 500px) {
+      padding: 5px 1px;
+    }
 
     &[aria-selected="true"] {
       box-shadow: inset 0px 0px 6px 2px var(--theme-color1-border);
@@ -369,6 +400,11 @@ svg {
           & > * {
             vertical-align: middle;
           }
+        }
+
+        .resource {
+          text-wrap: nowrap;
+          overflow: hidden;
         }
       }
     }

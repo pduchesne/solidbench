@@ -59,11 +59,11 @@ export const AppNavBar = memo(() => {
 
     return (
 
-        <AppBar position="static" className='navbar' color="primary">
+        <AppBar position="static" className='navbar'>
             <Toolbar disableGutters>
-                <img src="/images/logo-big.png" height={60}/>
+                <img src="/images/solidbench-256.png" className="app-logo"/>
 
-                <Box sx={{flexGrow: 1}} />
+                <Box sx={{flexGrow: 1, minWidth: '5px'}} />
                 {/*
                 <Box sx={{flexGrow: 1}}>
                     <Button component={Link} to="/tools/personal-dashboard" variant="contained">Personal Dashboard</Button>
@@ -72,7 +72,7 @@ export const AppNavBar = memo(() => {
                 */ }
 
 
-                <Box sx={{flexGrow: 0, float: 'right'}}>
+                <Box sx={{overflow: 'hidden', flexGrow: 0, float: 'right'}}>
                     {session.info.isLoggedIn ? (
                         <ProfileMenu/>
                     ) : (
