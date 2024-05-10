@@ -33,6 +33,7 @@ import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 import InfoIcon from '@mui/icons-material/Info';
 import HomeIcon from '@mui/icons-material/Home';
 import EditIcon from '@mui/icons-material/Edit';
+import GlobeIcon from '@mui/icons-material/Language';
 import BasicTabs, {TabDescriptor} from "../ui/tabs";
 import {UniversalAccessMetadata} from "./resourceAccess";
 import {getResourceName, sanitizeResourceName} from "@hilats/solid-utils";
@@ -46,7 +47,9 @@ import {ModalComponent, useModal} from "../ui/modal";
 import {GenericViewer} from "./viewers/GenericViewer";
 import {GenericEditor} from "./viewers/GenericEditor";
 import Dropzone from "react-dropzone";
-import {getParentUrl} from "@hilats/utils";
+import {assert, getParentUrl} from "@hilats/utils";
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import Markdown from "react-markdown";
 
 
 export const PodBrowserPanel = () => {
@@ -90,7 +93,7 @@ function FileBreadcrumbs(props: { rootUrl?: string, path: string, onSelect: (url
                 key={computedRoot}
                 underline="hover"
                 color="inherit"
-                onClick={() => props.onSelect(computedRoot)}><HomeIcon/></Link>
+                onClick={() => props.onSelect(computedRoot)}>{props.rootUrl ? <HomeIcon/> : <><GlobeIcon />{computedRoot}</>}</Link>
 
             {subpaths.slice(1).map((path) => (
                     <Link
@@ -137,6 +140,8 @@ export const PodBrowser = (props: { rootUrl: string, fetch?: typeof fetch, displ
     const appContext = useContext(AppContext);
 
     const [modal, openModal] = useModal();
+
+    const {ROOT= '-', '*' : RES_PATH} = params;
 
     const deleteResourceCb = useCallback(async (uri: string) => {
         openModal({
@@ -190,26 +195,24 @@ export const PodBrowser = (props: { rootUrl: string, fetch?: typeof fetch, displ
 
     }, [props.fetch, appContext.cache]);
 
-    /*
-    const [currentUrl, setCurrentUrl] = useState(props.rootUrl);
-    useEffect(() => {
-        // TODO support other roots
-        const path = props.rootUrl + (params['*'] || '');
-        setCurrentUrl(path);
-    }, [props.rootUrl, params['*'], params.ROOT]);
-
-     */
-
     const navigateToResource = useCallback((resPath: string) => {
-        const relativePath = resPath.replace(props.rootUrl, '../-/');
-        navigate(relativePath);
+        const newPath = resPath.startsWith(props.rootUrl) ?
+            resPath.replace(props.rootUrl, '../-/') :
+            '../$EXT/'+resPath
+        ;
+        navigate(newPath);
     }, [props.rootUrl, navigate]);
 
     const currentUrl = useMemo(() => {
         // TODO support other roots
-        const path = props.rootUrl + (params['*'] || '');
-        return path;
-    }, [props.rootUrl, params['*'], params.ROOT])
+        if (ROOT == '-')
+            return props.rootUrl + (RES_PATH || '');
+        else if (ROOT == '$EXT') {
+            assert(RES_PATH, "No resource path provided for external resource")
+            return RES_PATH;
+        } else
+            throw new Error("Unknown root alias : "+ROOT);
+    }, [props.rootUrl, RES_PATH, ROOT])
 
     useEffect(() => {
         if (currentUrl.endsWith('/'))
@@ -218,29 +221,21 @@ export const PodBrowser = (props: { rootUrl: string, fetch?: typeof fetch, displ
             setSelectedResource(currentUrl);
     }, [currentUrl]);
 
+    const anchorClickCallback = useCallback((e: React.MouseEvent) => {
+        //console.log(e.type + " : " + e.currentTarget.tagName);
+        if (e.target instanceof HTMLAnchorElement && e.target.href) {
+            e.preventDefault();
+            const relUri = e.target.href.replace(e.target.baseURI, './')
+            navigateToResource(new URL(relUri, currentUrl).toString());
+        }
+    }, [navigateToResource]);
+
     // TODO not very clean way
     const isOverview = currentUrl.endsWith('/overview');
     const isFolder = currentUrl.endsWith('/');
 
     return (
-        <div className="vFlow fill podbrowser">
-            <div className="topbar">
-                <FileBreadcrumbs path={currentUrl} onSelect={navigateToResource} rootUrl={props.rootUrl}
-                                 className='filebreadcrumb'/>
-                <div className='file_actions'>
-                    {selectedResource ? <DeleteIcon titleAccess="Delete Resource"
-                                                    onClick={() => deleteResourceCb(selectedResource)}/> : null}
-                    {isFolder ? <>
-                        <CreateNewFolderIcon titleAccess="Create Folder" onClick={() => addContainerCb(currentUrl)}/>
-                        <NoteAddIcon titleAccess="Create File" onClick={() => addResourceCb(currentUrl)}/>
-                    </> : <>
-                        <EditIcon onClick={() => setEditionMode(!editionMode)}/>
-                    </>}
-                    <InfoIcon titleAccess="Display Metadata" sx={{verticalAlign: 'sub', fontSize: '110%'}}
-                              onClick={() => setDisplayMetadata(!displayMetadata)}/>
-                </div>
-
-            </div>
+        <div className="vFlow fill podbrowser" onClick={anchorClickCallback}>
             <div className="podbrowser-body">
                 <div className="podbrowser-sidenav">
                     <div className="podbrowser-sidenav-quicklinks">
@@ -258,6 +253,26 @@ export const PodBrowser = (props: { rootUrl: string, fetch?: typeof fetch, displ
                     </div>
                 </div>
 
+                <div className="podbrowser-resource">
+                    <div className="topbar">
+                        <FileBreadcrumbs path={currentUrl} onSelect={navigateToResource}
+                                         rootUrl={ROOT == '-' ? props.rootUrl : undefined}
+                                         className='filebreadcrumb'/>
+                        <div className='file_actions'>
+                            {selectedResource ? <DeleteIcon titleAccess="Delete Resource"
+                                                            onClick={() => deleteResourceCb(selectedResource)}/> : null}
+                            {isFolder ? <>
+                                <CreateNewFolderIcon titleAccess="Create Folder"
+                                                     onClick={() => addContainerCb(currentUrl)}/>
+                                <NoteAddIcon titleAccess="Create File" onClick={() => addResourceCb(currentUrl)}/>
+                            </> : <>
+                                <EditIcon onClick={() => setEditionMode(!editionMode)}/>
+                            </>}
+                            <InfoIcon titleAccess="Display Metadata" sx={{verticalAlign: 'sub', fontSize: '110%'}}
+                                      onClick={() => setDisplayMetadata(!displayMetadata)}/>
+                        </div>
+
+                    </div>
                 {isOverview ?
                     <PodOverview folderUrl={props.rootUrl} fetch={props.fetch}/> :
                     <>
@@ -275,6 +290,7 @@ export const PodBrowser = (props: { rootUrl: string, fetch?: typeof fetch, displ
                             <ResourceMetadata resourceUrl={currentUrl} fetch={props.fetch}/>
                         </div> : null}
                     </>}
+                </div>
             </div>
             {modal}
         </div>
@@ -319,33 +335,64 @@ export const ContainerViewer = (props: ResourceViewerProps & {
         appContext.cache);
 
     return <PromiseStateContainer promiseState={containerAccessor.container$}>
-        {(container) =>
-            <Dropzone noClick={true} onDrop={acceptedFiles => acceptedFiles.forEach(f => containerAccessor.saveFile(f.name, f))}>
-                {({getRootProps, getInputProps}) => (
-                    <div {...getRootProps()} className="hFlow">
-                        <input {...getInputProps()} />
-                        <div
-                            className={'container-viewer ' + display} onClick={() => {
-                            setSelected(undefined);
-                            props.onSelectResource(undefined)
-                        }}>
-                            {getContainedResourceUrlAll(container).map(res =>
-                                <div key={res}
-                                     onClick={(e) => {
-                                         setSelected(res);
-                                         props.onSelectResource(res);
-                                         e.stopPropagation();
-                                     }}
-                                     onDoubleClick={() => props.onNavigateToResource(res)}
-                                     className={classNames('resource', {selected: selected == res})}>
-                                    {res.endsWith('/') ? <FolderIcon/> : <DescriptionIcon/>}
-                                    <div>{getResourceName(res)}</div>
-                                </div>)}
-                        </div>
-                    </div>)
-                }
-            </Dropzone>}
+        {(container) => {
+            const childResources = getContainedResourceUrlAll(container);
+            const readme = childResources.find(r => r.toLowerCase().endsWith('readme.md') || r.toLowerCase().endsWith('readme.txt'))
+            return <div className="container-viewer">
+                {readme ?
+                <div className="container-readme">
+                    <div className="container-readme-quicklink" title="See README file"><a onClick={() => props.onNavigateToResource(readme)}><OpenInNewIcon/></a></div>
+                    <ReadmeViewer uri={readme} fetch={props.fetch}/>
+                </div> : null }
+                <Dropzone noClick={true} onDrop={acceptedFiles => acceptedFiles.forEach(f => containerAccessor.saveFile(f.name, f))}>
+                    {({getRootProps, getInputProps}) => (
+                        <div {...getRootProps()} className="hFlow">
+                            <input {...getInputProps()} />
+                            <div
+                                className={'container-resource-list ' + display} onClick={() => {
+                                setSelected(undefined);
+                                props.onSelectResource(undefined)
+                            }}>
+                                {childResources.map(res =>
+                                    <div key={res}
+                                         onClick={(e) => {
+                                             setSelected(res);
+                                             props.onSelectResource(res);
+                                             e.stopPropagation();
+                                         }}
+                                         onDoubleClick={() => props.onNavigateToResource(res)}
+                                         className={classNames('resource', {selected: selected == res})}>
+                                        {res.endsWith('/') ? <FolderIcon/> : <DescriptionIcon/>}
+                                        <div>{getResourceName(res)}</div>
+                                    </div>)}
+                            </div>
+                        </div>)
+                    }
+                </Dropzone></div>
+            }
+        }
 </PromiseStateContainer>
+}
+
+
+
+export const ReadmeViewer = (props: {
+    uri: string,
+    fetch?: typeof fetch
+}) => {
+    const readmeFile = useSolidFile(
+        props.uri,
+        props.fetch);
+
+    const text$ = readmeFile.file$.useThen(async (f) => f?.text());
+
+    return <PromiseStateContainer promiseState={text$}>
+        {(readme) =>
+            <div>
+                <Markdown>{readme}</Markdown>
+            </div>
+        }
+    </PromiseStateContainer>
 }
 
 

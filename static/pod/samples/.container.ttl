@@ -10,10 +10,7 @@
 this:
     a ldp:BasicContainer, ldp:Container, space:Storage;
     ldp:contains
-        </README.md>, </samples/>.
+        <music/>.
 
-</README.md>
-    a ldp:Resource.
-
-</samples/>
+<music/>
     a ldp:Container.

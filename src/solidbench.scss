@@ -341,42 +341,12 @@ svg {
     }
   }
 
-  .topbar {
-    flex: none;
-    //min-height: 25px;
-    background-color: var(--theme-back1);
-    border-bottom: 1px solid var(--theme-back2);
-
-    .filebreadcrumb {
-      display: inline-block;
-      color: var(--theme-front1);
-      border-radius: 2px;
-      background-color: var(--theme-back2);
-      border: 1px solid var(--theme-back2);
-      margin: 3px;
-      padding: 0px 3px;
-    }
-
-    .file_actions {
-      display: inline-block;
-      float: right;
-
-      &>* {
-        vertical-align: bottom;
-
-        &:hover {
-          box-shadow: inset 0px 0px 6px 4px var(--theme-color1-hover);
-        }
-      }
-    }
-  }
-
   .podbrowser-body {
     @extend .hFlow;
 
     .podbrowser-sidenav {
       @extend .vFlow;
-      flex: 0.5;
+      flex: 0.25;
       padding: 8px;
       border-right: 1px solid var(--theme-border1);
 
@@ -409,12 +379,68 @@ svg {
       }
     }
 
+    .podbrowser-resource {
+      @extend .vFlow;
+
+      .topbar {
+        flex: none;
+        //min-height: 25px;
+        background-color: var(--theme-back1);
+        border-bottom: 1px solid var(--theme-back2);
+
+        .filebreadcrumb {
+          display: inline-block;
+          color: var(--theme-front1);
+          border-radius: 2px;
+          background-color: var(--theme-back2);
+          border: 1px solid var(--theme-back2);
+          margin: 3px;
+          padding: 0px 3px;
+        }
+
+        .file_actions {
+          display: inline-block;
+          float: right;
+
+          &>* {
+            vertical-align: bottom;
+
+            &:hover {
+              box-shadow: inset 0px 0px 6px 4px var(--theme-color1-hover);
+            }
+          }
+        }
+      }
+    }
+
     .podbrowser-resource-viewer {
       @extend .vFlow;
       flex: 2;
       border-right: 1px solid var(--theme-back2);
 
       .container-viewer {
+        @extend .vFlow;
+        .container-readme {
+          padding: 5px;
+          flex: none;
+          max-height: 10em;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          -webkit-line-clamp: 10;
+          -webkit-box-orient: vertical;
+          display: -webkit-box;
+          background-color: var(--theme-back2);
+          border-radius: 3px;
+          margin: 3px;
+          font-syize: 80%;
+
+          .container-readme-quicklink {
+            float: right
+          }
+        }
+      }
+
+      .container-resource-list {
         &.details .resource {
           svg {
             margin-right: 5px;
