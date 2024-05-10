@@ -112,7 +112,7 @@ export function ValueObjectModal(props: ValueObjectModalProps) {
             aria-labelledby={props.title}
         >
             <div className="modal">
-                <props.component onChange={setValues} values={props.initValue}/>
+                <props.component onChange={setValues} values={values}/>
                 <Button onClick={() => props.onOk(values)}>OK</Button>
                 <Button onClick={props.onCancel}>Cancel</Button>
             </div>
