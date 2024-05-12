@@ -1,16 +1,6 @@
 import * as React from 'react';
 import {useCallback, useContext, useEffect, useMemo, useState} from 'react';
 
-/*
-import 'codemirror/lib/codemirror.css';
-import 'codemirror/theme/material.css';
-import 'codemirror/mode/xml/xml';
-import 'codemirror/mode/turtle/turtle';
-import 'codemirror/mode/javascript/javascript';
-
- */
-import {useSession} from "@inrupt/solid-ui-react";
-
 import {CachedPromiseState, PromiseStateContainer, usePromiseFn} from "@hilats/react-utils";
 import {useSolidContainer, useSolidFile} from "../solid";
 import {
@@ -41,25 +31,20 @@ import classNames from "classnames";
 import {PodDirectoryTree} from "./podTree";
 import RadarIcon from '@mui/icons-material/Radar';
 import {useNavigate} from "react-router";
-import {Route, Routes, useParams} from "react-router-dom";
+import {Navigate, Route, Routes, useParams} from "react-router-dom";
 import {PodOverview} from "./overview";
 import {ModalComponent, useModal} from "../ui/modal";
 import {GenericViewer} from "./viewers/GenericViewer";
 import {GenericEditor} from "./viewers/GenericEditor";
 import Dropzone from "react-dropzone";
-import {assert, getParentUrl} from "@hilats/utils";
+import {ABSURL_REGEX, assert, getParentUrl} from "@hilats/utils";
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import Markdown from "react-markdown";
 
 
 export const PodBrowserPanel = () => {
 
-    const {fetch} = useSession();
-    const appContext = useContext(AppContext);
-
-    return appContext.podUrl ?
-        <PodBrowserRoutes rootUrl={appContext.podUrl} fetch={fetch}/> :
-        <div> Please login to your Solid pod to use the Pod Browser</div>;
+    return <PodBrowserRoutes/>
 }
 
 /**
@@ -110,9 +95,10 @@ function FileBreadcrumbs(props: { rootUrl?: string, path: string, onSelect: (url
 }
 
 
-export const PodBrowserRoutes = (props: { rootUrl: string, fetch?: typeof fetch, displayMetadata?: boolean }) => {
+export const PodBrowserRoutes = (props: { rootUrl?: string, fetch?: typeof fetch, displayMetadata?: boolean }) => {
     return <Routes>
         <Route path="/" element={<PodBrowser {...props}/>}/>
+        <Route path="/welcome" element={<Navigate to="../$EXT/https://pod.solidbench.dev/"/>}/>
         <Route path="/overview" element={<PodBrowser {...props}/>}/>
         <Route path="/:ROOT/*" element={<PodBrowser {...props}/>}/>
     </Routes>
@@ -129,7 +115,7 @@ export const CreateResourceDialog: ModalComponent<{ resourceName: string }> = (p
     </div>
 }
 
-export const PodBrowser = (props: { rootUrl: string, fetch?: typeof fetch, displayMetadata?: boolean }) => {
+export const PodBrowser = (props: { rootUrl?: string, fetch?: typeof fetch, displayMetadata?: boolean }) => {
 
     const [editionMode, setEditionMode] = useState(false);
     const [selectedResource, setSelectedResource] = useState<string | undefined>();
@@ -195,24 +181,37 @@ export const PodBrowser = (props: { rootUrl: string, fetch?: typeof fetch, displ
 
     }, [props.fetch, appContext.cache]);
 
+    const podUrl = props.rootUrl || appContext.podUrl;
+
     const navigateToResource = useCallback((resPath: string) => {
-        const newPath = resPath.startsWith(props.rootUrl) ?
-            resPath.replace(props.rootUrl, '../-/') :
-            '../$EXT/'+resPath
+        const newPath =
+                resPath.match(ABSURL_REGEX) ?
+                    // we have an absolute URL
+                    (podUrl && resPath.startsWith(podUrl) ?
+                        // TODO have a list of roots and search through them to find the matching alias
+                        resPath.replace(podUrl, '../-/') :
+                        // it's not matching a known root -> browse it as external
+                        '../$EXT/'+resPath) :
+                    // it's not an absolute URL. let's assume it is relative to the main root
+                    '../-/'+resPath
         ;
         navigate(newPath);
-    }, [props.rootUrl, navigate]);
+    }, [podUrl, navigate]);
 
     const currentUrl = useMemo(() => {
-        // TODO support other roots
-        if (ROOT == '-')
-            return props.rootUrl + (RES_PATH || '');
-        else if (ROOT == '$EXT') {
-            assert(RES_PATH, "No resource path provided for external resource")
+        if (ROOT == '$EXT') {
+            assert(RES_PATH, "No resource path provided for external resource");
+            assert(RES_PATH.match(ABSURL_REGEX), "External URL cannot be relative")
             return RES_PATH;
-        } else
-            throw new Error("Unknown root alias : "+ROOT);
-    }, [props.rootUrl, RES_PATH, ROOT])
+        }
+        else {
+            // TODO support other roots
+            if (ROOT == '-') {
+                return podUrl + (RES_PATH || '');
+            } else
+                throw new Error("Unknown root alias : " + ROOT);
+        }
+    }, [podUrl, RES_PATH, ROOT])
 
     useEffect(() => {
         if (currentUrl.endsWith('/'))
@@ -235,65 +234,70 @@ export const PodBrowser = (props: { rootUrl: string, fetch?: typeof fetch, displ
     const isFolder = currentUrl.endsWith('/');
 
     return (
-        <div className="vFlow fill podbrowser" onClick={anchorClickCallback}>
-            <div className="podbrowser-body">
-                <div className="podbrowser-sidenav">
-                    <div className="podbrowser-sidenav-quicklinks">
-                        <div onClick={() => navigate('../overview', {relative: 'route', replace: false})}>
-                            <RadarIcon/> overview
-                        </div>
-                    </div>
-                    <div className="podbrowser-tree">
-                        <PodDirectoryTree folderUrl={props.rootUrl} fetch={props.fetch}
-                                          onNavigateToResource={(path) => navigate(path.replace(props.rootUrl, '../-/'), {
-                                              relative: 'route',
-                                              replace: false
-                                          })}
-                                          selected={currentUrl}/>
-                    </div>
-                </div>
+        (!podUrl && ROOT != '$EXT') ? <div>Please login to browse your pod</div>:
+            <div className="vFlow fill podbrowser" onClick={anchorClickCallback}>
+                <div className="podbrowser-body">
+                    {podUrl ?
+                        // TODO display a sidenav if external URL is a pod ?
+                        <div className="podbrowser-sidenav">
+                            <div className="podbrowser-sidenav-quicklinks">
+                                <div onClick={() => navigate('../overview', {relative: 'route', replace: false})}>
+                                    <RadarIcon/> overview
+                                </div>
+                            </div>
 
-                <div className="podbrowser-resource">
-                    <div className="topbar">
-                        <FileBreadcrumbs path={currentUrl} onSelect={navigateToResource}
-                                         rootUrl={ROOT == '-' ? props.rootUrl : undefined}
-                                         className='filebreadcrumb'/>
-                        <div className='file_actions'>
-                            {selectedResource ? <DeleteIcon titleAccess="Delete Resource"
-                                                            onClick={() => deleteResourceCb(selectedResource)}/> : null}
-                            {isFolder ? <>
-                                <CreateNewFolderIcon titleAccess="Create Folder"
-                                                     onClick={() => addContainerCb(currentUrl)}/>
-                                <NoteAddIcon titleAccess="Create File" onClick={() => addResourceCb(currentUrl)}/>
-                            </> : <>
-                                <EditIcon onClick={() => setEditionMode(!editionMode)}/>
-                            </>}
-                            <InfoIcon titleAccess="Display Metadata" sx={{verticalAlign: 'sub', fontSize: '110%'}}
-                                      onClick={() => setDisplayMetadata(!displayMetadata)}/>
-                        </div>
-
-                    </div>
-                {isOverview ?
-                    <PodOverview folderUrl={props.rootUrl} fetch={props.fetch}/> :
-                    <>
-                        <div className="podbrowser-resource-viewer">
-                            {
-                                isFolder ?
-                                    <ContainerViewer uri={currentUrl} fetch={props.fetch}
-                                                     onNavigateToResource={navigateToResource}
-                                                     onSelectResource={setSelectedResource}/> :
-                                    <FileViewer uri={currentUrl} fetch={props.fetch} edition={editionMode}/>
-                            }
-
-                        </div>
-                        {displayMetadata ? <div className="vFlow">
-                            <ResourceMetadata resourceUrl={currentUrl} fetch={props.fetch}/>
+                            <div className="podbrowser-tree">
+                                <PodDirectoryTree folderUrl={podUrl} fetch={props.fetch}
+                                                  onNavigateToResource={(path) => navigate(path.replace(podUrl, '../-/'), {
+                                                      relative: 'route',
+                                                      replace: false
+                                                  })}
+                                                  selected={currentUrl}/>
+                            </div>
                         </div> : null}
-                    </>}
+
+                    <div className="podbrowser-resource">
+                        <div className="topbar">
+                            <FileBreadcrumbs path={currentUrl} onSelect={navigateToResource}
+                                             rootUrl={ROOT == '-' ? podUrl : undefined}
+                                             className='filebreadcrumb'/>
+                            <div className='file_actions'>
+                                {selectedResource ? <DeleteIcon titleAccess="Delete Resource"
+                                                                onClick={() => deleteResourceCb(selectedResource)}/> : null}
+                                {isFolder ? <>
+                                    <CreateNewFolderIcon titleAccess="Create Folder"
+                                                         onClick={() => addContainerCb(currentUrl)}/>
+                                    <NoteAddIcon titleAccess="Create File" onClick={() => addResourceCb(currentUrl)}/>
+                                </> : <>
+                                    <EditIcon onClick={() => setEditionMode(!editionMode)}/>
+                                </>}
+                                <InfoIcon titleAccess="Display Metadata" sx={{verticalAlign: 'sub', fontSize: '110%'}}
+                                          onClick={() => setDisplayMetadata(!displayMetadata)}/>
+                            </div>
+
+                        </div>
+                        {isOverview ?
+                            // podUrl cannot be undefined because it is not an EXT URL
+                            <PodOverview folderUrl={podUrl!} fetch={props.fetch}/> :
+                            <>
+                                <div className="podbrowser-resource-viewer">
+                                    {
+                                        isFolder ?
+                                            <ContainerViewer uri={currentUrl} fetch={props.fetch}
+                                                             onNavigateToResource={navigateToResource}
+                                                             onSelectResource={setSelectedResource}/> :
+                                            <FileViewer uri={currentUrl} fetch={props.fetch} edition={editionMode}/>
+                                    }
+
+                                </div>
+                                {displayMetadata ? <div className="vFlow">
+                                    <ResourceMetadata resourceUrl={currentUrl} fetch={props.fetch}/>
+                                </div> : null}
+                            </>}
+                    </div>
                 </div>
+                {modal}
             </div>
-            {modal}
-        </div>
     );
 };
 
