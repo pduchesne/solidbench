@@ -40,6 +40,7 @@ import Dropzone from "react-dropzone";
 import {ABSURL_REGEX, assert, getParentUrl} from "@hilats/utils";
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import Markdown from "react-markdown";
+import {useSession} from "@inrupt/solid-ui-react";
 
 
 export const PodBrowserPanel = () => {
@@ -117,6 +118,9 @@ export const CreateResourceDialog: ModalComponent<{ resourceName: string }> = (p
 
 export const PodBrowser = (props: { rootUrl?: string, fetch?: typeof fetch, displayMetadata?: boolean }) => {
 
+    const solidSession = useSession();
+    const fetch = props.fetch || solidSession.fetch;
+
     const [editionMode, setEditionMode] = useState(false);
     const [selectedResource, setSelectedResource] = useState<string | undefined>();
     const params = useParams();
@@ -134,7 +138,7 @@ export const PodBrowser = (props: { rootUrl?: string, fetch?: typeof fetch, disp
             title: "Delete " + uri,
             description: "Are you sure you want to delete this resource ?",
             onOk: async () => {
-                await deleteFile(uri, {fetch: props.fetch});
+                await deleteFile(uri, {fetch});
                 appContext.cache?.invalidate(uri, true);
 
                 //  let's go to the parent
@@ -142,12 +146,12 @@ export const PodBrowser = (props: { rootUrl?: string, fetch?: typeof fetch, disp
             }
         })
 
-    }, [props.fetch, appContext.cache]);
+    }, [fetch, appContext.cache]);
 
     const addResourceCb = useCallback(async (containerUri: string) => {
         const onOk = (async (values: { resourceName: string }) => {
             const newUri = new URL(sanitizeResourceName(values.resourceName), containerUri).toString();
-            await overwriteFile(newUri, new Blob([""]), {fetch: props.fetch});
+            await overwriteFile(newUri, new Blob([""]), {fetch});
 
             // let's open the new resource
             navigateToResource(newUri);
@@ -160,13 +164,13 @@ export const PodBrowser = (props: { rootUrl?: string, fetch?: typeof fetch, disp
             onOk
         })
 
-    }, [props.fetch, appContext.cache]);
+    }, [fetch, appContext.cache]);
 
 
     const addContainerCb = useCallback(async (containerUri: string) => {
         const onOk = (async (values: { resourceName: string }) => {
             const newUri = new URL(sanitizeResourceName(values.resourceName) + "/", containerUri).toString();
-            await overwriteFile(newUri, new Blob([""], {type: "text/turtle"}), {fetch: props.fetch});
+            await overwriteFile(newUri, new Blob([""], {type: "text/turtle"}), {fetch});
 
             // let's open the new resource
             navigateToResource(newUri);
@@ -179,7 +183,7 @@ export const PodBrowser = (props: { rootUrl?: string, fetch?: typeof fetch, disp
             onOk
         })
 
-    }, [props.fetch, appContext.cache]);
+    }, [fetch, appContext.cache]);
 
     const podUrl = props.rootUrl || appContext.podUrl;
 
@@ -234,20 +238,24 @@ export const PodBrowser = (props: { rootUrl?: string, fetch?: typeof fetch, disp
     const isFolder = currentUrl.endsWith('/');
 
     return (
-        (!podUrl && ROOT != '$EXT') ? <div>Please login to browse your pod</div>:
+        (!podUrl && ROOT != '$EXT') ?
+            ( !RES_PATH ? <Navigate to="../welcome"/> : <div>Please login to browse your pod</div>):
             <div className="vFlow fill podbrowser" onClick={anchorClickCallback}>
                 <div className="podbrowser-body">
                     {podUrl ?
                         // TODO display a sidenav if external URL is a pod ?
                         <div className="podbrowser-sidenav">
                             <div className="podbrowser-sidenav-quicklinks">
+                                <div onClick={() => navigate('../welcome', {relative: 'route', replace: false})}>
+                                    <InfoIcon/> welcome
+                                </div>
                                 <div onClick={() => navigate('../overview', {relative: 'route', replace: false})}>
                                     <RadarIcon/> overview
                                 </div>
                             </div>
 
                             <div className="podbrowser-tree">
-                                <PodDirectoryTree folderUrl={podUrl} fetch={props.fetch}
+                                <PodDirectoryTree folderUrl={podUrl} fetch={fetch}
                                                   onNavigateToResource={(path) => navigate(path.replace(podUrl, '../-/'), {
                                                       relative: 'route',
                                                       replace: false
@@ -278,22 +286,22 @@ export const PodBrowser = (props: { rootUrl?: string, fetch?: typeof fetch, disp
                         </div>
                         {isOverview ?
                             // podUrl cannot be undefined because it is not an EXT URL
-                            <PodOverview folderUrl={podUrl!} fetch={props.fetch}/> :
-                            <>
+                            <PodOverview folderUrl={podUrl!} fetch={fetch}/> :
+                            <div className="hFlow">
                                 <div className="podbrowser-resource-viewer">
                                     {
                                         isFolder ?
-                                            <ContainerViewer uri={currentUrl} fetch={props.fetch}
+                                            <ContainerViewer uri={currentUrl} fetch={fetch}
                                                              onNavigateToResource={navigateToResource}
                                                              onSelectResource={setSelectedResource}/> :
-                                            <FileViewer uri={currentUrl} fetch={props.fetch} edition={editionMode}/>
+                                            <FileViewer uri={currentUrl} fetch={fetch} edition={editionMode}/>
                                     }
 
                                 </div>
-                                {displayMetadata ? <div className="vFlow">
-                                    <ResourceMetadata resourceUrl={currentUrl} fetch={props.fetch}/>
+                                {displayMetadata ? <div className="podbrowser-resource-metadata">
+                                    <ResourceMetadata resourceUrl={currentUrl} fetch={fetch}/>
                                 </div> : null}
-                            </>}
+                            </div>}
                     </div>
                 </div>
                 {modal}
@@ -311,7 +319,7 @@ export const FileViewer = (props: { uri: string, fetch?: typeof fetch, edition?:
 
     return <PromiseStateContainer promiseState={currentFile.file$}>
         {(blob) => blob ?
-            (props.edition ? <GenericEditor content={blob} onSave={onSave}/> : <GenericViewer content={blob}/>) :
+            (props.edition ? <GenericEditor content={blob} onSave={onSave} uri={props.uri}/> : <GenericViewer content={blob} uri={props.uri}/>) :
             <div>
                 Resource not found
             </div>}
@@ -343,14 +351,9 @@ export const ContainerViewer = (props: ResourceViewerProps & {
             const childResources = getContainedResourceUrlAll(container);
             const readme = childResources.find(r => r.toLowerCase().endsWith('readme.md') || r.toLowerCase().endsWith('readme.txt'))
             return <div className="container-viewer">
-                {readme ?
-                <div className="container-readme">
-                    <div className="container-readme-quicklink" title="See README file"><a onClick={() => props.onNavigateToResource(readme)}><OpenInNewIcon/></a></div>
-                    <ReadmeViewer uri={readme} fetch={props.fetch}/>
-                </div> : null }
                 <Dropzone noClick={true} onDrop={acceptedFiles => acceptedFiles.forEach(f => containerAccessor.saveFile(f.name, f))}>
                     {({getRootProps, getInputProps}) => (
-                        <div {...getRootProps()} className="hFlow">
+                        <div {...getRootProps()} className="container-resources">
                             <input {...getInputProps()} />
                             <div
                                 className={'container-resource-list ' + display} onClick={() => {
@@ -372,7 +375,13 @@ export const ContainerViewer = (props: ResourceViewerProps & {
                             </div>
                         </div>)
                     }
-                </Dropzone></div>
+                </Dropzone>
+                {readme ?
+                    <div className="container-readme">
+                        <div className="container-readme-quicklink" title="See README file"><a onClick={() => props.onNavigateToResource(readme)}><OpenInNewIcon/></a></div>
+                        <ReadmeViewer uri={readme} fetch={props.fetch}/>
+                    </div> : null }
+            </div>
             }
         }
 </PromiseStateContainer>

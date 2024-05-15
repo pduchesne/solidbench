@@ -1,6 +1,7 @@
 const Dotenv = require("dotenv-webpack");
 const HtmlWebPackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 var webpack = require('webpack');
 require('dotenv').config();
 
@@ -77,6 +78,7 @@ module.exports = {
             react: path.resolve(__dirname, 'node_modules/react'),
             'react-dom': path.resolve(__dirname, 'node_modules/react-dom'),
             stream: path.resolve(__dirname, 'node_modules/stream-browserify'),
+            'monaco-editor': path.resolve(__dirname, 'node_modules/monaco-editor'),
 
 
             /*
@@ -127,9 +129,13 @@ module.exports = {
                 test: /\.scss$/,
                 use: [styleLoader, cssLoader, 'sass-loader']
             },
+            {   // needed for monaco fonts
+                test: /\.ttf$/,
+                type: 'asset/resource'
+            },
             // { test: /\.json$/, loader: "json-loader" },
             { // required for font-awesome
-                test: /\.(jpe?g|png|gif|svg|ico|woff(2)?|ttf|eot)(\?v=\d+\.\d+\.\d+)?$/,
+                test: /\.(jpe?g|png|gif|svg|ico|woff(2)?|eot)(\?v=\d+\.\d+\.\d+)?$/,
                 loader: "file-loader",
                 options: {
                     outputPath: 'assets/',
@@ -148,7 +154,18 @@ module.exports = {
         port: 8000,
         // needed to properly support BrowsrRouter
         // see https://stackoverflow.com/questions/43209666/react-router-v4-cannot-get-url
-        historyApiFallback: true,
+        historyApiFallback: {
+            // stock historyApiFallback is not enough
+            // it chokes on subpaths that contain a dot
+            rewrites: [
+                {
+                    from: /^.*$/,
+                    to: function() {
+                        return '/';
+                    }
+                }
+            ]
+        },
         https: true,
 
 
@@ -160,6 +177,22 @@ module.exports = {
                 secure: false,
                 changeOrigin: true
             }
+        },
+        client: {
+            overlay: {
+                // Ignore ResizeObserver errors
+                // see https://github.com/vuejs/vue-cli/issues/7431#issuecomment-1821173102
+                runtimeErrors: (error) => {
+                    const ignoreErrors = [
+                        "ResizeObserver loop limit exceeded",
+                        "ResizeObserver loop completed with undelivered notifications.",
+                    ];
+                    if (ignoreErrors.includes(error.message)) {
+                        return false;
+                    }
+                    return true;
+                },
+            },
         }
     },
 
@@ -185,6 +218,7 @@ module.exports = {
                 }
             ]
         }),
-        dotenvPlugin
+        dotenvPlugin,
+        new MonacoWebpackPlugin()
     ]
 };

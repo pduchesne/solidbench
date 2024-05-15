@@ -9,7 +9,7 @@
   --theme-front1: #333;
   --theme-front2: #494949;
   --theme-back1: #ececec;
-  --theme-back2: #c8c8c8;
+  --theme-back2: #dcdcdc;
   --theme-border1: #c8c8c8;
   --theme-border2: #ffffff;
   --theme-selection: #324c8730;
@@ -38,7 +38,7 @@
   --theme-front1: #e6e6e6;
   --theme-front2: #afafaf;
   --theme-back1: #222;
-  --theme-back2: #444;
+  --theme-back2: #353535;
   --theme-border1: #444;
   --theme-border2: #2c2c2c;
   --theme-selection: #4f75d330;
@@ -50,6 +50,22 @@
 
   --link-color: #4478cc;
   --link-hover-color: #1e63ff;
+
+  .monaco-editor {
+    .line-numbers.active-line-number {
+      color: #d9e1ff;
+    }
+
+    .cldr.codicon.codicon-folding-expanded, .monaco-editor .cldr.codicon.codicon-folding-collapsed {
+      color: #b5b5b5 !important;
+    }
+
+    .view-overlays .current-line {
+      border: 2px solid #404040;
+    }
+  }
+
+
 }
 
 /* MUI color overrides */
@@ -413,6 +429,13 @@ svg {
       }
     }
 
+    .podbrowser-resource-metadata {
+      @extend .vFlow;
+
+      [role="tabpanel"] {
+        padding: 5px;
+      }
+    }
     .podbrowser-resource-viewer {
       @extend .vFlow;
       flex: 2;
@@ -422,8 +445,8 @@ svg {
         @extend .vFlow;
         .container-readme {
           padding: 5px;
-          flex: none;
-          max-height: 10em;
+          flex: 1;
+          //max-height: 10em;
           overflow: hidden;
           text-overflow: ellipsis;
           -webkit-line-clamp: 10;
@@ -440,42 +463,49 @@ svg {
         }
       }
 
-      .container-resource-list {
-        &.details .resource {
-          svg {
-            margin-right: 5px;
-          }
-        }
+      .container-resources {
+        @extend .hFlow;
+        flex: 0.5 1;
 
-        &.grid {
-          display: flex;
-          flex-flow: row wrap;
-          align-items: center;
-          align-content: baseline;
-
-          .resource {
-            text-align: center;
-            height: 110px;
-            padding: 3px;
-
+        .container-resource-list {
+          &.details .resource {
             svg {
-              font-size: var(--resource-icon-size);
-              display: block;
-            }
-
-            div {
-              font-size: 15px;
-              max-width: var(--resource-icon-size);
-              overflow: hidden;
-              text-overflow: ellipsis;
-              word-break: break-all;
-              height: 30px;
+              margin-right: 5px;
             }
           }
 
-        }
+          &.grid {
+            display: flex;
+            flex-flow: row wrap;
+            align-items: center;
+            align-content: baseline;
 
+            .resource {
+              text-align: center;
+              height: 110px;
+              padding: 3px;
+
+              svg {
+                font-size: var(--resource-icon-size);
+                display: block;
+              }
+
+              div {
+                font-size: 15px;
+                max-width: var(--resource-icon-size);
+                overflow: hidden;
+                text-overflow: ellipsis;
+                word-break: break-all;
+                height: 30px;
+              }
+            }
+
+          }
+
+        }
       }
+
+
     }
 
     .acrPolicies, .acrMatchers {
