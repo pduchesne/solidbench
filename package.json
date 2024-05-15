@@ -10,7 +10,8 @@
         "start": "webpack-dev-server --profile --progress --mode development",
         "build": "yarn run --silent clean && node --max_old_space_size=4096 node_modules/.bin/webpack",
         "gh-pages": "npx gh-pages -d dist",
-        "build:ldo": "ldo build --input ./shapes --output ./src/ldo"
+        "build:ldo": "ldo build --input ./shapes --output ./src/ldo",
+        "postinstall": "patch-package"
     },
     "keywords": [],
     "author": "phd@highlatitud.es",
@@ -38,6 +39,7 @@
         "jest-junit": "^15.0.0",
         "jest-transform-stub": "^2.0.0",
         "node-sass": "9.0.0",
+        "patch-package": "^8.0.0",
         "prettier": "^3.0.3",
         "sass-loader": "13.3.2",
         "shx": "^0.3.4",

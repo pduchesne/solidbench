@@ -1,0 +1,23 @@
+diff --git a/node_modules/@inrupt/solid-client/package.json b/node_modules/@inrupt/solid-client/package.json
+index 3542cfc..8291856 100644
+--- a/node_modules/@inrupt/solid-client/package.json
++++ b/node_modules/@inrupt/solid-client/package.json
+@@ -38,6 +38,18 @@
+   "module": "dist/index.es.js",
+   "types": "dist/index.d.ts",
+   "exports": {
++    "./dist/acp/util/getAgentAccessAll": {
++      "types": "./dist/acp/util/getAgentAccessAll.d.ts",
++      "import": "./dist/acp/util/getAgentAccessAll.mjs"
++    },
++    "./dist/acl/acl.internal": {
++      "types": "./dist/acl/acl.internal.d.ts",
++      "import": "./dist/acl/acl.internal.mjs"
++    },
++    "./dist/acl/agent": {
++      "types": "./dist/acl/agent.d.ts",
++      "import": "./dist/acl/agent.mjs"
++    },
+     ".": {
+       "types": "./dist/index.d.ts",
+       "require": "./dist/index.js",
