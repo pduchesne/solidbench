@@ -1,12 +1,14 @@
 import {AccessModes, WithServerResourceInfo} from "@inrupt/solid-client";
 import * as React from "react";
 import {useState} from "react";
-import {Button, Checkbox, FormControlLabel} from "@mui/material";
 
 import {PromiseStateContainer} from "@hilats/react-utils";
 import {UniversalAccessForm, useUniversalAccess} from "./access_universal";
 import {AclAccessForm, useAclAccess} from "./access_acl";
 import {AcrAccessForm, useAcrAccess} from "./access_acr";
+import Checkbox from "@mui/material/Checkbox/Checkbox";
+import FormControlLabel from "@mui/material/FormControlLabel/FormControlLabel";
+import Button from "@mui/material/Button/Button";
 
 
 // ACP - ACR

@@ -2,12 +2,12 @@ import * as React from "react";
 import {IUnControlledCodeMirror, UnControlled as CodeMirror} from "react-codemirror2";
 import {useCallback, useEffect, useState} from "react";
 import {Editor} from 'codemirror';
-import {Button} from "@mui/material";
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/material.css';
 import 'codemirror/mode/xml/xml';
 import 'codemirror/mode/turtle/turtle';
 import 'codemirror/mode/javascript/javascript';
+import Button from "@mui/material/Button/Button";
 
 
 export const DirtyCodemirror = (props: IUnControlledCodeMirror) => {

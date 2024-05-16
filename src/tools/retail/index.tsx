@@ -6,8 +6,6 @@ import PdfjsWorker from "pdfjs-dist/build/pdf.worker.js";
 
 GlobalWorkerOptions.workerSrc = PdfjsWorker;
 
-import {Box, Chip, MenuItem, OutlinedInput, Select, Tab} from "@mui/material";
-
 import {TabContext, TabList, TabPanel} from '@mui/lab';
 
 import {Receipt, ReceiptWithRetailer} from "./model";
@@ -26,6 +24,12 @@ import ReceiptsTable from "./components/ReceiptsTable";
 import Overview from "./components/Overview";
 import {Navigate, Route, Routes, useLocation, useParams} from "react-router-dom";
 import {useNavigate} from "react-router";
+import Tab from "@mui/material/Tab/Tab";
+import Select from "@mui/material/Select/Select";
+import OutlinedInput from "@mui/material/OutlinedInput/OutlinedInput";
+import MenuItem from "@mui/material/MenuItem/MenuItem";
+import Box from "@mui/material/Box/Box";
+import Chip from "@mui/material/Chip/Chip";
 
 /**
  * Import UI components for specific retailers

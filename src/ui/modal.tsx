@@ -1,5 +1,6 @@
+import Button from "@mui/material/Button/Button";
+import Modal from "@mui/material/Modal/Modal";
 import React, {useCallback, useState} from "react";
-import {Button, Modal} from "@mui/material";
 
 export type ModalComponent<T extends {}> = React.ComponentType<{values: T, onChange: (newValues: T) => void}>;
 

@@ -1,9 +1,15 @@
 import {useMemo, useState} from "react";
 import {PromiseContainer} from "@hilats/react-utils";
-import {Box, Button, Pagination, Switch, Tab} from "@mui/material";
+import TabContext from "@mui/lab/TabContext/TabContext";
+import TabList from "@mui/lab/TabList/TabList";
+import TabPanel from "@mui/lab/TabPanel/TabPanel";
+import Pagination from "@mui/material/Pagination/Pagination";
+import Box from "@mui/material/Box/Box";
+import Button from "@mui/material/Button/Button";
+import Tab from "@mui/material/Tab/Tab";
+import Switch from "@mui/material/Switch/Switch";
 import * as React from "react";
 import {Receipt, VendorArticle} from "../../model";
-import {TabContext, TabList, TabPanel} from "@mui/lab";
 import {parseXlsxExport} from "./parser";
 
 export const DelhaizePanel = (props: { blob: Blob , onImport: (receipts: Receipt[]) => void}) => {

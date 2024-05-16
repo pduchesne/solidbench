@@ -1,5 +1,4 @@
 import {bindMenu, bindTrigger, usePopupState} from "material-ui-popup-state/hooks";
-import {AppBar, Box, Button, IconButton, Menu, MenuItem, Toolbar, Tooltip} from "@mui/material";
 import {Link} from "react-router-dom";
 import {memo, useContext} from "react";
 import * as React from "react";
@@ -7,6 +6,14 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import {LogoutButton, useSession} from "@inrupt/solid-ui-react";
 import {LoginMultiButton} from "./solid";
 import {AppContext} from "./appContext";
+import Button from "@mui/material/Button/Button";
+import MenuItem from "@mui/material/MenuItem/MenuItem";
+import Menu from "@mui/material/Menu/Menu";
+import Tooltip from "@mui/material/Tooltip/Tooltip";
+import IconButton from "@mui/material/IconButton/IconButton";
+import AppBar from "@mui/material/AppBar/AppBar";
+import Toolbar from "@mui/material/Toolbar/Toolbar";
+import Box from "@mui/material/Box/Box";
 
 export const ToolsMenu = () => {
     const popupState = usePopupState({variant: 'popover'})

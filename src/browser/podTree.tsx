@@ -1,7 +1,7 @@
 import * as React from "react";
 import {useContext, useState} from "react";
 import classNames from "classnames";
-import {FolderOpen} from "@mui/icons-material";
+import FolderOpen from "@mui/icons-material/FolderOpen";
 import FolderIcon from "@mui/icons-material/Folder";
 import {getResourceName} from "@hilats/solid-utils";
 import {AppContext} from "../appContext";

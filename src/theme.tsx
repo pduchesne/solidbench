@@ -1,7 +1,9 @@
 import * as React from "react";
-import {createTheme, Theme, ThemeProvider} from "@mui/material";
 import {AppContext} from "./appContext";
 import {useContext, useEffect} from "react";
+import createTheme, { Theme } from "@mui/material/styles/createTheme";
+import ThemeProvider from "@mui/material/styles/ThemeProvider";
+
 
 
 const THEMES: Record<string, Theme> = {

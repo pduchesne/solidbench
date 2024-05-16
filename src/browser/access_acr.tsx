@@ -6,7 +6,7 @@ import {
 import * as React from "react";
 import {useCallback} from "react";
 import {usePromiseFn} from "@hilats/react-utils";
-import {Checkbox} from "@mui/material";
+import Checkbox from "@mui/material/Checkbox/Checkbox";
 import {ResourcePolicy} from "@inrupt/solid-client/dist/acp/policy";
 import {ResourceMatcher} from "@inrupt/solid-client/dist/acp/matcher";
 import {PolicyAllowModes} from "@hilats/solid-utils/dist/cjs/acp";

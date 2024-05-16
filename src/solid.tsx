@@ -1,7 +1,6 @@
 import * as React from 'react';
 import {useCallback, useEffect, useMemo, useState} from 'react';
 import {LoginButton} from '@inrupt/solid-ui-react';
-import {Button, ButtonGroup, MenuItem, Select} from "@mui/material";
 import {
     createContainerAt,
     getFile,
@@ -13,6 +12,10 @@ import {CachedPromiseState, UpdatablePromiseState, usePromiseFn} from "@hilats/r
 import {_404undefined, assert} from '@hilats/utils';
 import {GetFileOptions} from "@inrupt/solid-client/dist/resource/file";
 import {ResourceCache} from "@hilats/solid-utils";
+import ButtonGroup from '@mui/material/ButtonGroup/ButtonGroup';
+import Button from '@mui/material/Button/Button';
+import Select from '@mui/material/Select/Select';
+import MenuItem from '@mui/material/MenuItem/MenuItem';
 
 const ISSUERS: Record<string, string> = {
     //"https://openid.sandbox-pod.datanutsbedrijf.be": "DNB Sandbox",

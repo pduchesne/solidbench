@@ -7,7 +7,7 @@ require('dotenv').config();
 
 var path = require('path');
 
-const APP_NAME = 'travel-map';
+const APP_NAME = 'solidbench';
 
 // this will create index.html file containing script
 // source in dist folder dynamically
@@ -43,8 +43,9 @@ function injectEnv(buffer) {
 }
 
 module.exports = {
+    // this can be overridden by command line `--mode=production`
     mode: dev ? 'development' : 'production',
-    optimization: {minimize: !dev},
+    //optimization: {minimize: true},
 
     //specify the entry point for your project
     entry: {[APP_NAME]: ['./src/index.tsx']},
@@ -129,18 +130,20 @@ module.exports = {
                 test: /\.scss$/,
                 use: [styleLoader, cssLoader, 'sass-loader']
             },
-            {   // needed for monaco fonts
-                test: /\.ttf$/,
-                type: 'asset/resource'
-            },
-            // { test: /\.json$/, loader: "json-loader" },
+
+            // with webpack 5, use 'asset/resource' to properly bundle resources like fonts or images
+            // cf https://github.com/microsoft/monaco-editor/tree/main/webpack-plugin
             { // required for font-awesome
-                test: /\.(jpe?g|png|gif|svg|ico|woff(2)?|eot)(\?v=\d+\.\d+\.\d+)?$/,
+                test: /\.(jpe?g|ttf|png|gif|svg|ico|woff(2)?|eot)(\?v=\d+\.\d+\.\d+)?$/,
+                type: 'asset/resource'
+                /*
                 loader: "file-loader",
                 options: {
                     outputPath: 'assets/',
                     name: '[name].[ext]'
                 }
+
+                 */
             },
         ]
     },
@@ -212,7 +215,6 @@ module.exports = {
                     from: "./src/client.jsonld",
                     to: "./client.jsonld",
                     transform(content, path) {
-                        console.log("inject: "+path)
                         return injectEnv(content)
                     }
                 }

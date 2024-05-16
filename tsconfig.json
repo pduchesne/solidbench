@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "module": "commonjs",
+        "module": "esnext",
         "target": "es2021",
         "esModuleInterop": true,
         "lib": ["es2021", "dom", "dom.iterable"],
@@ -9,7 +9,7 @@
         "sourceMap": true,
 
         "jsx": "react",
-        //"moduleResolution": "node",
+        "moduleResolution": "node",
         "forceConsistentCasingInFileNames": true,
         "noImplicitReturns": true,
         "noImplicitThis": true,

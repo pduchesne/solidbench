@@ -17,7 +17,6 @@ import FolderIcon from '@mui/icons-material/Folder';
 import DescriptionIcon from '@mui/icons-material/Description';
 import DeleteIcon from '@mui/icons-material/Delete';
 import NoteAddIcon from '@mui/icons-material/NoteAdd';
-import {Breadcrumbs, Input, Link} from "@mui/material";
 import {CommonProps} from "@mui/material/OverridableComponent";
 import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 import InfoIcon from '@mui/icons-material/Info';
@@ -41,6 +40,9 @@ import {ABSURL_REGEX, assert, getParentUrl} from "@hilats/utils";
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import Markdown from "react-markdown";
 import {useSession} from "@inrupt/solid-ui-react";
+import Breadcrumbs from "@mui/material/Breadcrumbs/Breadcrumbs";
+import Link from "@mui/material/Link/Link";
+import Input from "@mui/material/Input/Input";
 
 
 export const PodBrowserPanel = () => {

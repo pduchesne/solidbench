@@ -2,11 +2,17 @@ import {useCallback, useMemo, useState} from "react";
 import {parsePdfData, reduceItems} from "./parser";
 import {PromiseContainer} from "@hilats/react-utils";
 import {TextItem} from "pdfjs-dist/types/src/display/api";
-import {Box, Button, Pagination, Switch, Tab} from "@mui/material";
+import Box from "@mui/material/Box/Box";
+import Button from "@mui/material/Button/Button";
+import Tab from "@mui/material/Tab/Tab";
+import Switch from "@mui/material/Switch/Switch";
 import * as React from "react";
 import {Receipt, VendorArticle} from "../../model";
-import {TabContext, TabList, TabPanel} from "@mui/lab";
 import {enrichArticlesFromCache} from "./services";
+import TabContext from "@mui/lab/TabContext/TabContext";
+import TabList from "@mui/lab/TabList/TabList";
+import TabPanel from "@mui/lab/TabPanel/TabPanel";
+import Pagination from "@mui/material/Pagination/Pagination";
 
 export const ColruytPanel = (props: { blob: Blob , onImport: (receipts: Receipt[]) => void}) => {
 

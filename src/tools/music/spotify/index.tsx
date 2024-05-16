@@ -1,7 +1,7 @@
 import * as React from "react";
 import {useSpotifyContext} from "./tools";
 import {Scopes} from "@spotify/web-api-ts-sdk";
-import {Button} from "@mui/material";
+import Button from "@mui/material/Button/Button";
 import {PromiseFnContainer} from "@hilats/react-utils";
 import {MusicDataImporter, MusicDataProvider} from "../index";
 import {useNavigate} from "react-router";

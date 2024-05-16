@@ -2,7 +2,8 @@ import * as React from "react";
 
 import {useContext} from "react";
 import {AppContext} from "../../appContext";
-import {MenuItem, Select} from "@mui/material";
+import Select from "@mui/material/Select/Select";
+import MenuItem from "@mui/material/MenuItem/MenuItem";
 
 export const PodDashboardSettings = (props: {}) => {
 

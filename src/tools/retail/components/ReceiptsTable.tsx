@@ -1,9 +1,9 @@
-import {Pagination} from "@mui/material";
 import * as React from "react";
 import {Receipt} from "../model";
 import {Route, Routes, useParams} from "react-router-dom";
 import {useNavigate} from "react-router";
 import {FormattedDate} from "./Overview";
+import Pagination from "@mui/material/Pagination/Pagination";
 
 
 export const ReceiptsTableRoutes = (props: { receipts: Array<Receipt> }) => {

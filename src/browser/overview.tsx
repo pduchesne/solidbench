@@ -4,7 +4,7 @@ import {AppContext} from "../appContext";
 import {useSolidContainer, useSolidFile} from "../solid";
 import {PromiseStateContainer} from "@hilats/react-utils";
 import {ScanMetadata, scanResource} from "../tools/scanner";
-import {Button} from "@mui/material";
+import Button from "@mui/material/Button/Button";
 import {_404undefined} from "@hilats/utils";
 
 const SHAPES = {

@@ -1,4 +1,4 @@
-import {Checkbox} from "@mui/material";
+import Checkbox from "@mui/material/Checkbox/Checkbox";
 import * as React from "react";
 import {useCallback} from "react";
 import {usePromiseFn} from "@hilats/react-utils";
