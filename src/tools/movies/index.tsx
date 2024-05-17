@@ -6,3 +6,5 @@ export const MoviesDashboard = () => {
     </div>
 }
 
+export default MoviesDashboard;
+

@@ -1,27 +1,21 @@
 import * as React from "react";
 
 import {Sidenav} from "./sidenav";
-import {PodBrowserPanel} from "../../browser/pod-browser";
-import {RetailDashboardRoutes} from "../retail";
-import {MusicDashboard} from "../music";
+
 import {Navigate, Route, Routes, useLocation, useParams} from "react-router-dom";
 import {useNavigate} from "react-router";
 import {useSession} from "@inrupt/solid-ui-react";
-import {useContext} from "react";
+import {lazy, LazyExoticComponent, Suspense, useContext} from "react";
 import {AppContext} from "../../appContext";
-import {PodDashboardSettings} from "./settings";
-import {AnnotationsDashboard} from "../annotations";
-import {MoviesDashboard} from "../movies";
-import {HealthDashboard} from "../health";
 
-export const PANELS = {
-    podbrowser: PodBrowserPanel,
-    retail: RetailDashboardRoutes,
-    music: MusicDashboard,
-    settings: PodDashboardSettings,
-    annotations: AnnotationsDashboard,
-    movies: MoviesDashboard,
-    health: HealthDashboard
+export const PANELS: Record<string, LazyExoticComponent<any>> = {
+    podbrowser: lazy(() => import('../../browser/pod-browser')),
+    retail: lazy(() => import('../retail')),
+    music: lazy(() => import('../music')),
+    settings: lazy(() => import('./settings')),
+    annotations: lazy(() => import('../annotations')),
+    movies: lazy(() => import('../movies')),
+    health: lazy(() => import('../health'))
 }
 export type PANEL_ID = keyof typeof PANELS;
 
@@ -50,7 +44,9 @@ export const PersonalDashboard = (props: {selectedPanel?: string }) => {
     return <div className="hFlow">
         <Sidenav selectPanel={(panelId: string) => {navigate("/personal-dashboard/"+panelId);}} selected={panelId}/>
         <div className="contentPane">
-            <Panel/>
+            <Suspense fallback={<div>Loading...</div>}>
+                <Panel/>
+            </Suspense>
         </div>
 
     </div>

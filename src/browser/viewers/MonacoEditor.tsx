@@ -10,7 +10,7 @@ const LANGUAGES: Record<string, string> = {
     [WELL_KNOWN_TYPES.md] : 'markdown',
 }
 
-const MonacoComponent = lazy(() => import('../../ui/monaco').then(module => ({default: module.MonacoEditor})));
+const MonacoComponent = lazy(() => import('../../ui/monaco'));
 
 export const MonacoEditor: ContentEditor = (props) => {
     const ctx = useContext(AppContext);

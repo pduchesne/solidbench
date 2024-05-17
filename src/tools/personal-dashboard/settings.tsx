@@ -22,3 +22,5 @@ export const PodDashboardSettings = (props: {}) => {
         </div>
     </div>
 }
+
+export default PodDashboardSettings;

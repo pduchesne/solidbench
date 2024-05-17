@@ -6,3 +6,4 @@ export const AnnotationsDashboard = () => {
     </div>
 }
 
+export default AnnotationsDashboard;

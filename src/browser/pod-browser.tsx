@@ -481,3 +481,4 @@ export const RawResourceInfo = (props: { resourceInfo: WithResourceInfo }) => {
     );
 };
 
+export default PodBrowserPanel;

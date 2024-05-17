@@ -206,4 +206,4 @@ export const ShoppingDashboard = (props: { receipts: Array<ReceiptWithRetailer>,
 
 }
 
-
+export default RetailDashboardRoutes;

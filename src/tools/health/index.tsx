@@ -6,3 +6,5 @@ export const HealthDashboard = () => {
     </div>
 }
 
+export default HealthDashboard;
+

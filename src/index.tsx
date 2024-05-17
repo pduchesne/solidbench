@@ -6,18 +6,16 @@ import './solidbench.scss';
 import {SessionProvider} from '@inrupt/solid-ui-react';
 
 import {ErrorBoundary} from '@hilats/react-utils';
-import {PodBrowserPanel} from "./browser/pod-browser";
 import {createRoot} from "react-dom/client";
 import {AppNavBar} from "./navbar";
 import {AppContextProvider} from "./appContext";
-import {ColruytDbPanel} from './tools/retail/retailers/colruytdb';
-import {RetailDashboard} from "./tools/retail";
 import {memo, useCallback} from "react";
 import {useNavigate} from "react-router";
 import {DashboardRoutes} from "./tools/personal-dashboard";
-import {MusicDashboard} from "./tools/music";
 import classNames from "classnames";
 import {AppThemeProvider} from "./theme";
+
+//TODO move this somewhere where it can be lazy-loaded
 
 // register the echarts dark theme for use throughout the app
 import echartsDarkTheme from './echarts_dark.json';
@@ -30,10 +28,12 @@ const routes = [
         component: DashboardRoutes,
         path: '/personal-dashboard/*'
     },
+    /*
     {
         component: PodBrowserPanel,
         path: '/tools/pod-viewer'
     },
+
     {
         component: RetailDashboard,
         path: '/tools/retail'
@@ -46,6 +46,8 @@ const routes = [
         component: MusicDashboard,
         path: '/tools/spotify'
     }
+
+     */
 
 ];
 
