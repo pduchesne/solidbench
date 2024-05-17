@@ -1,15 +1,15 @@
-//import './wdyr';
+import './wdyr';
 
 import * as React from 'react';
+import {memo, useCallback} from 'react';
 import {BrowserRouter, Navigate, Route, Routes} from 'react-router-dom';
 import './solidbench.scss';
-import {SessionProvider} from '@inrupt/solid-ui-react';
+import {SessionProvider, useSession} from '@inrupt/solid-ui-react';
 
-import {ErrorBoundary} from '@hilats/react-utils';
+import {ErrorBoundary, DEFAULTS} from '@hilats/react-utils';
 import {createRoot} from "react-dom/client";
 import {AppNavBar} from "./navbar";
 import {AppContextProvider} from "./appContext";
-import {memo, useCallback} from "react";
 import {useNavigate} from "react-router";
 import {DashboardRoutes} from "./tools/personal-dashboard";
 import classNames from "classnames";
@@ -60,21 +60,41 @@ const MemoSessionProvider = memo(SessionProvider);
 
 export const AppWithContext = memo(() => {
 
+    const session = useSession();
+
+    /*
+    useEffect(() => {
+        console.log("sessionRequestInProgress: " + session.sessionRequestInProgress)
+    }, [session.sessionRequestInProgress]);
+
+    useEffect(() => {
+        console.log("fetch: " + session.fetch)
+    }, [session.fetch]);
+
+    useEffect(() => {
+        console.log("isLoggedIn: " + session.session.info.isLoggedIn)
+    }, [session.session.info.isLoggedIn]);
+
+     */
+
     return <AppThemeProvider>
         <div className={classNames("mainApp", "vFlow")}>
             <AppNavBar/>
-            <div className='vFlow'>
-                <ErrorBoundary>
-                    <Routes>
-                        {routes.map((route, i) => (
-                            <Route path={route.path} key={i} element={<ErrorBoundary>
-                                <route.component/>
-                            </ErrorBoundary>}/>
-                        ))}
-                        <Route path="*" element={<Navigate to="/personal-dashboard"/>}/>
-                    </Routes>
-                </ErrorBoundary>
-            </div>
+            {session.sessionRequestInProgress ?
+                <DEFAULTS.Loader message={"Authenticating..."}/> :
+                <div className='vFlow'>
+                    <ErrorBoundary>
+                        <Routes>
+                            {routes.map((route, i) => (
+                                <Route path={route.path} key={i} element={<ErrorBoundary>
+                                    <route.component/>
+                                </ErrorBoundary>}/>
+                            ))}
+                            <Route path="*" element={<Navigate to="/personal-dashboard"/>}/>
+                        </Routes>
+                    </ErrorBoundary>
+                </div>
+            }
         </div>
     </AppThemeProvider>
 })
@@ -90,7 +110,12 @@ export const App = memo(() => {
     }, [ /* navigate TODO WARN this means the navigate function will never get updated, and therefore cannot be used for relative navigation*/ ]);
 
     return (
-        <MemoSessionProvider restorePreviousSession={true} sessionId="solidbench-app" onSessionRestore={sessionRestoreCb}
+        <MemoSessionProvider restorePreviousSession={true}
+                             sessionId="solidbench-app"
+                             onSessionRestore={sessionRestoreCb}
+                             // TODO loading the profile is useless as of now, but skipping it causes abug
+                             // see https://github.com/inrupt/solid-ui-react/issues/970
+                             //skipLoadingProfile={true}
                          onError={console.log}>
             <AppContextProvider>
                 <AppWithContext />

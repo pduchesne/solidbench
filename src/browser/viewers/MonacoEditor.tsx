@@ -1,6 +1,6 @@
 import React, {useContext, lazy, Suspense} from "react";
 import {ContentEditor} from "./GenericEditor";
-import {PromiseStateContainer, usePromiseFn} from "@hilats/react-utils";
+import {DEFAULTS, PromiseStateContainer, usePromiseFn} from "@hilats/react-utils";
 import {WELL_KNOWN_TYPES} from "@hilats/utils";
 import {AppContext} from "../../appContext";
 
@@ -23,7 +23,7 @@ export const MonacoEditor: ContentEditor = (props) => {
 
     return <PromiseStateContainer promiseState={contentString$}>
         {(content) =>
-            <Suspense fallback={<div>Loading...</div>}>
+            <Suspense fallback={<DEFAULTS.Loader />}>
                 <MonacoComponent
                     content={content}
                     uri={props.uri}

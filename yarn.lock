@@ -669,22 +669,22 @@
     rdflib "^2.2.35"
 
 "@hilats/react-utils@file:../toolkit-ts/react-utils":
-  version "0.0.1-alpha"
+  version "0.0.2"
   dependencies:
-    "@hilats/utils" "0.0.1-alpha"
+    "@hilats/utils" "0.0.2"
     react "^18.2.0"
     react-dom "^18.2.0"
     react-measure "^2.3.0"
     styled-components "^6.1.0"
 
 "@hilats/solid-utils@file:../toolkit-ts/solid-utils":
-  version "0.0.1-alpha"
+  version "0.0.2"
   dependencies:
-    "@hilats/utils" "0.0.1-alpha"
+    "@hilats/utils" "0.0.2"
     "@inrupt/solid-client" "^2.0.0"
 
-"@hilats/utils@0.0.1-alpha", "@hilats/utils@file:../toolkit-ts/utils":
-  version "0.0.1-alpha"
+"@hilats/utils@0.0.2", "@hilats/utils@file:../toolkit-ts/utils":
+  version "0.0.2"
 
 "@humanwhocodes/config-array@^0.11.14":
   version "0.11.14"

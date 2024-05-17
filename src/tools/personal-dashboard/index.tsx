@@ -7,6 +7,7 @@ import {useNavigate} from "react-router";
 import {useSession} from "@inrupt/solid-ui-react";
 import {lazy, LazyExoticComponent, Suspense, useContext} from "react";
 import {AppContext} from "../../appContext";
+import { DEFAULTS } from "@hilats/react-utils";
 
 export const PANELS: Record<string, LazyExoticComponent<any>> = {
     podbrowser: lazy(() => import('../../browser/pod-browser')),
@@ -44,7 +45,7 @@ export const PersonalDashboard = (props: {selectedPanel?: string }) => {
     return <div className="hFlow">
         <Sidenav selectPanel={(panelId: string) => {navigate("/personal-dashboard/"+panelId);}} selected={panelId}/>
         <div className="contentPane">
-            <Suspense fallback={<div>Loading...</div>}>
+            <Suspense fallback={<DEFAULTS.Loader />}>
                 <Panel/>
             </Suspense>
         </div>
