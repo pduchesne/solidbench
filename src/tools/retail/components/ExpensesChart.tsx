@@ -1,10 +1,9 @@
 import {useContext, useEffect, useMemo} from "react";
 import {AppContext} from "../../../appContext";
 import * as React from "react";
-import {EChartsOption} from "echarts";
-import ReactEcharts from "echarts-for-react";
 import {ReceiptWithRetailer} from "../model";
 import {useNavigate} from "react-router";
+import ReactEcharts, {EChartsOption } from "../../../ui/echarts";
 
 const AVG_SPAN_WEEKS = 4;
 const AVG_SPAN = AVG_SPAN_WEEKS * 7 * 24 * 60 * 60 * 1000;

@@ -1,13 +1,11 @@
 import {ItemWithHistory, Receipt} from "../model";
 import {useContext, useEffect, useMemo, useRef} from "react";
 import {AppContext} from "../../../appContext";
-import {EChartsOption} from "echarts";
-import ReactEcharts from "echarts-for-react";
 import * as React from "react";
 import {FrequencyBar} from "./Overview";
 import {Route, Routes, useLocation, useParams} from "react-router-dom";
 import {useNavigate} from "react-router";
-import {OptionSourceData} from "echarts/types/src/util/types";
+import ReactEcharts, { EChartsOption, OptionSourceData } from "../../../ui/echarts";
 
 export const ItemsTableRoutes = (props: { receipts: Array<Receipt> }) => {
     return <Routes>

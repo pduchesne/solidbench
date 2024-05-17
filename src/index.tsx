@@ -15,14 +15,6 @@ import {DashboardRoutes} from "./tools/personal-dashboard";
 import classNames from "classnames";
 import {AppThemeProvider} from "./theme";
 
-//TODO move this somewhere where it can be lazy-loaded
-
-// register the echarts dark theme for use throughout the app
-import echartsDarkTheme from './echarts_dark.json';
-import {registerTheme} from 'echarts';
-registerTheme('dark', echartsDarkTheme)
-
-
 const routes = [
     {
         component: DashboardRoutes,
