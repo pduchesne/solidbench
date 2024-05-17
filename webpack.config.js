@@ -77,6 +77,7 @@ module.exports = {
             // these are necessary to allow yarn linking of local packages
             // cf https://github.com/facebook/react/issues/14257
             react: path.resolve(__dirname, 'node_modules/react'),
+            rdflib: path.resolve(__dirname, 'node_modules/rdflib'),
             'react-dom': path.resolve(__dirname, 'node_modules/react-dom'),
             stream: path.resolve(__dirname, 'node_modules/stream-browserify'),
             'monaco-editor': path.resolve(__dirname, 'node_modules/monaco-editor'),
@@ -169,18 +170,20 @@ module.exports = {
                 }
             ]
         },
-        https: true,
+
+        server: 'https',
 
 
-        proxy: {
-            "/proxy": {
+        proxy: [
+            {
+                context: ['/proxy'],
                 //"changeOrigin": true,
                 //"cookieDomainRewrite": "localhost",
                 "target": 'https://demo.highlatitud.es',
                 secure: false,
                 changeOrigin: true
             }
-        },
+        ],
         client: {
             overlay: {
                 // Ignore ResizeObserver errors
