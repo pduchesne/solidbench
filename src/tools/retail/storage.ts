@@ -1,10 +1,12 @@
 import {PodStorage} from "@hilats/solid-utils";
-import {Receipt} from "./model";
-import {_404undefined} from "@hilats/utils";
+import {_404undefined, WELL_KNOWN_TYPES} from "@hilats/utils";
 import {createLdoDataset, parseRdf} from "@ldo/ldo";
 import {ReceiptShapeType} from "../../ldo/retail.shapeTypes";
 import {datasetToString} from "@ldo/rdf-utils";
+import {retail} from "@hilats/data-modules";
 
+//import {Receipt} from "./model";
+type Receipt = retail.Receipt;
 
 export const PATH_PREFERENCES = 'preferences.json';
 export const PATH_RETAILER_PREFIX = 'retailers/';
@@ -16,7 +18,7 @@ export type Preferences = any;
 
 export type ReceiptsMap = Record<string, Receipt[]>;
 
-const USE_LDO = false;
+const STORAGE : 'LDO' | 'JSONLD' | 'JSON' = 'JSONLD';
 
 export class RetailStorage extends PodStorage {
 
@@ -55,7 +57,7 @@ export class RetailStorage extends PodStorage {
     }
 
     async fetchHistory(retailer: string) {
-        if (USE_LDO) {
+        if (STORAGE == 'LDO') {
             const ttl = await this.fetchFile(PATH_RETAILER_PREFIX + retailer + '/' + PATH_RETAILER_HISTORY.replace('.json', '.ttl')).catch(_404undefined).then(r => r?.text())
 
             if (ttl) {
@@ -69,6 +71,13 @@ export class RetailStorage extends PodStorage {
             } else {
                 return undefined;
             }
+        } else if (STORAGE == "JSONLD") {
+            const uri = this.getResourceUri(PATH_RETAILER_PREFIX + retailer + '/' + PATH_RETAILER_HISTORY.replace('.json', '.nq'));
+            const ttl = await this.fetchFile(uri).catch(_404undefined).then(r => r?.text())
+
+            const receipts = ttl ? await retail.DM_RETAIL.parseTriples([ttl], uri) : undefined;
+
+            return receipts;
         } else {
             return this.fetchJSON<Receipt[]>(PATH_RETAILER_PREFIX + retailer + '/' + PATH_RETAILER_HISTORY).catch(_404undefined)
         }
@@ -76,7 +85,7 @@ export class RetailStorage extends PodStorage {
 
     async saveHistory(retailer: string, receipts: Receipt[]) {
 
-        if (USE_LDO) {
+        if (STORAGE == 'LDO') {
             const ldoDataset = createLdoDataset();
             const ldoReceiptBuilder = ldoDataset.usingType(ReceiptShapeType);
 
@@ -84,7 +93,12 @@ export class RetailStorage extends PodStorage {
 
             const ttl = datasetToString(ldoDataset, {});
 
-            return this.putFile(PATH_RETAILER_PREFIX + retailer + '/' + PATH_RETAILER_HISTORY.replace('.json', '.ttl'), new Blob([ttl], {type: 'text/turtle'})).catch(_404undefined);
+            return this.putFile(PATH_RETAILER_PREFIX + retailer + '/' + PATH_RETAILER_HISTORY.replace('.json', '.ttl'), new Blob([ttl], {type: WELL_KNOWN_TYPES.ttl})).catch(_404undefined);
+
+        } else if (STORAGE == "JSONLD") {
+            const ttl = await retail.DM_RETAIL.serialize(receipts, WELL_KNOWN_TYPES.nq)
+
+            return this.putFile(PATH_RETAILER_PREFIX + retailer + '/' + PATH_RETAILER_HISTORY.replace('.json', '.nq'), new Blob([ttl], {type: WELL_KNOWN_TYPES.ttl})).catch(_404undefined);
 
         } else {
             return this.putJSON(PATH_RETAILER_PREFIX + retailer + '/' + PATH_RETAILER_HISTORY, receipts).catch(_404undefined);
