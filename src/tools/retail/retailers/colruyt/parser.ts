@@ -172,6 +172,9 @@ function parseReceipt(textItems: Array<TextItem>, startOffset: number): [Receipt
 
         assert(textItems[++currentOffset].str.toLowerCase().startsWith('total'), "Unexpected cell: "+textItems[currentOffset].str);
         receipt.totalAmount = parseLocaleNumber(textItems[currentOffset].str.split(':').pop()!);
+
+        // receipt IDs may be repeated - let's prepend the day
+        receipt.receiptId = new Date(receipt.date).toISOString().split('T')[0].replaceAll('-', '')+'-'+receipt.receiptId
     } catch (err) {
         console.warn(err);
     }
