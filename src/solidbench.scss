@@ -496,22 +496,33 @@ svg {
             align-content: baseline;
 
             .resource {
+              @extend .vFlow;
               text-align: center;
               height: 110px;
               padding: 3px;
 
+
               svg {
+                flex: none;
                 font-size: var(--resource-icon-size);
                 display: block;
               }
 
-              div {
-                font-size: 15px;
+              .resource-name {
+                font-size: 80%;
                 max-width: var(--resource-icon-size);
                 overflow: hidden;
                 text-overflow: ellipsis;
                 word-break: break-all;
-                height: 30px;
+
+                display: -webkit-box;
+                -webkit-line-clamp: 2; /* max line number */
+                -webkit-box-orient: vertical;
+              }
+
+              &:hover>.resource-name {
+                overflow: visible;
+                -webkit-line-clamp: inherit;
               }
             }
 

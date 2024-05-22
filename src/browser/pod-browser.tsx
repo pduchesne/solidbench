@@ -387,7 +387,7 @@ export const ContainerViewer = (props: ResourceViewerProps & {
                                          onDoubleClick={() => props.onNavigateToResource(res)}
                                          className={classNames('resource', {selected: selected == res})}>
                                         {res.endsWith('/') ? <FolderIcon/> : <DescriptionIcon/>}
-                                        <div>{getResourceName(res)}</div>
+                                        <div className="resource-name">{getResourceName(res)}</div>
                                     </div>)}
                                 <div className="container-drag-hint">Drag and drop files here to upload</div>
                             </div>
