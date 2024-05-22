@@ -71,7 +71,7 @@ module.exports = {
             "crypto": require.resolve("crypto-browserify"),
             //stream: require.resolve('readable-stream'),
             "buffer": require.resolve("buffer"),
-
+            'process/browser': require.resolve('process/browser')
         },
         alias: {
             // these are necessary to allow yarn linking of local packages
@@ -81,6 +81,7 @@ module.exports = {
             'react-dom': path.resolve(__dirname, 'node_modules/react-dom'),
             stream: path.resolve(__dirname, 'node_modules/stream-browserify'),
             'monaco-editor': path.resolve(__dirname, 'node_modules/monaco-editor'),
+            process: "process/browser"
 
 
             /*
@@ -208,6 +209,7 @@ module.exports = {
     plugins: [
         new webpack.ProvidePlugin({
             Buffer: ['buffer', 'Buffer'],
+            process: 'process/browser'
         }),
         htmlPlugin,
         definePlugin,

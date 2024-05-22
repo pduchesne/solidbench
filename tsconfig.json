@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "module": "esnext",
+        "module": "ESNext",
         "target": "es2021",
         "esModuleInterop": true,
         "lib": ["es2021", "dom", "dom.iterable"],
@@ -9,7 +9,7 @@
         "sourceMap": true,
 
         "jsx": "react",
-        "moduleResolution": "node",
+        "moduleResolution": "Node",
         "forceConsistentCasingInFileNames": true,
         "noImplicitReturns": true,
         "noImplicitThis": true,
@@ -25,9 +25,10 @@
         "resolveJsonModule": true,
         "skipLibCheck": true,
         //"typeRoots": [ "./types", "./node_modules/@types"]
-
+        "allowJs": true,
         "composite": true,
         "incremental": true,
+        "types": ["node", "jest"],
 
         "outDir": "dist/lib",
         "declarationDir": "dist/types",

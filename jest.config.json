@@ -1,0 +1,28 @@
+{
+  //"preset": "ts-jest/presets/default-esm",
+  //"testEnvironment": "node",
+  "moduleNameMapper": {
+    "^@inrupt/solid-client/dist/acp/util/getAgentAccessAll$": "<rootDir>/node_modules/@inrupt/solid-client/dist/acp/util/getAgentAccessAll",
+    "^(\\.{1,2}/.*)\\.js$": "$1"
+  },
+  "extensionsToTreatAsEsm": [".ts"],
+  "globals": {
+    "ts-jest": {
+      "useESM": true
+    }
+  },
+  "transformIgnorePatterns": [
+    "<rootDir>/node_modules/(?!(@inrupt)/)",
+    "\\.pnp\\.[^\\\/]+$"
+    //"/node_modules/@inrupt/solid-client"
+    //"<rootDir>/node_modules/@inrupt/solid-client/dist/acp/util/getAgentAccessAll"
+  ],
+  "transform": {
+    "^.+\\.(mt|t|cj|j)s$": [
+      "ts-jest",
+      {
+        "useESM": true
+      }
+    ]
+  }
+}
