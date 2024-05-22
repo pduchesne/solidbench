@@ -20,7 +20,7 @@ function parseRdf(str: string, base: string) {
     return store;
 }
 
-export const MonacoEditor = (props: {theme?: string, language: string, content: string, uri?: string}) => {
+export const MonacoEditor = (props: {theme?: string, language: string, content: string, uri?: string, onChange?: (content: string | undefined) => void}) => {
 
     const [editor, setEditor] = useState<any>();
 
@@ -52,6 +52,8 @@ export const MonacoEditor = (props: {theme?: string, language: string, content: 
                 const model = editor.getModel();
                 model.rdfGraph = rdfGraph;
             }
+
+            props.onChange && props.onChange(value);
         }}
         //defaultValue="// some comment"
         //onChange={props.}

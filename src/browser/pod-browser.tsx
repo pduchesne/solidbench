@@ -8,7 +8,7 @@ import {
     getContentType,
     getResourceInfo,
     getSourceUrl,
-    isRawData, overwriteFile,
+    overwriteFile,
     WithResourceInfo,
     WithServerResourceInfo
 } from "@inrupt/solid-client";
@@ -33,10 +33,10 @@ import {useNavigate} from "react-router";
 import {Navigate, Route, Routes, useParams} from "react-router-dom";
 import {PodOverview} from "./overview";
 import {ModalComponent, useModal} from "../ui/modal";
-import {GenericViewer} from "./viewers/GenericViewer";
-import {GenericEditor} from "./viewers/GenericEditor";
+import {getViewer, guessContentType} from "./viewers/GenericViewer";
+import {getEditor} from "./viewers/GenericEditor";
 import Dropzone from "react-dropzone";
-import {ABSURL_REGEX, assert, getParentUrl, WELL_KNOWN_TYPES} from "@hilats/utils";
+import {ABSURL_REGEX, assert, getParentUrl, MIME_REGISTRY, WELL_KNOWN_TYPES} from "@hilats/utils";
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import Markdown from "react-markdown";
 import {useSession} from "@inrupt/solid-ui-react";
@@ -120,12 +120,18 @@ export const CreateResourceDialog: ModalComponent<{ resourceName: string }> = (p
     </div>
 }
 
+export type ResourceAction = {
+    title: string,
+    icon: React.ElementType,
+    onClick: (uri: string) => Promise<void>
+}
+
+
 export const PodBrowser = (props: { rootUrl?: string, fetch?: typeof fetch, displayMetadata?: boolean }) => {
 
     const solidSession = useSession();
     const fetch = props.fetch || solidSession.fetch;
 
-    const [editionMode, setEditionMode] = useState(false);
     const [selectedResource, setSelectedResource] = useState<string | undefined>();
     const params = useParams();
     const navigate = useNavigate();
@@ -155,7 +161,8 @@ export const PodBrowser = (props: { rootUrl?: string, fetch?: typeof fetch, disp
     const addResourceCb = useCallback(async (containerUri: string) => {
         const onOk = (async (values: { resourceName: string }) => {
             const newUri = new URL(sanitizeResourceName(values.resourceName), containerUri).toString();
-            await overwriteFile(newUri, new Blob([""]), {fetch});
+            const type = MIME_REGISTRY.guessMimeType(newUri);
+            await overwriteFile(newUri, new Blob([""]), {fetch, contentType: type});
 
             // let's open the new resource
             navigateToResource(newUri);
@@ -221,6 +228,8 @@ export const PodBrowser = (props: { rootUrl?: string, fetch?: typeof fetch, disp
         }
     }, [podUrl, RES_PATH, ROOT])
 
+    const [resourceActions, setResourceActions] = useState<ResourceAction[]>([]);
+
     useEffect(() => {
         if (currentUrl.endsWith('/'))
             setSelectedResource(undefined);
@@ -230,7 +239,7 @@ export const PodBrowser = (props: { rootUrl?: string, fetch?: typeof fetch, disp
 
     const anchorClickCallback = useCallback((e: React.MouseEvent) => {
         //console.log(e.type + " : " + e.currentTarget.tagName);
-        if (e.target instanceof HTMLAnchorElement && e.target.href) {
+        if (e.target instanceof HTMLAnchorElement && e.target.href && !e.target.target) {
             e.preventDefault();
             const relUri = e.target.href.replace(e.target.baseURI, './')
             navigateToResource(new URL(relUri, currentUrl).toString());
@@ -274,15 +283,15 @@ export const PodBrowser = (props: { rootUrl?: string, fetch?: typeof fetch, disp
                                              rootUrl={ROOT == '-' ? podUrl : undefined}
                                              className='filebreadcrumb'/>
                             <div className='file_actions'>
-                                {selectedResource ? <DeleteIcon titleAccess="Delete Resource"
-                                                                onClick={() => deleteResourceCb(selectedResource)}/> : null}
+                                {(!isFolder || selectedResource) ? <DeleteIcon titleAccess="Delete Resource"
+                                                                onClick={() => deleteResourceCb(isFolder ? selectedResource! : currentUrl)}/> : null}
                                 {isFolder ? <>
                                     <CreateNewFolderIcon titleAccess="Create Folder"
                                                          onClick={() => addContainerCb(currentUrl)}/>
                                     <NoteAddIcon titleAccess="Create File" onClick={() => addResourceCb(currentUrl)}/>
-                                </> : <>
-                                    <EditIcon onClick={() => setEditionMode(!editionMode)}/>
-                                </>}
+                                </> : null}
+                                {resourceActions.map(action =>
+                                    <action.icon onClick={() => action.onClick(currentUrl)} titleAccess={action.title} />)}
                                 <InfoIcon titleAccess="Display Metadata" sx={{verticalAlign: 'sub', fontSize: '110%'}}
                                           onClick={() => setDisplayMetadata(!displayMetadata)}/>
                             </div>
@@ -298,7 +307,9 @@ export const PodBrowser = (props: { rootUrl?: string, fetch?: typeof fetch, disp
                                             <ContainerViewer uri={currentUrl} fetch={fetch}
                                                              onNavigateToResource={navigateToResource}
                                                              onSelectResource={setSelectedResource}/> :
-                                            <FileViewer uri={currentUrl} fetch={fetch} edition={editionMode}/>
+                                            <FileViewerWithFetch uri={currentUrl}
+                                                                 fetch={fetch}
+                                                                 setResourceActions={setResourceActions}/>
                                     }
 
                                 </div>
@@ -314,29 +325,76 @@ export const PodBrowser = (props: { rootUrl?: string, fetch?: typeof fetch, disp
 };
 
 
-export const FileViewer = (props: { uri: string, fetch?: typeof fetch, edition?: boolean }) => {
+export const FileViewerWithFetch = (props: { uri: string, fetch?: typeof fetch, edition?: boolean, setResourceActions?: (actions: ResourceAction[]) => void }) => {
+
+    const {fetch, ...otherProps} = props;
+
     const currentFile = useSolidFile(
         props.uri,
-        props.fetch);
+        fetch);
 
     const onSave = useCallback((content: string | Blob) => currentFile?.saveRawContent(content), [currentFile]);
 
     return <PromiseStateContainer promiseState={currentFile.file$}>
-        {(blob) => {
-            if (blob && (blob.type == WELL_KNOWN_TYPES.ttl || blob.type == WELL_KNOWN_TYPES.nq)) {
-                retail.DM_RETAIL.matches(blob).then(result => {
-                    if (result.matches.length)
-                        toast("This resource can be best viewed in your retail dashboard");
-                })
-            }
-            return blob ?
-                (props.edition ? <GenericEditor content={blob} onSave={onSave} uri={props.uri}/> : <GenericViewer content={blob} uri={props.uri}/>) :
+        {(blob) =>  blob ?
+                <FileViewer {...otherProps} content={blob} onSave={onSave} /> :
                 <div>
                     Resource not found
-                </div>}
+                </div>
         }
     </PromiseStateContainer>
 }
+
+
+export const FileViewer = (props: { uri: string, content: Blob | string, edition?: boolean, onSave: (content: string | Blob) => Promise<void>, setResourceActions?: (actions: ResourceAction[]) => void }) => {
+
+    const {edition, onSave, ...otherProps} = props;
+
+    const [editMode, setEditMode] = useState(edition);
+
+    const [Viewer, Editor, contentType] = useMemo(() => {
+        const contentType = guessContentType(props.content, undefined, props.uri);
+
+        const [viewer] = getViewer(undefined, contentType, undefined);
+        const [editor] = getEditor(undefined, contentType, undefined);
+
+        if (editor) {
+            if(viewer != editor) {
+                props.setResourceActions && props.setResourceActions([{
+                    icon: EditIcon,
+                    title: "Edit",
+                    onClick: async () => {
+                        setEditMode(prevState => !prevState);
+                    }
+                }]);
+            } else {
+                if (edition == undefined) setEditMode(true);
+            }
+        }
+
+        return [
+            viewer,
+            editor,
+            contentType
+        ];
+    }, [props.content, props.uri])
+
+    useEffect(() => {
+        if ((contentType == WELL_KNOWN_TYPES.ttl || contentType == WELL_KNOWN_TYPES.nq)) {
+            retail.DM_RETAIL.matches(props.content).then(result => {
+                if (result.matches.length)
+                    toast("This resource can be best viewed in your retail dashboard");
+            })
+        }
+    }, [contentType]);
+
+    return editMode ?
+        <Editor {...otherProps} type={contentType} onSave={onSave} /> :
+        <Viewer {...otherProps} type={contentType} />
+}
+
+
+
 
 export type ResourceViewerProps = {
     uri: string,
@@ -469,12 +527,10 @@ export const ResourceMetadata = (props: { resourceUrl: string, resource?: string
 
 
 export const ResourceInfo = (props: { resourceInfo: WithResourceInfo }) => {
-
     return (
         <div>
-            <h3>Resource Info</h3>
-            <div>{getSourceUrl(props.resourceInfo)}</div>
-            <div>{isRawData(props.resourceInfo)}</div>
+            <h4>Resource Info</h4>
+            <div><a target="_blank" href={getSourceUrl(props.resourceInfo)}>{getSourceUrl(props.resourceInfo)}</a></div>
             <div>{getContentType(props.resourceInfo)}</div>
         </div>
     );

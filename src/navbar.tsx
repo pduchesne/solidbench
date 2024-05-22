@@ -14,6 +14,7 @@ import IconButton from "@mui/material/IconButton/IconButton";
 import AppBar from "@mui/material/AppBar/AppBar";
 import Toolbar from "@mui/material/Toolbar/Toolbar";
 import Box from "@mui/material/Box/Box";
+import {useNavigate} from "react-router";
 
 export const ToolsMenu = () => {
     const popupState = usePopupState({variant: 'popover'})
@@ -64,11 +65,13 @@ const ProfileMenu = () => {
 export const AppNavBar = memo(() => {
     const {session} = useSession();
 
+    const navigate = useNavigate();
+
     return (
 
         <AppBar position="static" className='navbar'>
             <Toolbar disableGutters>
-                <img src="/images/solidbench-256.png" className="app-logo"/>
+                <img src="/images/solidbench-256.png" className="app-logo" onClick={() => navigate('/')}/>
 
                 <Box sx={{flexGrow: 1, minWidth: '5px'}} />
                 {/*

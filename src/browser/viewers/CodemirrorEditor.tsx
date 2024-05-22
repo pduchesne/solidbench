@@ -17,7 +17,7 @@ export const CodemirrorEditor: ContentEditor = (props) => {
                 lineNumbers: true
             }}
             onChange={((editor, data, value) => {
-                props.onSave(value);
+                props.onSave && props.onSave(value);
             })}
         />}
     </PromiseStateContainer>

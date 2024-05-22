@@ -1,10 +1,10 @@
 import {WELL_KNOWN_TYPES} from "@hilats/utils";
-import React from "react";
+import React, {useMemo} from "react";
 import {ContentViewerProps, guessContentType} from "./GenericViewer";
 import CodemirrorEditor from "./CodemirrorEditor";
 import MonacoEditor from "./MonacoEditor";
 
-export type ContentEditorProps = ContentViewerProps & {onSave: (content: Blob | string) => Promise<void>};
+export type ContentEditorProps = ContentViewerProps & {onSave?: (content: Blob | string) => Promise<void>};
 export type ContentEditor = React.ComponentType<ContentEditorProps>;
 
 const EDITORS: Record<string, ContentEditor> = {
@@ -15,10 +15,18 @@ const EDITORS: Record<string, ContentEditor> = {
 
 const DEFAULT_EDITOR = CodemirrorEditor;
 
-export const GenericEditor: ContentEditor = (props) => {
-    let contentType = guessContentType(props.content, props.type, props.uri);
+export function getEditor(uri?: string, type?: string, content?: string | Blob): [ContentEditor, string | undefined] {
+    let contentType = guessContentType(content, type, uri);
 
-    const Editor = (contentType && EDITORS[contentType]) || DEFAULT_EDITOR;
+    return [
+        (contentType && EDITORS[contentType]) || DEFAULT_EDITOR,
+        contentType
+        ];
+}
+
+export const GenericEditor: ContentEditor = (props) => {
+
+    const [Editor, contentType] = useMemo(()=> getEditor(props.uri, props.type, props.content), [props.content, props.type, props.uri]);
 
     return <Editor {...props} type={contentType}/>;
 }
