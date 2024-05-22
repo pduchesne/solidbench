@@ -8,6 +8,8 @@ import {useSession} from "@inrupt/solid-ui-react";
 import {lazy, LazyExoticComponent, Suspense, useContext} from "react";
 import {AppContext} from "../../appContext";
 import { DEFAULTS } from "@hilats/react-utils";
+import { ToastContainer } from 'react-toastify';
+
 
 export const PANELS: Record<string, LazyExoticComponent<any>> = {
     podbrowser: lazy(() => import('../../browser/pod-browser')),
@@ -48,6 +50,7 @@ export const PersonalDashboard = (props: {selectedPanel?: string }) => {
             <Suspense fallback={<DEFAULTS.Loader />}>
                 <Panel/>
             </Suspense>
+            <ToastContainer/>
         </div>
 
     </div>

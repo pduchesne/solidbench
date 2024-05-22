@@ -36,7 +36,7 @@ import {ModalComponent, useModal} from "../ui/modal";
 import {GenericViewer} from "./viewers/GenericViewer";
 import {GenericEditor} from "./viewers/GenericEditor";
 import Dropzone from "react-dropzone";
-import {ABSURL_REGEX, assert, getParentUrl} from "@hilats/utils";
+import {ABSURL_REGEX, assert, getParentUrl, WELL_KNOWN_TYPES} from "@hilats/utils";
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import Markdown from "react-markdown";
 import {useSession} from "@inrupt/solid-ui-react";
@@ -44,6 +44,8 @@ import Breadcrumbs from "@mui/material/Breadcrumbs/Breadcrumbs";
 import Link from "@mui/material/Link/Link";
 import Input from "@mui/material/Input/Input";
 
+import {retail} from "@hilats/data-modules";
+import {toast} from "react-toastify";
 
 export const PodBrowserPanel = () => {
 
@@ -320,11 +322,19 @@ export const FileViewer = (props: { uri: string, fetch?: typeof fetch, edition?:
     const onSave = useCallback((content: string | Blob) => currentFile?.saveRawContent(content), [currentFile]);
 
     return <PromiseStateContainer promiseState={currentFile.file$}>
-        {(blob) => blob ?
-            (props.edition ? <GenericEditor content={blob} onSave={onSave} uri={props.uri}/> : <GenericViewer content={blob} uri={props.uri}/>) :
-            <div>
-                Resource not found
-            </div>}
+        {(blob) => {
+            if (blob && (blob.type == WELL_KNOWN_TYPES.ttl || blob.type == WELL_KNOWN_TYPES.nq)) {
+                retail.DM_RETAIL.matches(blob).then(result => {
+                    if (result.matches.length)
+                        toast("This resource can be best viewed in your retail dashboard");
+                })
+            }
+            return blob ?
+                (props.edition ? <GenericEditor content={blob} onSave={onSave} uri={props.uri}/> : <GenericViewer content={blob} uri={props.uri}/>) :
+                <div>
+                    Resource not found
+                </div>}
+        }
     </PromiseStateContainer>
 }
 
@@ -353,6 +363,11 @@ export const ContainerViewer = (props: ResourceViewerProps & {
             const childResources = getContainedResourceUrlAll(container);
             const readme = childResources.find(r => r.toLowerCase().endsWith('readme.md') || r.toLowerCase().endsWith('readme.txt'))
             return <div className="container-viewer">
+                {readme ?
+                    <div className="container-readme">
+                        <div className="container-readme-quicklink" title="See README file"><a onClick={() => props.onNavigateToResource(readme)}><OpenInNewIcon/></a></div>
+                        <ReadmeViewer uri={readme} fetch={props.fetch}/>
+                    </div> : null }
                 <Dropzone noClick={true} onDrop={acceptedFiles => acceptedFiles.forEach(f => containerAccessor.saveFile(f.name, f))}>
                     {({getRootProps, getInputProps}) => (
                         <div {...getRootProps()} className="container-resources">
@@ -374,15 +389,11 @@ export const ContainerViewer = (props: ResourceViewerProps & {
                                         {res.endsWith('/') ? <FolderIcon/> : <DescriptionIcon/>}
                                         <div>{getResourceName(res)}</div>
                                     </div>)}
+                                <div className="container-drag-hint">Drag and drop files here to upload</div>
                             </div>
                         </div>)
                     }
                 </Dropzone>
-                {readme ?
-                    <div className="container-readme">
-                        <div className="container-readme-quicklink" title="See README file"><a onClick={() => props.onNavigateToResource(readme)}><OpenInNewIcon/></a></div>
-                        <ReadmeViewer uri={readme} fetch={props.fetch}/>
-                    </div> : null }
             </div>
             }
         }

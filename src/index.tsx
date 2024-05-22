@@ -1,4 +1,6 @@
-import './wdyr';
+//import './wdyr';
+
+import 'react-toastify/dist/ReactToastify.css';
 
 import * as React from 'react';
 import {memo, useCallback} from 'react';
