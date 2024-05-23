@@ -416,6 +416,10 @@ svg {
           border: 1px solid var(--theme-back2);
           margin: 3px;
           padding: 0px 3px;
+
+          &:hover {
+            box-shadow: inset 0 0 5px var(--theme-shadow);
+          }
         }
 
         .file_actions {

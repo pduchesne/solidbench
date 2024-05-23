@@ -48,7 +48,7 @@ export const MonacoEditor: ContentEditor = (props) => {
 
     return <PromiseStateContainer promiseState={contentString$}>
         {(content) =>
-            <Suspense fallback={<DEFAULTS.Loader />}>
+            <Suspense fallback={<DEFAULTS.Loader message="Loading UI..."/>}>
                 <MonacoComponent
                     content={content}
                     uri={props.uri}

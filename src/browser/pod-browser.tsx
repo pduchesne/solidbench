@@ -59,6 +59,8 @@ export const PodBrowserPanel = () => {
  */
 function FileBreadcrumbs(props: { rootUrl?: string, path: string, onSelect: (url: string) => void } & CommonProps) {
 
+    const [editMode, setEditMode] = useState(false);
+
     const {rootUrl, path, onSelect, ...commonProps} = props;
 
     // compute the root and the relative path of the file
@@ -70,32 +72,47 @@ function FileBreadcrumbs(props: { rootUrl?: string, path: string, onSelect: (url
 
     const pathElements = relPath.split('/');
 
-    // create the list of all subpaths
-    const subpaths = pathElements.reduce((acc: string[], path: string, idx, arr) => {
-        if (path) acc.push(acc[acc.length - 1] + path + ((idx < arr.length - 1) ? '/' : ''));
+    // create a list of [pathLabel, path] for each subpath
+    const subpaths = pathElements.reduce<[string,string][]>((acc, path: string, idx, arr) => {
+        if (path) acc.push( [
+            path,
+            acc[acc.length - 1][1] + path + ((idx < arr.length - 1) ? '/' : '')
+        ] );
         return acc;
-    }, [computedRoot]);
+    }, [[computedRoot.endsWith('/') ? computedRoot.substring(0, computedRoot.length-1) : computedRoot, computedRoot]]);
 
     return (
-        <Breadcrumbs aria-label="breadcrumb" {...commonProps}>
-            <Link
-                title={computedRoot}
-                key={computedRoot}
-                underline="hover"
-                color="inherit"
-                onClick={() => props.onSelect(computedRoot)}>{props.rootUrl ? <HomeIcon/> : <><GlobeIcon />{computedRoot}</>}</Link>
+        editMode?
+            <Input defaultValue={props.path}
+                   onBlur={(e) => {
+                       props.onSelect(e.target.value);
+                       setEditMode(false)
+                   } }/> :
+            <Breadcrumbs aria-label="breadcrumb" {...commonProps} onClick={() => setEditMode(true)}>
+                <Link
+                    title={computedRoot}
+                    key={computedRoot}
+                    underline="hover"
+                    color="inherit"
+                    onClick={() => props.onSelect(subpaths[0][1])}>
+                    {props.rootUrl ?
+                        <HomeIcon style={{marginRight: '3px'}}/> :
+                        <><GlobeIcon style={{marginRight: '3px'}}/>{subpaths[0][0]}</>
+                    }
+                </Link>
 
-            {subpaths.slice(1).map((path) => (
-                    <Link
-                        key={path}
-                        underline="hover"
-                        color="inherit"
-                        onClick={() => props.onSelect(path)}>{path.split('/').filter(e => e).pop()}</Link>
+                {subpaths.slice(1).map(([label, path]) => (
+                        <Link
+                            title={path}
+                            key={path}
+                            underline="hover"
+                            color="inherit"
+                            onClick={() => props.onSelect(path)}>{label}</Link>
+                    )
                 )
-            )
-            }
+                }
 
-        </Breadcrumbs>
+            </Breadcrumbs>
     );
 }
 

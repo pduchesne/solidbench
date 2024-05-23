@@ -47,7 +47,7 @@ export const PersonalDashboard = (props: {selectedPanel?: string }) => {
     return <div className="hFlow">
         <Sidenav selectPanel={(panelId: string) => {navigate("/personal-dashboard/"+panelId);}} selected={panelId}/>
         <div className="contentPane">
-            <Suspense fallback={<DEFAULTS.Loader />}>
+            <Suspense fallback={<DEFAULTS.Loader message="Loading UI..."/>}>
                 <Panel/>
             </Suspense>
             <ToastContainer/>
