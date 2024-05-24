@@ -44,7 +44,7 @@ import Breadcrumbs from "@mui/material/Breadcrumbs/Breadcrumbs";
 import Link from "@mui/material/Link/Link";
 import Input from "@mui/material/Input/Input";
 
-import {retail} from "@hilats/data-modules";
+import {MODULE_REGISTRY, retail} from "@hilats/data-modules";
 import {toast} from "react-toastify";
 
 export const PodBrowserPanel = () => {
@@ -88,13 +88,13 @@ function FileBreadcrumbs(props: { rootUrl?: string, path: string, onSelect: (url
                        props.onSelect(e.target.value);
                        setEditMode(false)
                    } }/> :
-            <Breadcrumbs aria-label="breadcrumb" {...commonProps} onClick={() => setEditMode(true)}>
+            <Breadcrumbs aria-label="breadcrumb" {...commonProps} onDoubleClick={() => setEditMode(true)}>
                 <Link
                     title={computedRoot}
                     key={computedRoot}
                     underline="hover"
                     color="inherit"
-                    onClick={() => props.onSelect(subpaths[0][1])}>
+                    onClick={(e) => {props.onSelect(subpaths[0][1]); e.stopPropagation();} }>
                     {props.rootUrl ?
                         <HomeIcon style={{marginRight: '3px'}}/> :
                         <><GlobeIcon style={{marginRight: '3px'}}/>{subpaths[0][0]}</>
@@ -397,11 +397,14 @@ export const FileViewer = (props: { uri: string, content: Blob | string, edition
     }, [props.content, props.uri])
 
     useEffect(() => {
-        if ((contentType == WELL_KNOWN_TYPES.ttl || contentType == WELL_KNOWN_TYPES.nq)) {
-            retail.DM_RETAIL.matches(props.content).then(result => {
-                if (result.matches.length)
-                    toast("This resource can be best viewed in your retail dashboard");
+        if ((contentType == WELL_KNOWN_TYPES.ttl || contentType == WELL_KNOWN_TYPES.nq || contentType == WELL_KNOWN_TYPES.nt)) {
+            Object.entries(MODULE_REGISTRY.modules).forEach( ([key, module]) => {
+                module.matches(props.content, contentType).then(result => {
+                    if (result.matches.length)
+                        toast("This resource can be best viewed in your " + key + " dashboard");
+                })
             })
+            retail.DM_RETAIL.matches(props.content)
         }
     }, [contentType]);
 
