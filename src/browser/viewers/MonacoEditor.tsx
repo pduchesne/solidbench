@@ -7,6 +7,8 @@ import SaveIcon from '@mui/icons-material/Save';
 import {ResourceAction} from "../pod-browser";
 
 const LANGUAGES: Record<string, string> = {
+    [WELL_KNOWN_TYPES.nq] : 'turtle',
+    [WELL_KNOWN_TYPES.nt] : 'turtle',
     [WELL_KNOWN_TYPES.ttl] : 'turtle',
     [WELL_KNOWN_TYPES.json] : 'json',
     [WELL_KNOWN_TYPES.md] : 'markdown',
