@@ -1,5 +1,5 @@
 import {PodStorage} from "@hilats/solid-utils";
-import {_404undefined, WELL_KNOWN_TYPES} from "@hilats/utils";
+import {_404undefined, MIME_REGISTRY, WELL_KNOWN_TYPES} from "@hilats/utils";
 import {createLdoDataset, parseRdf} from "@ldo/ldo";
 import {ReceiptShapeType} from "../../ldo/retail.shapeTypes";
 import {datasetToString} from "@ldo/rdf-utils";
@@ -75,7 +75,7 @@ export class RetailStorage extends PodStorage {
             const uri = this.getResourceUri(PATH_RETAILER_PREFIX + retailer + '/' + PATH_RETAILER_HISTORY.replace('.json', '.nq'));
             const ttl = await this.fetchFile(uri).catch(_404undefined).then(r => r?.text())
 
-            const receipts = ttl ? await retail.DM_RETAIL.parseTriples([ttl], uri) : undefined;
+            const receipts = ttl ? await retail.DM_RETAIL.parseTriples([ttl], {base: uri}) : undefined;
 
             return receipts;
         } else {
@@ -85,6 +85,9 @@ export class RetailStorage extends PodStorage {
 
     async saveHistory(retailer: string, receipts: Receipt[]) {
 
+        // let's take the absolute URI so we can use it to base the triples
+        let uri = this.getResourceUri(PATH_RETAILER_PREFIX + retailer + '/' + PATH_RETAILER_HISTORY);
+
         if (STORAGE == 'LDO') {
             const ldoDataset = createLdoDataset();
             const ldoReceiptBuilder = ldoDataset.usingType(ReceiptShapeType);
@@ -93,15 +96,19 @@ export class RetailStorage extends PodStorage {
 
             const ttl = datasetToString(ldoDataset, {});
 
-            return this.putFile(PATH_RETAILER_PREFIX + retailer + '/' + PATH_RETAILER_HISTORY.replace('.json', '.ttl'), new Blob([ttl], {type: WELL_KNOWN_TYPES.ttl})).catch(_404undefined);
+            uri = MIME_REGISTRY.substituteExtension(uri, WELL_KNOWN_TYPES.ttl);
+
+            return this.putFile(uri, new Blob([ttl], {type: WELL_KNOWN_TYPES.ttl})).catch(_404undefined);
 
         } else if (STORAGE == "JSONLD") {
-            const ttl = await retail.DM_RETAIL.serialize(receipts, WELL_KNOWN_TYPES.nq)
+            uri = MIME_REGISTRY.substituteExtension(uri, WELL_KNOWN_TYPES.nq);
 
-            return this.putFile(PATH_RETAILER_PREFIX + retailer + '/' + PATH_RETAILER_HISTORY.replace('.json', '.nq'), new Blob([ttl], {type: WELL_KNOWN_TYPES.ttl})).catch(_404undefined);
+            const ttl = await retail.DM_RETAIL.serialize(receipts, {base: uri, contentType: WELL_KNOWN_TYPES.nq})
+
+            return this.putFile(uri, new Blob([ttl], {type: WELL_KNOWN_TYPES.nq})).catch(_404undefined);
 
         } else {
-            return this.putJSON(PATH_RETAILER_PREFIX + retailer + '/' + PATH_RETAILER_HISTORY, receipts).catch(_404undefined);
+            return this.putJSON(uri, receipts).catch(_404undefined);
         }
     }
 
