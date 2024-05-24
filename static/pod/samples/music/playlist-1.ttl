@@ -4,6 +4,7 @@
 @prefix tr: <https://open.spotify.com/track/>.
 
 :001
+    a sdo:MusicPlaylist;
     sdo:description "For example purposes";
     sdo:name "A groovy playlist";
     sdo:track

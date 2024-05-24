@@ -1,12 +1,19 @@
 import React, {useCallback, useState} from "react";
 import {Editor} from "@monaco-editor/react";
-import {registerTurtle} from "@hilats/monaco-language-turtle";
+import {registerTurtle, TOOLTIPS} from "@hilats/monaco-language-turtle";
 import {WELL_KNOWN_TYPES} from "@hilats/utils";
 import * as rdflib from 'rdflib';
 
 import * as monaco from 'monaco-editor';
 import {loader} from "@monaco-editor/react";
+import {MODULE_REGISTRY} from "@hilats/data-modules";
 loader.config({ monaco });
+
+Object.entries(MODULE_REGISTRY.modules).forEach( ([key, module])  => {
+    //@ts-ignore
+    module.tooltipProducers?.length && TOOLTIPS.push(...module.tooltipProducers);
+})
+
 
 function parseRdf(str: string, base: string) {
     const store = rdflib.graph();
