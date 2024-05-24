@@ -1,16 +1,20 @@
-@prefix : <./> .
-@prefix schema: <http://schema.org/> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix : <#>.
+@prefix sdo: <https://schema.org/>.
+@prefix wd: <https://www.wikidata.org/wiki/>.
+@prefix tr: <https://open.spotify.com/track/>.
 
 :001
-    a schema:MusicPlaylist ;
-    schema:name "A Test Playlist"^^xsd:string ;
-    #schema:numTracks 1 ;
-    schema:track [
-          a schema:MusicRecording ;
-          schema:byArtist "Bob Dylan"^^xsd:string ;
-          schema:inAlbum "The Freewheelin' Bob Dylan"^^xsd:string ;
-          schema:name "Blowin' in the Wind"^^xsd:string ;
-          schema:spotifyId "18GiV1BaXzPVYpp9rmOg0E"^^xsd:string ;
-          schema:wikidataId "Q89268524"^^xsd:string ;
-      ].
+    sdo:description "For example purposes";
+    sdo:name "A groovy playlist";
+    sdo:track
+            [
+                sdo:byArtist [ sdo:identifier wd:Q392; sdo:name "Bob Dylan" ];
+                sdo:identifier tr:18GiV1BaXzPVYpp9rmOg0E, wd:Q89268524;
+                sdo:inAlbum
+                        [
+                            sdo:identifier wd:Q11632;
+                            sdo:name "The Freewheelin' Bob Dylan"
+                        ];
+                sdo:name "Blowin' in the Wind"
+            ],
+        [ sdo:identifier tr:7eYYxblNEZKKeTT0HBQbXO; sdo:name "Kozmic Blues" ].
