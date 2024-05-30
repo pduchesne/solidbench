@@ -1,5 +1,5 @@
 import * as React from "react";
-import {FC, useCallback, useContext, useMemo, useState} from "react";
+import { useContext, useMemo, useState} from "react";
 import {GlobalWorkerOptions} from 'pdfjs-dist';
 // @ts-ignore
 import PdfjsWorker from "pdfjs-dist/build/pdf.worker.js";
@@ -8,16 +8,12 @@ GlobalWorkerOptions.workerSrc = PdfjsWorker;
 
 import {TabContext, TabList, TabPanel} from '@mui/lab';
 
-import {Receipt, ReceiptWithRetailer} from "./model";
+import { ReceiptWithRetailer} from "./model";
 import {MemoryReceiptsStorage, PodRetailStorage, ReceiptsStorage} from "./storage";
 import {useSession} from "@inrupt/solid-ui-react";
 import {AppContext} from "../../appContext";
 import {ErrorBoundary, PromiseContainer} from "@hilats/react-utils";
-import {ColruytPanel} from "./retailers/colruyt/ImportPanel";
 import Dropzone from "react-dropzone";
-import classNames from "classnames";
-import {AmazonPanel} from "./retailers/amazon/ImportPanel";
-import {DelhaizePanel} from "./retailers/delhaize/ImportPanel";
 import ExpensesChart from "./components/ExpensesChart";
 import ItemsTable from "./components/ItemsTable";
 import ReceiptsTable from "./components/ReceiptsTable";
@@ -30,28 +26,7 @@ import MenuItem from "@mui/material/MenuItem/MenuItem";
 import Box from "@mui/material/Box/Box";
 import Chip from "@mui/material/Chip/Chip";
 import {usePersistentQueryNavigate} from "../../ui/hooks";
-import {toast} from "react-toastify";
-
-/**
- * Import UI components for specific retailers
- */
-const RETAILERS: Record<string, {
-    label: string,
-    comp: FC<{ blob: Blob, onImport: (receipts: Receipt[]) => void }>
-}> = {
-    colruyt: {
-        label: "Colruyt",
-        comp: ColruytPanel
-    },
-    delhaize: {
-        label: "Delhaize",
-        comp: DelhaizePanel
-    },
-    amazon: {
-        label: "Amazon",
-        comp: AmazonPanel
-    }
-}
+import Import from "./components/Import";
 
 
 export const RetailDashboardRoutes = () => {
@@ -82,39 +57,10 @@ export const RetailDashboard = () => {
         [appContext.podUrl, fetch]);
     //const preferences$ = useMemo(() => retailStorage?.fetchPreferences(), [retailStorage]);
 
-
-    const [upload, setUpload] = useState<{ retailer: string, blob: Blob } | { retailer?: undefined }>({});
-    const UploadComp = upload.retailer && RETAILERS[upload.retailer].comp;
-
-    const importCallback = useCallback((receipts: Receipt[]) => {
-        if (upload.retailer && retailStorage) {
-            const response$ = retailStorage.saveHistory(receipts, upload.retailer);
-            toast.promise(response$, {
-                pending: "Saving receipts data"
-            })
-        }
-
-    }, [retailStorage, upload.retailer]);
-
     return <div className="retail">
-        <div className="hFlow dataproviders">
-            {Object.entries(RETAILERS).map(([retailer, config]) => {
-                return <div key={retailer}
-                            className={classNames('providerCard', {'selected': upload.retailer == retailer})}>
-                    {config.label}
-                    <FileDrop onData={(blob) => setUpload({retailer, blob})}/>
-                </div>
-            })}
-        </div>
-        {UploadComp ?
-            /* *Display retailer importer */
-            <div className="uploader"><UploadComp blob={upload.blob} onImport={importCallback}/></div> :
-
-            /* Display currenty history*/
-            <ErrorBoundary>
-                {retailStorage ? <ShoppingDashboardContainer receiptsStorage={retailStorage}/> : null}
-            </ErrorBoundary>
-        }
+        <ErrorBoundary>
+            {retailStorage ? <ShoppingDashboardContainer receiptsStorage={retailStorage}/> : null}
+        </ErrorBoundary>
     </div>
 }
 
@@ -183,6 +129,8 @@ export const ShoppingDashboard = (props: { receipts: Array<ReceiptWithRetailer>,
                         <Tab label="Receipts" value="receipts"/>
                         <Tab label="Frequent Items" value="frequent"/>
                         <Tab label="Expenses" value="expenses"/>
+                        <div style={{width: '30px'}}></div>
+                        <Tab label="Import" value="import"/>
                     </TabList>
                     <Select
                         sx={{'& .MuiSelect-select': {padding: "5px 6px"}}}
@@ -218,6 +166,7 @@ export const ShoppingDashboard = (props: { receipts: Array<ReceiptWithRetailer>,
                 <TabPanel value="receipts" className='vFlow'><ReceiptsTable receipts={receipts}/></TabPanel>
                 <TabPanel value="frequent" className='vFlow'><ItemsTable receipts={receipts}/></TabPanel>
                 <TabPanel value="expenses" className='vFlow'><ExpensesChart receipts={receipts}/></TabPanel>
+                <TabPanel value="import" className='vFlow'><Import /></TabPanel>
             </TabContext>
         </Box></>
 
