@@ -43,6 +43,7 @@ import {useSession} from "@inrupt/solid-ui-react";
 import Breadcrumbs from "@mui/material/Breadcrumbs/Breadcrumbs";
 import Link from "@mui/material/Link/Link";
 import Input from "@mui/material/Input/Input";
+import {Link as RouterLink} from 'react-router-dom';
 
 import {MODULE_REGISTRY, retail} from "@hilats/data-modules";
 import {toast} from "react-toastify";
@@ -401,7 +402,9 @@ export const FileViewer = (props: { uri: string, content: Blob | string, edition
             Object.entries(MODULE_REGISTRY.modules).forEach( ([key, module]) => {
                 module.matches(props.content, contentType).then(result => {
                     if (result.matches.length)
-                        toast("This resource can be best viewed in your " + key + " dashboard");
+                        toast(() => <div>
+                            This resource can be best viewed in your <RouterLink to={`/personal-dashboard/${key}?input=${encodeURIComponent(props.uri)}`}>{key} dashboard</RouterLink>
+                        </div>);
                 })
             })
             retail.DM_RETAIL.matches(props.content)
