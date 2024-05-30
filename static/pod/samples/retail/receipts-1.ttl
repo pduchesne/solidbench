@@ -1,1229 +1,1130 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
-@prefix ex: <http://example.org/>.
-@prefix delhaize: <https://delhaize.be/receipts/>.
-@prefix colruyt: <https://colruyt.be/receipts/>.
+@prefix sdo: <https://schema.org/>.
+@prefix delhaize: <https://delhaize.be/>.
+@prefix colruyt: <https://colruyt.be/>.
 
-delhaize:2593946071
-    ex:date "2024-02-22T14:18:28.000Z"^^xsd:dateTime;
-    ex:items
+<delhaize:receipts/2593946071>
+    sdo:dateIssued "2024-02-22T14:18:28.000Z"^^xsd:dateTime;
+    sdo:item
             [
-                ex:amount 1.89E0;
-                ex:article
+                sdo:amount 1.89E0;
+                sdo:product
                           [
-                              ex:label "70G GALL PIEMONTAIS MILK";
-                              ex:vendorId "70G GALL PIEMONTAIS MILK"
+                              sdo:name "70G GALL PIEMONTAIS MILK";
+                              sdo:productID "delhaize:product/70G GALL PIEMONTAIS MILK"
                           ];
-                ex:date "2024-02-22T14:18:28.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 1.89E0
+                sdo:orderQuantity 1;
+                sdo:price 1.89E0
             ],
             [
-                ex:amount 3.35E0;
-                ex:article
+                sdo:amount 3.35E0;
+                sdo:product
                           [
-                              ex:label "200G C OR CHOC DESSERT 58";
-                              ex:vendorId "200G C OR CHOC DESSERT 58"
+                              sdo:name "200G C OR CHOC DESSERT 58";
+                              sdo:productID "delhaize:product/200G C OR CHOC DESSERT 58"
                           ];
-                ex:date "2024-02-22T14:18:28.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 3.35E0
+                sdo:orderQuantity 1;
+                sdo:price 3.35E0
             ],
             [
-                ex:amount 3.35E0;
-                ex:article
+                sdo:amount 3.35E0;
+                sdo:product
                           [
-                              ex:label "200G C OR CHOC DESSERT 58";
-                              ex:vendorId "200G C OR CHOC DESSERT 58"
+                              sdo:name "200G C OR CHOC DESSERT 58";
+                              sdo:productID "delhaize:product/200G C OR CHOC DESSERT 58"
                           ];
-                ex:date "2024-02-22T14:18:28.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 3.35E0
+                sdo:orderQuantity 1;
+                sdo:price 3.35E0
             ],
             [
-                ex:amount 3.49E0;
-                ex:article
+                sdo:amount 3.49E0;
+                sdo:product
                           [
-                              ex:label "480G OIKOS BIG POT NATURE";
-                              ex:vendorId "480G OIKOS BIG POT NATURE"
+                              sdo:name "480G OIKOS BIG POT NATURE";
+                              sdo:productID "delhaize:product/480G OIKOS BIG POT NATURE"
                           ];
-                ex:date "2024-02-22T14:18:28.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 3.49E0
+                sdo:orderQuantity 1;
+                sdo:price 3.49E0
             ],
             [
-                ex:amount 3.49E0;
-                ex:article
+                sdo:amount 3.49E0;
+                sdo:product
                           [
-                              ex:label "PERLE DE LAIT COCONUT 4X125G";
-                              ex:vendorId "PERLE DE LAIT COCONUT 4X125G"
+                              sdo:name "PERLE DE LAIT COCONUT 4X125G";
+                              sdo:productID "delhaize:product/PERLE DE LAIT COCONUT 4X125G"
                           ];
-                ex:date "2024-02-22T14:18:28.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 3.49E0
+                sdo:orderQuantity 1;
+                sdo:price 3.49E0
             ],
             [
-                ex:amount 6.65E0;
-                ex:article
+                sdo:amount 6.65E0;
+                sdo:product
                           [
-                              ex:label "500G BAMBOO CRUNCHY BERRY";
-                              ex:vendorId "500G BAMBOO CRUNCHY BERRY"
+                              sdo:name "500G BAMBOO CRUNCHY BERRY";
+                              sdo:productID "delhaize:product/500G BAMBOO CRUNCHY BERRY"
                           ];
-                ex:date "2024-02-22T14:18:28.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 6.65E0
+                sdo:orderQuantity 1;
+                sdo:price 6.65E0
             ];
-    ex:shippingCosts 0;
-    ex:storeId "PROXY SAINT-SEVERIN III";
-    ex:storeName "PROXY SAINT-SEVERIN III";
-    ex:totalAmount 2.222E1 .
+    sdo:shippingCosts 0;
+    sdo:location <delhaize:store/PROXY%20SAINT-SEVERIN%20III>;
+    sdo:amount 2.222E1 .
 
-delhaize:2599816262
-    ex:date "2024-03-02T16:03:49.000Z"^^xsd:dateTime;
-    ex:items
+<delhaize:store/PROXY%20SAINT-SEVERIN%20III>
+    sdo:name "PROXY SAINT-SEVERIN III".
+
+<delhaize:receipts/2599816262>
+    sdo:dateIssued "2024-03-02T16:03:49.000Z"^^xsd:dateTime;
+    sdo:item
             [
-                ex:amount 1.19E0;
-                ex:article
+                sdo:amount 1.19E0;
+                sdo:product
                           [
-                              ex:label "50CL SAN PELLEGRINO";
-                              ex:vendorId "50CL SAN PELLEGRINO"
+                              sdo:name "50CL SAN PELLEGRINO";
+                              sdo:productID "delhaize:product/50CL SAN PELLEGRINO"
                           ];
-                ex:date "2024-03-02T16:03:49.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 1.19E0
+                sdo:orderQuantity 1;
+                sdo:price 1.19E0
             ],
             [
-                ex:amount 1.99E0;
-                ex:article [ ex:label "?"; ex:vendorId "?" ];
-                ex:date "2024-03-02T16:03:49.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 1.99E0
+                sdo:amount 1.99E0;
+                sdo:product [ sdo:name "?"; sdo:productID "delhaize:product/?" ];
+                sdo:orderQuantity 1;
+                sdo:price 1.99E0
             ];
-    ex:shippingCosts 0;
-    ex:storeId "SHOP PONT D AVROY";
-    ex:storeName "SHOP PONT D AVROY";
-    ex:totalAmount 3.18E0 .
+    sdo:shippingCosts 0;
+    sdo:location <delhaize:store/SHOP%20PONT%20D%20AVROY>;
+    sdo:amount 3.18E0 .
 
-colruyt:1001
-    ex:date "2018-12-08T23:00:00.000Z"^^xsd:dateTime;
-    ex:items
+<delhaize:store/SHOP%20PONT%20D%20AVROY>
+    sdo:name "SHOP PONT D AVROY".
+
+<colruyt:receipts/1001>
+    sdo:dateIssued "2018-12-08T23:00:00.000Z"^^xsd:dateTime;
+    sdo:item
             [
-                ex:amount 1.005E1;
-                ex:article
+                sdo:amount 1.005E1;
+                sdo:product
                           [
-                              ex:label
+                              sdo:name
                                           "Livre Pok\u00e9mon - Aventure sur mesure XXL";
-                              ex:vendorId "742822"
+                              sdo:productID "colruyt:product/742822"
                           ];
-                ex:date "2018-12-08T23:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 1.005E1
+                sdo:orderQuantity 1;
+                sdo:price 1.005E1
             ],
             [
-                ex:amount 1.39E0;
-                ex:article
+                sdo:amount 1.39E0;
+                sdo:product
                           [
-                              ex:label "Bracelet glowsticks dans un \u00e9tui";
-                              ex:vendorId "726125"
+                              sdo:name "Bracelet glowsticks dans un \u00e9tui";
+                              sdo:productID "colruyt:product/726125"
                           ];
-                ex:date "2018-12-08T23:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 1.39E0
+                sdo:orderQuantity 1;
+                sdo:price 1.39E0
             ],
             [
-                ex:amount 12;
-                ex:article
+                sdo:amount 12;
+                sdo:product
                           [
-                              ex:label "Livre Quad je serai grand, je serai FR";
-                              ex:vendorId "771632"
+                              sdo:name "Livre Quad je serai grand, je serai FR";
+                              sdo:productID "colruyt:product/771632"
                           ];
-                ex:date "2018-12-08T23:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 12
+                sdo:orderQuantity 1;
+                sdo:price 12
             ],
             [
-                ex:amount 3.79E0;
-                ex:article
+                sdo:amount 3.79E0;
+                sdo:product
                           [
-                              ex:label "Livre Le petit assistant de St Nicolas";
-                              ex:vendorId "744301"
+                              sdo:name "Livre Le petit assistant de St Nicolas";
+                              sdo:productID "colruyt:product/744301"
                           ];
-                ex:date "2018-12-08T23:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 3.79E0
+                sdo:orderQuantity 1;
+                sdo:price 3.79E0
             ],
             [
-                ex:amount 4.95E0;
-                ex:article
+                sdo:amount 4.95E0;
+                sdo:product
                           [
-                              ex:label "Playmobil 9218 DuoPack Policier voleur";
-                              ex:vendorId "718225"
+                              sdo:name "Playmobil 9218 DuoPack Policier voleur";
+                              sdo:productID "colruyt:product/718225"
                           ];
-                ex:date "2018-12-08T23:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 4.95E0
+                sdo:orderQuantity 1;
+                sdo:price 4.95E0
             ],
             [
-                ex:amount 5;
-                ex:article
+                sdo:amount 5;
+                sdo:product
                           [
-                              ex:label "Livre PETIT POILU POCHE 18 SUPERPOILU";
-                              ex:vendorId "775099"
+                              sdo:name "Livre PETIT POILU POCHE 18 SUPERPOILU";
+                              sdo:productID "colruyt:product/775099"
                           ];
-                ex:date "2018-12-08T23:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 5
+                sdo:orderQuantity 1;
+                sdo:price 5
             ],
             [
-                ex:amount 5;
-                ex:article
+                sdo:amount 5;
+                sdo:product
                           [
-                              ex:label
+                              sdo:name
                                           "Livre Petit Poilu Poche 16 blues y\u00e9ti FR";
-                              ex:vendorId "769151"
+                              sdo:productID "colruyt:product/769151"
                           ];
-                ex:date "2018-12-08T23:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 5
+                sdo:orderQuantity 1;
+                sdo:price 5
             ],
             [
-                ex:amount 5;
-                ex:article
+                sdo:amount 5;
+                sdo:product
                           [
-                              ex:label "Livre PETIT POILU POCHE 20 MADAME";
-                              ex:vendorId "775102"
+                              sdo:name "Livre PETIT POILU POCHE 20 MADAME";
+                              sdo:productID "colruyt:product/775102"
                           ];
-                ex:date "2018-12-08T23:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 5
+                sdo:orderQuantity 1;
+                sdo:price 5
             ],
             [
-                ex:amount 5;
-                ex:article
+                sdo:amount 5;
+                sdo:product
                           [
-                              ex:label "Livre PETIT POILU POCHE 19 LE PRINCE";
-                              ex:vendorId "775101"
+                              sdo:name "Livre PETIT POILU POCHE 19 LE PRINCE";
+                              sdo:productID "colruyt:product/775101"
                           ];
-                ex:date "2018-12-08T23:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 5
+                sdo:orderQuantity 1;
+                sdo:price 5
             ],
             [
-                ex:amount 5.2E0;
-                ex:article
+                sdo:amount 5.2E0;
+                sdo:product
                           [
-                              ex:label "Livre Souliers saint Nicolas, FR";
-                              ex:vendorId "775107"
+                              sdo:name "Livre Souliers saint Nicolas, FR";
+                              sdo:productID "colruyt:product/775107"
                           ];
-                ex:date "2018-12-08T23:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 5.2E0
+                sdo:orderQuantity 1;
+                sdo:price 5.2E0
             ],
             [
-                ex:amount 5.69E0;
-                ex:article
+                sdo:amount 5.69E0;
+                sdo:product
                           [
-                              ex:label "Livre 100 jeux Saint-Nicolas, FR";
-                              ex:vendorId "744302"
+                              sdo:name "Livre 100 jeux Saint-Nicolas, FR";
+                              sdo:productID "colruyt:product/744302"
                           ];
-                ex:date "2018-12-08T23:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 5.69E0
+                sdo:orderQuantity 1;
+                sdo:price 5.69E0
             ],
             [
-                ex:amount 6;
-                ex:article
-                          [ ex:label "Tampon 3D Pyjamasques"; ex:vendorId "761056" ];
-                ex:date "2018-12-08T23:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 2;
-                ex:unitPrice 3
+                sdo:amount 6;
+                sdo:product
+                          [ sdo:name "Tampon 3D Pyjamasques"; sdo:productID "colruyt:product/761056" ];
+                sdo:orderQuantity 2;
+                sdo:price 3
             ],
             [
-                ex:amount 7.49E0;
-                ex:article
+                sdo:amount 7.49E0;
+                sdo:product
                           [
-                              ex:label "Ballon, illooms led balloons marble";
-                              ex:vendorId "708614"
+                              sdo:name "Ballon, illooms led balloons marble";
+                              sdo:productID "colruyt:product/708614"
                           ];
-                ex:date "2018-12-08T23:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 7.49E0
+                sdo:orderQuantity 1;
+                sdo:price 7.49E0
             ];
-    ex:storeId "4241";
-    ex:storeName "DREAMLAND HUY";
-    ex:totalAmount 8.106E1 .
-colruyt:10031
-    ex:date "2023-09-09T22:00:00.000Z"^^xsd:dateTime;
-    ex:items
+    sdo:location <colruyt:store/4241>;
+    sdo:amount 8.106E1 .
+
+
+<colruyt:store/4241>
+    sdo:name "DREAMLAND HUY".
+
+<colruyt:receipts/10031>
+    sdo:dateIssued "2023-09-09T22:00:00.000Z"^^xsd:dateTime;
+    sdo:item
             [
-                ex:amount 1;
-                ex:article
+                sdo:amount 1;
+                sdo:product
                           [
-                              ex:label "BOITE EN CARTON PLIABLE 15kg";
-                              ex:vendorId "260009"
+                              sdo:name "BOITE EN CARTON PLIABLE 15kg";
+                              sdo:productID "colruyt:product/260009"
                           ];
-                ex:date "2023-09-09T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 1
+                sdo:orderQuantity 1;
+                sdo:price 1
             ],
             [
-                ex:amount 1.099E1;
-                ex:article
+                sdo:amount 1.099E1;
+                sdo:product
                           [
-                              ex:label "BONI BIO sirop d'\u00e9rable 500ml";
-                              ex:vendorId "1473"
+                              sdo:name "BONI BIO sirop d'\u00e9rable 500ml";
+                              sdo:productID "colruyt:product/1473"
                           ];
-                ex:date "2023-09-09T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 1.099E1
+                sdo:orderQuantity 1;
+                sdo:price 1.099E1
             ],
             [
-                ex:amount 1.11E0;
-                ex:article
+                sdo:amount 1.11E0;
+                sdo:product
                           [
-                              ex:label "BONI Fil dent menthe-fluor 50m";
-                              ex:vendorId "952242"
+                              sdo:name "BONI Fil dent menthe-fluor 50m";
+                              sdo:productID "colruyt:product/952242"
                           ];
-                ex:date "2023-09-09T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 1.11E0
+                sdo:orderQuantity 1;
+                sdo:price 1.11E0
             ],
             [
-                ex:amount 1.49E0;
-                ex:article
+                sdo:amount 1.49E0;
+                sdo:product
                           [
-                              ex:label "BONI lingettes humides citron 80pc";
-                              ex:vendorId "4931"
+                              sdo:name "BONI lingettes humides citron 80pc";
+                              sdo:productID "colruyt:product/4931"
                           ];
-                ex:date "2023-09-09T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 1.49E0
+                sdo:orderQuantity 1;
+                sdo:price 1.49E0
             ],
             [
-                ex:amount 1.95E0;
-                ex:article
+                sdo:amount 1.95E0;
+                sdo:product
                           [
-                              ex:label "KANGOUROU Cahier \u00e0 carreaux A4";
-                              ex:vendorId "222122"
+                              sdo:name "KANGOUROU Cahier \u00e0 carreaux A4";
+                              sdo:productID "colruyt:product/222122"
                           ];
-                ex:date "2023-09-09T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 1.95E0
+                sdo:orderQuantity 1;
+                sdo:price 1.95E0
             ],
             [
-                ex:amount 1.99E0;
-                ex:article
+                sdo:amount 1.99E0;
+                sdo:product
                           [
-                              ex:label "ETOILE vinaigre de vin rouge 500ml";
-                              ex:vendorId "14223"
+                              sdo:name "ETOILE vinaigre de vin rouge 500ml";
+                              sdo:productID "colruyt:product/14223"
                           ];
-                ex:date "2023-09-09T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 1.99E0
+                sdo:orderQuantity 1;
+                sdo:price 1.99E0
             ],
             [
-                ex:amount 2.15E0;
-                ex:article
+                sdo:amount 2.15E0;
+                sdo:product
                           [
-                              ex:label "EVERYDAY feuille aluminium 30m";
-                              ex:vendorId "14298"
+                              sdo:name "EVERYDAY feuille aluminium 30m";
+                              sdo:productID "colruyt:product/14298"
                           ];
-                ex:date "2023-09-09T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 2.15E0
+                sdo:orderQuantity 1;
+                sdo:price 2.15E0
             ],
             [
-                ex:amount 2.29E0;
-                ex:article
+                sdo:amount 2.29E0;
+                sdo:product
                           [
-                              ex:label "BONI Tagliatelle aux oeufs frais 500g";
-                              ex:vendorId "27805"
+                              sdo:name "BONI Tagliatelle aux oeufs frais 500g";
+                              sdo:productID "colruyt:product/27805"
                           ];
-                ex:date "2023-09-09T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 2.29E0
+                sdo:orderQuantity 1;
+                sdo:price 2.29E0
             ],
             [
-                ex:amount 2.29E0;
-                ex:article
+                sdo:amount 2.29E0;
+                sdo:product
                           [
-                              ex:label "BONI mayo traditionelle 350ml";
-                              ex:vendorId "12179"
+                              sdo:name "BONI mayo traditionelle 350ml";
+                              sdo:productID "colruyt:product/12179"
                           ];
-                ex:date "2023-09-09T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 2.29E0
+                sdo:orderQuantity 1;
+                sdo:price 2.29E0
             ],
             [
-                ex:amount 2.39E0;
-                ex:article
-                          [ ex:label "BONI BIO tagliatelle 250g"; ex:vendorId "22161" ];
-                ex:date "2023-09-09T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 2.39E0
+                sdo:amount 2.39E0;
+                sdo:product
+                          [ sdo:name "BONI BIO tagliatelle 250g"; sdo:productID "colruyt:product/22161" ];
+                sdo:orderQuantity 1;
+                sdo:price 2.39E0
             ],
             [
-                ex:amount 2.99E0;
-                ex:article
-                          [ ex:label "BONGIORNO Biondo 0% 6x10cl"; ex:vendorId "6230" ];
-                ex:date "2023-09-09T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 2.99E0
+                sdo:amount 2.99E0;
+                sdo:product
+                          [ sdo:name "BONGIORNO Biondo 0% 6x10cl"; sdo:productID "colruyt:product/6230" ];
+                sdo:orderQuantity 1;
+                sdo:price 2.99E0
             ],
             [
-                ex:amount 2.99E0;
-                ex:article
+                sdo:amount 2.99E0;
+                sdo:product
                           [
-                              ex:label "BONI nettoie-tout spray eucal. 750ml";
-                              ex:vendorId "19014"
+                              sdo:name "BONI nettoie-tout spray eucal. 750ml";
+                              sdo:productID "colruyt:product/19014"
                           ];
-                ex:date "2023-09-09T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 2.99E0
+                sdo:orderQuantity 1;
+                sdo:price 2.99E0
             ],
             [
-                ex:amount 3.49E0;
-                ex:article
-                          [ ex:label "BONI tresse d'ail 350g"; ex:vendorId "28103" ];
-                ex:date "2023-09-09T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 3.49E0
+                sdo:amount 3.49E0;
+                sdo:product
+                          [ sdo:name "BONI tresse d'ail 350g"; sdo:productID "colruyt:product/28103" ];
+                sdo:orderQuantity 1;
+                sdo:price 3.49E0
             ],
             [
-                ex:amount 3.99E0;
-                ex:article
-                          [ ex:label "BONI \u00e9pices thym 190g"; ex:vendorId "14952" ];
-                ex:date "2023-09-09T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 3.99E0
+                sdo:amount 3.99E0;
+                sdo:product
+                          [ sdo:name "BONI \u00e9pices thym 190g"; sdo:productID "colruyt:product/14952" ];
+                sdo:orderQuantity 1;
+                sdo:price 3.99E0
             ],
             [
-                ex:amount 3.99E0;
-                ex:article
-                          [ ex:label "tomates au miel 180g"; ex:vendorId "30773" ];
-                ex:date "2023-09-09T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 3.99E0
+                sdo:amount 3.99E0;
+                sdo:product
+                          [ sdo:name "tomates au miel 180g"; sdo:productID "colruyt:product/30773" ];
+                sdo:orderQuantity 1;
+                sdo:price 3.99E0
             ],
             [
-                ex:amount 4.02E0;
-                ex:article
+                sdo:amount 4.02E0;
+                sdo:product
                           [
-                              ex:label "EVERYDAY yaourt \u00e0 boire fr.ex. 850g";
-                              ex:vendorId "40202"
+                              sdo:name "EVERYDAY yaourt \u00e0 boire fr.ex. 850g";
+                              sdo:productID "colruyt:product/40202"
                           ];
-                ex:date "2023-09-09T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 3;
-                ex:unitPrice 1.34E0
+                sdo:orderQuantity 3;
+                sdo:price 1.34E0
             ],
             [
-                ex:amount 4.39E0;
-                ex:article
+                sdo:amount 4.39E0;
+                sdo:product
                           [
-                              ex:label
+                              sdo:name
                                           "ROCHEFORT beurre de laiterie sal\u00e9 250g";
-                              ex:vendorId "26719"
+                              sdo:productID "colruyt:product/26719"
                           ];
-                ex:date "2023-09-09T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 4.39E0
+                sdo:orderQuantity 1;
+                sdo:price 4.39E0
             ],
             [
-                ex:amount 5.99E0;
-                ex:article
+                sdo:amount 5.99E0;
+                sdo:product
                           [
-                              ex:label
+                              sdo:name
                                           "COLLA MAE.FORM. Parmigia.Regg.bloc \u00b1300g";
-                              ex:vendorId "5144"
+                              sdo:productID "colruyt:product/5144"
                           ];
-                ex:date "2023-09-09T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 3.01E0;
-                ex:unitPrice 1.99E0
+                sdo:orderQuantity 3.01E0;
+                sdo:price 1.99E0
             ],
             [
-                ex:amount 7.34E0;
-                ex:article
+                sdo:amount 7.34E0;
+                sdo:product
                           [
-                              ex:label "BONI Caps Ultra Trio Activ 36pc";
-                              ex:vendorId "8133"
+                              sdo:name "BONI Caps Ultra Trio Activ 36pc";
+                              sdo:productID "colruyt:product/8133"
                           ];
-                ex:date "2023-09-09T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 7.34E0
+                sdo:orderQuantity 1;
+                sdo:price 7.34E0
             ],
             [
-                ex:amount 7.81E0;
-                ex:article
+                sdo:amount 7.81E0;
+                sdo:product
                           [
-                              ex:label "PRITT Compact roller de colle 2pc";
-                              ex:vendorId "321923"
+                              sdo:name "PRITT Compact roller de colle 2pc";
+                              sdo:productID "colruyt:product/321923"
                           ];
-                ex:date "2023-09-09T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 7.81E0
+                sdo:orderQuantity 1;
+                sdo:price 7.81E0
             ],
             [
-                ex:amount 8.109999999999999E0;
-                ex:article
+                sdo:amount 8.109999999999999E0;
+                sdo:product
                           [
-                              ex:label "BH hachis prepare boeuf+porc";
-                              ex:vendorId "10091"
+                              sdo:name "BH hachis prepare boeuf+porc";
+                              sdo:productID "colruyt:product/10091"
                           ];
-                ex:date "2023-09-09T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 8.289999999999999E0;
-                ex:unitPrice 9.8E-1
+                sdo:orderQuantity 8.289999999999999E0;
+                sdo:price 9.8E-1
             ];
-    ex:storeId "3521";
-    ex:storeName "CADI BEN-AHIN";
-    ex:totalAmount 8.405E1 .
-colruyt:10121
-    ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-    ex:items
+    sdo:location <colruyt:store/3521> ;
+    sdo:amount 8.405E1 .
+
+<colruyt:store/3521>
+    sdo:name "CADI BEN-AHIN".
+
+
+<colruyt:receipts/10121>
+    sdo:dateIssued "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
+    sdo:item
             [
-                ex:amount 1.05E0;
-                ex:article
-                          [ ex:label "BONI roquette sachet 100g"; ex:vendorId "42376" ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 1.05E0
+                sdo:amount 1.05E0;
+                sdo:product
+                          [ sdo:name "BONI roquette sachet 100g"; sdo:productID "colruyt:product/42376" ];
+                sdo:orderQuantity 1;
+                sdo:price 1.05E0
             ],
             [
-                ex:amount 1.18E0;
-                ex:article
+                sdo:amount 1.18E0;
+                sdo:product
                           [
-                              ex:label "BONI BIO flocons d'avoine 500g";
-                              ex:vendorId "15067"
+                              sdo:name "BONI BIO flocons d'avoine 500g";
+                              sdo:productID "colruyt:product/15067"
                           ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 1.18E0
+                sdo:orderQuantity 1;
+                sdo:price 1.18E0
             ],
             [
-                ex:amount 1.19E0;
-                ex:article [ ex:label "Persil"; ex:vendorId "29615" ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 1.19E0
+                sdo:amount 1.19E0;
+                sdo:product [ sdo:name "Persil"; sdo:productID "colruyt:product/29615" ];
+                sdo:orderQuantity 1;
+                sdo:price 1.19E0
             ],
             [
-                ex:amount 1.299E1;
-                ex:article
+                sdo:amount 1.299E1;
+                sdo:product
                           [
-                              ex:label "SODASTREAM cylindre 60L 425g";
-                              ex:vendorId "18250"
+                              sdo:name "SODASTREAM cylindre 60L 425g";
+                              sdo:productID "colruyt:product/18250"
                           ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 1.299E1
+                sdo:orderQuantity 1;
+                sdo:price 1.299E1
             ],
             [
-                ex:amount 1.35E0;
-                ex:article
+                sdo:amount 1.35E0;
+                sdo:product
                           [
-                              ex:label "LORENZ MONSTER MUNCH paprika 75g";
-                              ex:vendorId "9320"
+                              sdo:name "LORENZ MONSTER MUNCH paprika 75g";
+                              sdo:productID "colruyt:product/9320"
                           ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 1.35E0
+                sdo:orderQuantity 1;
+                sdo:price 1.35E0
             ],
             [
-                ex:amount 1.39E0;
-                ex:article
+                sdo:amount 1.39E0;
+                sdo:product
                           [
-                              ex:label "CROKY HULAHOOPS paprika 100g";
-                              ex:vendorId "19795"
+                              sdo:name "CROKY HULAHOOPS paprika 100g";
+                              sdo:productID "colruyt:product/19795"
                           ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 1.39E0
+                sdo:orderQuantity 1;
+                sdo:price 1.39E0
             ],
             [
-                ex:amount 1.39E0;
-                ex:article
+                sdo:amount 1.39E0;
+                sdo:product
                           [
-                              ex:label "BONI passata rustica verre 690g";
-                              ex:vendorId "36728"
+                              sdo:name "BONI passata rustica verre 690g";
+                              sdo:productID "colruyt:product/36728"
                           ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 1.39E0
+                sdo:orderQuantity 1;
+                sdo:price 1.39E0
             ],
             [
-                ex:amount 1.3E0;
-                ex:article
+                sdo:amount 1.3E0;
+                sdo:product
                           [
-                              ex:label
+                              sdo:name
                                           "BONI cr\u00e8me extra l\u00e9g\u00e8re 7%mg brique 25cl";
-                              ex:vendorId "26493"
+                              sdo:productID "colruyt:product/26493"
                           ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 2;
-                ex:unitPrice 6.5E-1
+                sdo:orderQuantity 2;
+                sdo:price 6.5E-1
             ],
             [
-                ex:amount 1.45E0;
-                ex:article
+                sdo:amount 1.45E0;
+                sdo:product
                           [
-                              ex:label "pain multigrain gr.fra.du j 600g";
-                              ex:vendorId "7245"
+                              sdo:name "pain multigrain gr.fra.du j 600g";
+                              sdo:productID "colruyt:product/7245"
                           ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 1.45E0
+                sdo:orderQuantity 1;
+                sdo:price 1.45E0
             ],
             [
-                ex:amount 1.49E0;
-                ex:article
+                sdo:amount 1.49E0;
+                sdo:product
                           [
-                              ex:label "BONI jus pomme-poire-framboise 500ml";
-                              ex:vendorId "3571"
+                              sdo:name "BONI jus pomme-poire-framboise 500ml";
+                              sdo:productID "colruyt:product/3571"
                           ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 1.49E0
+                sdo:orderQuantity 1;
+                sdo:price 1.49E0
             ],
             [
-                ex:amount 1.49E0;
-                ex:article
-                          [ ex:label "CROKY chips Bolognese 200g"; ex:vendorId "40414" ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 1.49E0
+                sdo:amount 1.49E0;
+                sdo:product
+                          [ sdo:name "CROKY chips Bolognese 200g"; sdo:productID "colruyt:product/40414" ];
+                sdo:orderQuantity 1;
+                sdo:price 1.49E0
             ],
             [
-                ex:amount 1.4E0;
-                ex:article
+                sdo:amount 1.4E0;
+                sdo:product
                           [
-                              ex:label "Chipolata de volaille bien-\u00bftre";
-                              ex:vendorId "10378"
+                              sdo:name "Chipolata de volaille bien-\u00bftre";
+                              sdo:productID "colruyt:product/10378"
                           ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 3.05E0;
-                ex:unitPrice 4.6E-1
+                sdo:orderQuantity 3.05E0;
+                sdo:price 4.6E-1
             ],
             [
-                ex:amount 1.69E0;
-                ex:article
+                sdo:amount 1.69E0;
+                sdo:product
                           [
-                              ex:label "BONI \u00e9pices cumin moulu 35g";
-                              ex:vendorId "50497"
+                              sdo:name "BONI \u00e9pices cumin moulu 35g";
+                              sdo:productID "colruyt:product/50497"
                           ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 1.69E0
+                sdo:orderQuantity 1;
+                sdo:price 1.69E0
             ],
             [
-                ex:amount 1.73E0;
-                ex:article
+                sdo:amount 1.73E0;
+                sdo:product
                           [
-                              ex:label "SUCRES DE TIRLEMONT cassona. Graeffe 1kg";
-                              ex:vendorId "5950"
+                              sdo:name "SUCRES DE TIRLEMONT cassona. Graeffe 1kg";
+                              sdo:productID "colruyt:product/5950"
                           ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 1.73E0
+                sdo:orderQuantity 1;
+                sdo:price 1.73E0
             ],
             [
-                ex:amount 1.74E0;
-                ex:article
-                          [ ex:label "LAY'S MAX Naturel XL 250g"; ex:vendorId "19714" ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 1.74E0
+                sdo:amount 1.74E0;
+                sdo:product
+                          [ sdo:name "LAY'S MAX Naturel XL 250g"; sdo:productID "colruyt:product/19714" ];
+                sdo:orderQuantity 1;
+                sdo:price 1.74E0
             ],
             [
-                ex:amount 1.799E1;
-                ex:article
-                          [ ex:label "CORBEO Sisal corde 350m"; ex:vendorId "280268" ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 1.799E1
+                sdo:amount 1.799E1;
+                sdo:product
+                          [ sdo:name "CORBEO Sisal corde 350m"; sdo:productID "colruyt:product/280268" ];
+                sdo:orderQuantity 1;
+                sdo:price 1.799E1
             ],
             [
-                ex:amount 1.872E1;
-                ex:article
-                          [ ex:label "COCA-COLA Zero Sugar 50cl"; ex:vendorId "5017" ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 16;
-                ex:unitPrice 1.17E0
+                sdo:amount 1.872E1;
+                sdo:product
+                          [ sdo:name "COCA-COLA Zero Sugar 50cl"; sdo:productID "colruyt:product/5017" ];
+                sdo:orderQuantity 16;
+                sdo:price 1.17E0
             ],
             [
-                ex:amount 1.99E0;
-                ex:article
-                          [ ex:label "BONI airelles tendres 250g"; ex:vendorId "28271" ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 1.99E0
+                sdo:amount 1.99E0;
+                sdo:product
+                          [ sdo:name "BONI airelles tendres 250g"; sdo:productID "colruyt:product/28271" ];
+                sdo:orderQuantity 1;
+                sdo:price 1.99E0
             ],
             [
-                ex:amount 2.39E0;
-                ex:article
+                sdo:amount 2.39E0;
+                sdo:product
                           [
-                              ex:label
+                              sdo:name
                                           "DR.BECKMANN Diable d\u00e9t.fruit&boiss. 50ml";
-                              ex:vendorId "261112"
+                              sdo:productID "colruyt:product/261112"
                           ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 2.39E0
+                sdo:orderQuantity 1;
+                sdo:price 2.39E0
             ],
             [
-                ex:amount 2.39E0;
-                ex:article
+                sdo:amount 2.39E0;
+                sdo:product
                           [
-                              ex:label "DEL MONTE demi-p\u00bfche jus cons 825g";
-                              ex:vendorId "15390"
+                              sdo:name "DEL MONTE demi-p\u00bfche jus cons 825g";
+                              sdo:productID "colruyt:product/15390"
                           ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 2.39E0
+                sdo:orderQuantity 1;
+                sdo:price 2.39E0
             ],
             [
-                ex:amount 2.44E0;
-                ex:article
+                sdo:amount 2.44E0;
+                sdo:product
                           [
-                              ex:label "TEISSEIRE Zero sirop Mojito 60cl";
-                              ex:vendorId "42061"
+                              sdo:name "TEISSEIRE Zero sirop Mojito 60cl";
+                              sdo:productID "colruyt:product/42061"
                           ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 2.44E0
+                sdo:orderQuantity 1;
+                sdo:price 2.44E0
             ],
             [
-                ex:amount 2.47E0;
-                ex:article
+                sdo:amount 2.47E0;
+                sdo:product
                           [
-                              ex:label
+                              sdo:name
                                           "C\u00c9R\u00c9AL biscuits citron - yuzu 132g";
-                              ex:vendorId "7121"
+                              sdo:productID "colruyt:product/7121"
                           ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 2.47E0
+                sdo:orderQuantity 1;
+                sdo:price 2.47E0
             ],
             [
-                ex:amount 2.49E0;
-                ex:article
+                sdo:amount 2.49E0;
+                sdo:product
                           [
-                              ex:label "BONI Hummus paprika chili 150g";
-                              ex:vendorId "9420"
+                              sdo:name "BONI Hummus paprika chili 150g";
+                              sdo:productID "colruyt:product/9420"
                           ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 2.49E0
+                sdo:orderQuantity 1;
+                sdo:price 2.49E0
             ],
             [
-                ex:amount 2.49E0;
-                ex:article
+                sdo:amount 2.49E0;
+                sdo:product
                           [
-                              ex:label "ROUCADIL figues moelleuses 250g";
-                              ex:vendorId "28923"
+                              sdo:name "ROUCADIL figues moelleuses 250g";
+                              sdo:productID "colruyt:product/28923"
                           ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 2.49E0
+                sdo:orderQuantity 1;
+                sdo:price 2.49E0
             ],
             [
-                ex:amount 2.49E0;
-                ex:article
+                sdo:amount 2.49E0;
+                sdo:product
                           [
-                              ex:label "BONI BIO oeuf Belge frais L 6pc";
-                              ex:vendorId "28028"
+                              sdo:name "BONI BIO oeuf Belge frais L 6pc";
+                              sdo:productID "colruyt:product/28028"
                           ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 2.49E0
+                sdo:orderQuantity 1;
+                sdo:price 2.49E0
             ],
             [
-                ex:amount 2.55E0;
-                ex:article
+                sdo:amount 2.55E0;
+                sdo:product
                           [
-                              ex:label
+                              sdo:name
                                           "PAYSAN BRETON MADAME LO\u00cfK light nat 150g";
-                              ex:vendorId "33914"
+                              sdo:productID "colruyt:product/33914"
                           ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 2.55E0
+                sdo:orderQuantity 1;
+                sdo:price 2.55E0
             ],
             [
-                ex:amount 2.63E0;
-                ex:article
-                          [ ex:label "BH Merguez Agneau-Porc"; ex:vendorId "10105" ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 2.76E0;
-                ex:unitPrice 9.5E-1
+                sdo:amount 2.63E0;
+                sdo:product
+                          [ sdo:name "BH Merguez Agneau-Porc"; sdo:productID "colruyt:product/10105" ];
+                sdo:orderQuantity 2.76E0;
+                sdo:price 9.5E-1
             ],
             [
-                ex:amount 2.65E0;
-                ex:article
+                sdo:amount 2.65E0;
+                sdo:product
                           [
-                              ex:label "SPAAS bougie jardin Lemon Breeze";
-                              ex:vendorId "240063"
+                              sdo:name "SPAAS bougie jardin Lemon Breeze";
+                              sdo:productID "colruyt:product/240063"
                           ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 2.65E0
+                sdo:orderQuantity 1;
+                sdo:price 2.65E0
             ],
             [
-                ex:amount 2.74E0;
-                ex:article
+                sdo:amount 2.74E0;
+                sdo:product
                           [
-                              ex:label "COLRUYT salami d'ardenne 150g";
-                              ex:vendorId "15601"
+                              sdo:name "COLRUYT salami d'ardenne 150g";
+                              sdo:productID "colruyt:product/15601"
                           ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 2.74E0
+                sdo:orderQuantity 1;
+                sdo:price 2.74E0
             ],
             [
-                ex:amount 2.75E0;
-                ex:article
+                sdo:amount 2.75E0;
+                sdo:product
                           [
-                              ex:label "COLRUYT filet de poulet nature 160g";
-                              ex:vendorId "16117"
+                              sdo:name "COLRUYT filet de poulet nature 160g";
+                              sdo:productID "colruyt:product/16117"
                           ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 2.75E0
+                sdo:orderQuantity 1;
+                sdo:price 2.75E0
             ],
             [
-                ex:amount 2.78E0;
-                ex:article
+                sdo:amount 2.78E0;
+                sdo:product
                           [
-                              ex:label "COLRUYT lard sale grosses tranches 200g";
-                              ex:vendorId "15461"
+                              sdo:name "COLRUYT lard sale grosses tranches 200g";
+                              sdo:productID "colruyt:product/15461"
                           ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 2.78E0
+                sdo:orderQuantity 1;
+                sdo:price 2.78E0
             ],
             [
-                ex:amount 2.79E0;
-                ex:article [ ex:label "fraises 500g"; ex:vendorId "29247" ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 2.79E0
+                sdo:amount 2.79E0;
+                sdo:product [ sdo:name "fraises 500g"; sdo:productID "colruyt:product/29247" ];
+                sdo:orderQuantity 1;
+                sdo:price 2.79E0
             ],
             [
-                ex:amount 2.93E0;
-                ex:article
+                sdo:amount 2.93E0;
+                sdo:product
                           [
-                              ex:label
+                              sdo:name
                                           "NUTELLA p\u00e2te \u00e0 tartiner noisettes 400g";
-                              ex:vendorId "16052"
+                              sdo:productID "colruyt:product/16052"
                           ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 2.93E0
+                sdo:orderQuantity 1;
+                sdo:price 2.93E0
             ],
             [
-                ex:amount 2.95E0;
-                ex:article
-                          [ ex:label "BONI oignons 2,5kg"; ex:vendorId "28281" ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 2.95E0
+                sdo:amount 2.95E0;
+                sdo:product
+                          [ sdo:name "BONI oignons 2,5kg"; sdo:productID "colruyt:product/28281" ];
+                sdo:orderQuantity 1;
+                sdo:price 2.95E0
             ],
             [
-                ex:amount 2.99E0;
-                ex:article
+                sdo:amount 2.99E0;
+                sdo:product
                           [
-                              ex:label "CRUMBEL mini speculoos chocolat 300g";
-                              ex:vendorId "16701"
+                              sdo:name "CRUMBEL mini speculoos chocolat 300g";
+                              sdo:productID "colruyt:product/16701"
                           ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 2.99E0
+                sdo:orderQuantity 1;
+                sdo:price 2.99E0
             ],
             [
-                ex:amount 2.99E0;
-                ex:article
+                sdo:amount 2.99E0;
+                sdo:product
                           [
-                              ex:label "BONI miel liquide acacia 350g";
-                              ex:vendorId "16156"
+                              sdo:name "BONI miel liquide acacia 350g";
+                              sdo:productID "colruyt:product/16156"
                           ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 2.99E0
+                sdo:orderQuantity 1;
+                sdo:price 2.99E0
             ],
             [
-                ex:amount 2.99E0;
-                ex:article
+                sdo:amount 2.99E0;
+                sdo:product
                           [
-                              ex:label "BELVIVA Frites belges four 600g";
-                              ex:vendorId "5958"
+                              sdo:name "BELVIVA Frites belges four 600g";
+                              sdo:productID "colruyt:product/5958"
                           ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 2.99E0
+                sdo:orderQuantity 1;
+                sdo:price 2.99E0
             ],
             [
-                ex:amount 3;
-                ex:article
+                sdo:amount 3;
+                sdo:product
                           [
-                              ex:label
+                              sdo:name
                                           "BONI cr\u00e8me culinaire 20%mg brique 25cl";
-                              ex:vendorId "17792"
+                              sdo:productID "colruyt:product/17792"
                           ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 4;
-                ex:unitPrice 7.5E-1
+                sdo:orderQuantity 4;
+                sdo:price 7.5E-1
             ],
             [
-                ex:amount 3.08E0;
-                ex:article
+                sdo:amount 3.08E0;
+                sdo:product
                           [
-                              ex:label "C\u00c9C\u00c9MEL less sugar brik 6x20cl";
-                              ex:vendorId "21806"
+                              sdo:name "C\u00c9C\u00c9MEL less sugar brik 6x20cl";
+                              sdo:productID "colruyt:product/21806"
                           ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 3.08E0
+                sdo:orderQuantity 1;
+                sdo:price 3.08E0
             ],
             [
-                ex:amount 3.12E0;
-                ex:article
+                sdo:amount 3.12E0;
+                sdo:product
                           [
-                              ex:label "CAMPINA maqu\u00e9e enti\u00e8re 500g";
-                              ex:vendorId "26221"
+                              sdo:name "CAMPINA maqu\u00e9e enti\u00e8re 500g";
+                              sdo:productID "colruyt:product/26221"
                           ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 3.12E0
+                sdo:orderQuantity 1;
+                sdo:price 3.12E0
             ],
             [
-                ex:amount 3.25E0;
-                ex:article
-                          [ ex:label "BONI BIO citrons 500g"; ex:vendorId "28484" ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 3.25E0
+                sdo:amount 3.25E0;
+                sdo:product
+                          [ sdo:name "BONI BIO citrons 500g"; sdo:productID "colruyt:product/28484" ];
+                sdo:orderQuantity 1;
+                sdo:price 3.25E0
             ],
             [
-                ex:amount 3.29E0;
-                ex:article
+                sdo:amount 3.29E0;
+                sdo:product
                           [
-                              ex:label "BONI graines de s\u00e9same 160g";
-                              ex:vendorId "22509"
+                              sdo:name "BONI graines de s\u00e9same 160g";
+                              sdo:productID "colruyt:product/22509"
                           ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 3.29E0
+                sdo:orderQuantity 1;
+                sdo:price 3.29E0
             ],
             [
-                ex:amount 3.29E0;
-                ex:article
+                sdo:amount 3.29E0;
+                sdo:product
                           [
-                              ex:label
+                              sdo:name
                                           "MAREDSOUS from.tart. double cr\u00e8me 250g";
-                              ex:vendorId "33340"
+                              sdo:productID "colruyt:product/33340"
                           ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 3.29E0
+                sdo:orderQuantity 1;
+                sdo:price 3.29E0
             ],
             [
-                ex:amount 3.44E0;
-                ex:article
+                sdo:amount 3.44E0;
+                sdo:product
                           [
-                              ex:label
+                              sdo:name
                                           "LOTUS Mini-Frangipanes 12 pi\u00e8ces 390g";
-                              ex:vendorId "17215"
+                              sdo:productID "colruyt:product/17215"
                           ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 3.44E0
+                sdo:orderQuantity 1;
+                sdo:price 3.44E0
             ],
             [
-                ex:amount 3.49E0;
-                ex:article
-                          [ ex:label "CRUMBEL mini gaufres 250g"; ex:vendorId "16548" ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 3.49E0
+                sdo:amount 3.49E0;
+                sdo:product
+                          [ sdo:name "CRUMBEL mini gaufres 250g"; sdo:productID "colruyt:product/16548" ];
+                sdo:orderQuantity 1;
+                sdo:price 3.49E0
             ],
             [
-                ex:amount 3.98E0;
-                ex:article
+                sdo:amount 3.98E0;
+                sdo:product
                           [
-                              ex:label "BONI galettes croquantes mini 350g";
-                              ex:vendorId "36026"
+                              sdo:name "BONI galettes croquantes mini 350g";
+                              sdo:productID "colruyt:product/36026"
                           ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 2;
-                ex:unitPrice 1.99E0
+                sdo:orderQuantity 2;
+                sdo:price 1.99E0
             ],
             [
-                ex:amount 3.99E0;
-                ex:article
-                          [ ex:label "BONI amandes 250g"; ex:vendorId "28857" ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 3.99E0
+                sdo:amount 3.99E0;
+                sdo:product
+                          [ sdo:name "BONI amandes 250g"; sdo:productID "colruyt:product/28857" ];
+                sdo:orderQuantity 1;
+                sdo:price 3.99E0
             ],
             [
-                ex:amount 3.99E0;
-                ex:article
+                sdo:amount 3.99E0;
+                sdo:product
                           [
-                              ex:label "CRUMBEL mini gaufres chocolat 250g";
-                              ex:vendorId "16516"
+                              sdo:name "CRUMBEL mini gaufres chocolat 250g";
+                              sdo:productID "colruyt:product/16516"
                           ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 3.99E0
+                sdo:orderQuantity 1;
+                sdo:price 3.99E0
             ],
             [
-                ex:amount 4.07E0;
-                ex:article
+                sdo:amount 4.07E0;
+                sdo:product
                           [
-                              ex:label "CREAZIONI D'ITALIA pecorino romano 275g";
-                              ex:vendorId "6897"
+                              sdo:name "CREAZIONI D'ITALIA pecorino romano 275g";
+                              sdo:productID "colruyt:product/6897"
                           ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 4.07E0
+                sdo:orderQuantity 1;
+                sdo:price 4.07E0
             ],
             [
-                ex:amount 4.15E0;
-                ex:article
+                sdo:amount 4.15E0;
+                sdo:product
                           [
-                              ex:label "LA CONTADINA mozzarel.buffle tresse 250g";
-                              ex:vendorId "44107"
+                              sdo:name "LA CONTADINA mozzarel.buffle tresse 250g";
+                              sdo:productID "colruyt:product/44107"
                           ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 4.15E0
+                sdo:orderQuantity 1;
+                sdo:price 4.15E0
             ],
             [
-                ex:amount 4.17E0;
-                ex:article
+                sdo:amount 4.17E0;
+                sdo:product
                           [
-                              ex:label
+                              sdo:name
                                           "BONDUELLE mac\u00e9doine l\u00e9gumes verre 330g";
-                              ex:vendorId "11953"
+                              sdo:productID "colruyt:product/11953"
                           ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 3;
-                ex:unitPrice 1.39E0
+                sdo:orderQuantity 3;
+                sdo:price 1.39E0
             ],
             [
-                ex:amount 4.25E0;
-                ex:article
+                sdo:amount 4.25E0;
+                sdo:product
                           [
-                              ex:label "LOTUS cornet Sp\u00e9culoos 4x115ml";
-                              ex:vendorId "41794"
+                              sdo:name "LOTUS cornet Sp\u00e9culoos 4x115ml";
+                              sdo:productID "colruyt:product/41794"
                           ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 4.25E0
+                sdo:orderQuantity 1;
+                sdo:price 4.25E0
             ],
             [
-                ex:amount 4.49E0;
-                ex:article
+                sdo:amount 4.49E0;
+                sdo:product
                           [
-                              ex:label
+                              sdo:name
                                           "BONI lani\u00e8res saumon fum\u00e9 Norv\u00e8ge 150g";
-                              ex:vendorId "38570"
+                              sdo:productID "colruyt:product/38570"
                           ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 4.49E0
+                sdo:orderQuantity 1;
+                sdo:price 4.49E0
             ],
             [
-                ex:amount 4.86E0;
-                ex:article
-                          [ ex:label "COURGETTES DE NICE (vrac)"; ex:vendorId "29716" ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1.876E1;
-                ex:unitPrice 2.6E-1
+                sdo:amount 4.86E0;
+                sdo:product
+                          [ sdo:name "COURGETTES DE NICE (vrac)"; sdo:productID "colruyt:product/29716" ];
+                sdo:orderQuantity 1.876E1;
+                sdo:price 2.6E-1
             ],
             [
-                ex:amount 4.99E0;
-                ex:article
+                sdo:amount 4.99E0;
+                sdo:product
                           [
-                              ex:label "ROUCADIL abricots moelleux 500g";
-                              ex:vendorId "28904"
+                              sdo:name "ROUCADIL abricots moelleux 500g";
+                              sdo:productID "colruyt:product/28904"
                           ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 4.99E0
+                sdo:orderQuantity 1;
+                sdo:price 4.99E0
             ],
             [
-                ex:amount 5.23E0;
-                ex:article
+                sdo:amount 5.23E0;
+                sdo:product
                           [
-                              ex:label "PERRIER eau p\u00e9tillante 1L";
-                              ex:vendorId "6941"
+                              sdo:name "PERRIER eau p\u00e9tillante 1L";
+                              sdo:productID "colruyt:product/6941"
                           ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 6;
-                ex:unitPrice 8.7E-1
+                sdo:orderQuantity 6;
+                sdo:price 8.7E-1
             ],
             [
-                ex:amount 5.67E0;
-                ex:article
+                sdo:amount 5.67E0;
+                sdo:product
                           [
-                              ex:label "C\u00d4TE D'OR chocolat au lait 150g";
-                              ex:vendorId "20004"
+                              sdo:name "C\u00d4TE D'OR chocolat au lait 150g";
+                              sdo:productID "colruyt:product/20004"
                           ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 3;
-                ex:unitPrice 1.89E0
+                sdo:orderQuantity 3;
+                sdo:price 1.89E0
             ],
             [
-                ex:amount 5.78E0;
-                ex:article
+                sdo:amount 5.78E0;
+                sdo:product
                           [
-                              ex:label "MELI gaufre fourr\u00e9 miel 8pc 240g";
-                              ex:vendorId "21142"
+                              sdo:name "MELI gaufre fourr\u00e9 miel 8pc 240g";
+                              sdo:productID "colruyt:product/21142"
                           ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 2;
-                ex:unitPrice 2.89E0
+                sdo:orderQuantity 2;
+                sdo:price 2.89E0
             ],
             [
-                ex:amount 5.95E0;
-                ex:article
+                sdo:amount 5.95E0;
+                sdo:product
                           [
-                              ex:label "ISABELLE LAURIER gants exfoliants 2pc";
-                              ex:vendorId "282335"
+                              sdo:name "ISABELLE LAURIER gants exfoliants 2pc";
+                              sdo:productID "colruyt:product/282335"
                           ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 5.95E0
+                sdo:orderQuantity 1;
+                sdo:price 5.95E0
             ],
             [
-                ex:amount 5.98E0;
-                ex:article
+                sdo:amount 5.98E0;
+                sdo:product
                           [
-                              ex:label "KINDER CHOCOLATE batonnets 24st 300g";
-                              ex:vendorId "20399"
+                              sdo:name "KINDER CHOCOLATE batonnets 24st 300g";
+                              sdo:productID "colruyt:product/20399"
                           ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 2;
-                ex:unitPrice 2.99E0
+                sdo:orderQuantity 2;
+                sdo:price 2.99E0
             ],
             [
-                ex:amount 5.99E0;
-                ex:article
+                sdo:amount 5.99E0;
+                sdo:product
                           [
-                              ex:label "SPAAS maxi chauffe-plat Lemon Breeze 8pc";
-                              ex:vendorId "240059"
+                              sdo:name "SPAAS maxi chauffe-plat Lemon Breeze 8pc";
+                              sdo:productID "colruyt:product/240059"
                           ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 5.99E0
+                sdo:orderQuantity 1;
+                sdo:price 5.99E0
             ],
             [
-                ex:amount 5.99E0;
-                ex:article
+                sdo:amount 5.99E0;
+                sdo:product
                           [
-                              ex:label "SPAAS maxi chauffe-plat Asian Garden 8pc";
-                              ex:vendorId "240060"
+                              sdo:name "SPAAS maxi chauffe-plat Asian Garden 8pc";
+                              sdo:productID "colruyt:product/240060"
                           ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 5.99E0
+                sdo:orderQuantity 1;
+                sdo:price 5.99E0
             ],
             [
-                ex:amount 5.99E0;
-                ex:article
+                sdo:amount 5.99E0;
+                sdo:product
                           [
-                              ex:label "SPAAS maxi boug.ch.-pl.Summer Blossom 8p";
-                              ex:vendorId "240061"
+                              sdo:name "SPAAS maxi boug.ch.-pl.Summer Blossom 8p";
+                              sdo:productID "colruyt:product/240061"
                           ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 5.99E0
+                sdo:orderQuantity 1;
+                sdo:price 5.99E0
             ],
             [
-                ex:amount 6.25E0;
-                ex:article
+                sdo:amount 6.25E0;
+                sdo:product
                           [
-                              ex:label "BH Filet de Poulet Bien-\u00bftre";
-                              ex:vendorId "10073"
+                              sdo:name "BH Filet de Poulet Bien-\u00bftre";
+                              sdo:productID "colruyt:product/10073"
                           ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 6.44E0;
-                ex:unitPrice 9.7E-1
+                sdo:orderQuantity 6.44E0;
+                sdo:price 9.7E-1
             ],
             [
-                ex:amount 6.36E0;
-                ex:article
+                sdo:amount 6.36E0;
+                sdo:product
                           [
-                              ex:label "GRAINDOR grains Espresso UTZ 500g";
-                              ex:vendorId "51231"
+                              sdo:name "GRAINDOR grains Espresso UTZ 500g";
+                              sdo:productID "colruyt:product/51231"
                           ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 2;
-                ex:unitPrice 3.18E0
+                sdo:orderQuantity 2;
+                sdo:price 3.18E0
             ],
             [
-                ex:amount 6.98E0;
-                ex:article
+                sdo:amount 6.98E0;
+                sdo:product
                           [
-                              ex:label
+                              sdo:name
                                           "KNORR soupe Classics 8l\u00e9g.boul. briq 1L";
-                              ex:vendorId "38956"
+                              sdo:productID "colruyt:product/38956"
                           ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 2;
-                ex:unitPrice 3.49E0
+                sdo:orderQuantity 2;
+                sdo:price 3.49E0
             ],
             [
-                ex:amount 7.56E0;
-                ex:article
+                sdo:amount 7.56E0;
+                sdo:product
                           [
-                              ex:label "hachis prepare de campagne porc";
-                              ex:vendorId "10001"
+                              sdo:name "hachis prepare de campagne porc";
+                              sdo:productID "colruyt:product/10001"
                           ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 8.4E0;
-                ex:unitPrice 9.0E-1
+                sdo:orderQuantity 8.4E0;
+                sdo:price 9.0E-1
             ],
             [
-                ex:amount 7.5E0;
-                ex:article
+                sdo:amount 7.5E0;
+                sdo:product
                           [
-                              ex:label "DYLON All-in-1 teinture textile bleu";
-                              ex:vendorId "261243"
+                              sdo:name "DYLON All-in-1 teinture textile bleu";
+                              sdo:productID "colruyt:product/261243"
                           ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 7.5E0
+                sdo:orderQuantity 1;
+                sdo:price 7.5E0
             ],
             [
-                ex:amount 7.9E-1;
-                ex:article
+                sdo:amount 7.9E-1;
+                sdo:product
                           [
-                              ex:label "EVERYDAY gel wc citron javel 1L";
-                              ex:vendorId "42598"
+                              sdo:name "EVERYDAY gel wc citron javel 1L";
+                              sdo:productID "colruyt:product/42598"
                           ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 7.9E-1
+                sdo:orderQuantity 1;
+                sdo:price 7.9E-1
             ],
             [
-                ex:amount 8.99E0;
-                ex:article
-                          [ ex:label "BONI pistaches 500g"; ex:vendorId "3879" ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 8.99E0
+                sdo:amount 8.99E0;
+                sdo:product
+                          [ sdo:name "BONI pistaches 500g"; sdo:productID "colruyt:product/3879" ];
+                sdo:orderQuantity 1;
+                sdo:price 8.99E0
             ],
             [
-                ex:amount 9.5E0;
-                ex:article
+                sdo:amount 9.5E0;
+                sdo:product
                           [
-                              ex:label "GRAINDOR Grains deca RFA 1kg";
-                              ex:vendorId "51227"
+                              sdo:name "GRAINDOR Grains deca RFA 1kg";
+                              sdo:productID "colruyt:product/51227"
                           ];
-                ex:date "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
-                ex:quantity 1;
-                ex:unitPrice 9.5E0
+                sdo:orderQuantity 1;
+                sdo:price 9.5E0
             ];
-    ex:storeId "3521";
-    ex:storeName "CADI BEN-AHIN";
-    ex:totalAmount 3.0583E2 .
+    sdo:location <colruyt:store/3521> ;
+    sdo:amount 3.0583E2 .
+
+<colruyt:store/3521>
+    sdo:name "CADI BEN-AHIN".
 
