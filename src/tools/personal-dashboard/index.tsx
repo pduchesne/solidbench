@@ -10,6 +10,7 @@ import {AppContext} from "../../appContext";
 import { DEFAULTS } from "@hilats/react-utils";
 import { ToastContainer } from 'react-toastify';
 
+DEFAULTS.loaderMessage = 'Loading data...';
 
 export const PANELS: Record<string, LazyExoticComponent<any>> = {
     podbrowser: lazy(() => import('../../browser/pod-browser')),
@@ -34,7 +35,7 @@ export const DashboardRoutes = () => {
 
 export const PersonalDashboard = (props: {selectedPanel?: string }) => {
 
-    /*const appContext =*/ useContext(AppContext);
+    const appContext = useContext(AppContext);
     /*const {fetch} = */ useSession();
 
     const navigate = useNavigate();
@@ -50,7 +51,7 @@ export const PersonalDashboard = (props: {selectedPanel?: string }) => {
             <Suspense fallback={<DEFAULTS.Loader message="Loading UI..."/>}>
                 <Panel/>
             </Suspense>
-            <ToastContainer/>
+            <ToastContainer theme={appContext.theme}/>
         </div>
 
     </div>
