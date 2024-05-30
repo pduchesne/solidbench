@@ -59,7 +59,7 @@ export async function parseXlsxExport(data: Blob | Buffer) {
 
         const item: ReceiptItem = {
             quantity: parseFloat(quantity),
-            date: utcTimestamp,
+            //date: utcTimestamp,
             unitPrice: amount / parseFloat(quantity),
             amount,
             article: {
@@ -77,19 +77,21 @@ export async function parseXlsxExport(data: Blob | Buffer) {
             const storeName = store![4] as string;
 
             receipt = {
-                receiptId,
+                id: "delhaize:receipt/"+encodeURIComponent(receiptId),
                 date: utcTimestamp,
                 items: [],
-                storeId: storeName, // TODO
-                storeName,
-                totalAmount: 0,
+                store: {
+                    //TODO
+                    id: "delhaize:store/"+encodeURIComponent(storeName),
+                    name: storeName},
+                amount: 0,
                 shippingCosts: 0
             };
             receipts[receiptId] = receipt;
         }
 
         receipt.items.push(item);
-        receipt.totalAmount += item.amount
+        receipt.amount += item.amount
     }
 
     itemRows.slice(1).forEach(parseItem);

@@ -9,7 +9,7 @@ GlobalWorkerOptions.workerSrc = PdfjsWorker;
 import {TabContext, TabList, TabPanel} from '@mui/lab';
 
 import {Receipt, ReceiptWithRetailer} from "./model";
-import {RetailStorage} from "./storage";
+import {MemoryReceiptsStorage, PodRetailStorage, ReceiptsStorage} from "./storage";
 import {useSession} from "@inrupt/solid-ui-react";
 import {AppContext} from "../../appContext";
 import {ErrorBoundary, PromiseContainer} from "@hilats/react-utils";
@@ -22,14 +22,15 @@ import ExpensesChart from "./components/ExpensesChart";
 import ItemsTable from "./components/ItemsTable";
 import ReceiptsTable from "./components/ReceiptsTable";
 import Overview from "./components/Overview";
-import {Navigate, Route, Routes, useLocation, useParams} from "react-router-dom";
-import {useNavigate} from "react-router";
+import {Navigate, Route, Routes, useLocation, useParams, useSearchParams} from "react-router-dom";
 import Tab from "@mui/material/Tab/Tab";
 import Select from "@mui/material/Select/Select";
 import OutlinedInput from "@mui/material/OutlinedInput/OutlinedInput";
 import MenuItem from "@mui/material/MenuItem/MenuItem";
 import Box from "@mui/material/Box/Box";
 import Chip from "@mui/material/Chip/Chip";
+import {usePersistentQueryNavigate} from "../../ui/hooks";
+import {toast} from "react-toastify";
 
 /**
  * Import UI components for specific retailers
@@ -68,7 +69,17 @@ export const RetailDashboard = () => {
     const {fetch} = useSession();
     const appContext = useContext(AppContext);
 
-    const retailStorage = useMemo(() => appContext.podUrl ? new RetailStorage(appContext.podUrl, {fetch}) : undefined, [appContext.podUrl, fetch]);
+    const [params] = useSearchParams();
+    const retailStorage = useMemo(() => {
+        const externalInputs = params.getAll('input');
+        if (externalInputs?.length) {
+            return new MemoryReceiptsStorage({uris: externalInputs});
+        } else if (appContext.podUrl) {
+            return new PodRetailStorage(appContext.podUrl, {fetch});
+        } else
+            return undefined;
+    },
+        [appContext.podUrl, fetch]);
     //const preferences$ = useMemo(() => retailStorage?.fetchPreferences(), [retailStorage]);
 
 
@@ -76,7 +87,13 @@ export const RetailDashboard = () => {
     const UploadComp = upload.retailer && RETAILERS[upload.retailer].comp;
 
     const importCallback = useCallback((receipts: Receipt[]) => {
-        (upload.retailer && retailStorage) && retailStorage.saveHistory(upload.retailer, receipts);
+        if (upload.retailer && retailStorage) {
+            const response$ = retailStorage.saveHistory(receipts, upload.retailer);
+            toast.promise(response$, {
+                pending: "Saving receipts data"
+            })
+        }
+
     }, [retailStorage, upload.retailer]);
 
     return <div className="retail">
@@ -95,7 +112,7 @@ export const RetailDashboard = () => {
 
             /* Display currenty history*/
             <ErrorBoundary>
-                {retailStorage ? <ShoppingDashboardContainer retailStorage={retailStorage}/> : null}
+                {retailStorage ? <ShoppingDashboardContainer receiptsStorage={retailStorage}/> : null}
             </ErrorBoundary>
         }
     </div>
@@ -119,13 +136,13 @@ export const FileDrop = (props: { onData: (blob: Blob) => void }) => {
 }
 
 
-export const ShoppingDashboardContainer = (props: { retailStorage: RetailStorage }) => {
+export const ShoppingDashboardContainer = (props: { receiptsStorage: ReceiptsStorage }) => {
 
 
     // TODO const history$ = useMemo(async () => selectedRetailers.length ? Promise.all(selectedRetailers.map(retailer => props.retailStorage.fetchHistory(retailer))) : [] as Receipt[][], [props.retailStorage, selectedRetailers]);
     const histories$ = useMemo(async () => {
-            const retailers = await props.retailStorage.listRetailers();
-            const histories = await props.retailStorage.fetchHistories(retailers)
+            const retailers = await props.receiptsStorage.listRetailers();
+            const histories = await props.receiptsStorage.fetchHistories(retailers)
                 .then(receiptMap => Object.entries(receiptMap).reduce<ReceiptWithRetailer[]>((result, [retailer, receipts]) => {
                     result.push(...receipts.map<ReceiptWithRetailer>(r => ({...r, retailer})));
                     return result;
@@ -133,7 +150,7 @@ export const ShoppingDashboardContainer = (props: { retailStorage: RetailStorage
 
             return [retailers, histories] as [string[], ReceiptWithRetailer[]];
         },
-        [props.retailStorage]);
+        [props.receiptsStorage]);
 
     return <PromiseContainer promise={histories$}>{([retailers, histories]) => retailers ?
             <ShoppingDashboard receipts={histories} retailers={retailers}/> :
@@ -145,7 +162,7 @@ export const ShoppingDashboardContainer = (props: { retailStorage: RetailStorage
 
 export const ShoppingDashboard = (props: { receipts: Array<ReceiptWithRetailer>, retailers: string[] }) => {
 
-    const navigate = useNavigate();
+    const navigate = usePersistentQueryNavigate();
     let { panelId } = useParams();
     const tab = panelId || 'overview';
 

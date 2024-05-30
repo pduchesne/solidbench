@@ -9,12 +9,12 @@ export const Overview = (props: { receipts: Array<Receipt> }) => {
         props.receipts.forEach(r => {
             r.items?.forEach(i => {
                 if (i.article.vendorId in items) {
-                    items[i.article.vendorId].history.push({...i, receiptId: r.receiptId});
+                    items[i.article.vendorId].history.push({...i, receiptId: r.id, date: r.date});
                 } else {
                     items[i.article.vendorId] = {
                         id: i.article.vendorId,
                         label: i.article.label,
-                        history: [{...i, receiptId: r.receiptId}]
+                        history: [{...i, receiptId: r.id, date: r.date}]
                     }
                 }
             })

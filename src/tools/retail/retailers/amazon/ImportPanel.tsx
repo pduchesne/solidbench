@@ -79,7 +79,7 @@ export const AmazonReceiptsTable = (props: { receipts: Array<Receipt>, lastUpdat
         <Pagination count={showedReceipts.length} siblingCount={1} boundaryCount={1}
                     onChange={(e, value) => setPage(value)}/>
         <div style={{padding: 10}}>
-            <h2>{r.storeName} ({r.storeId}) - {r.date} - €{r.totalAmount}</h2>
+            <h2>{r.store.name} ({r.store.id}) - {r.date} - €{r.amount}</h2>
             <table>{r.items.map(i =>
                 <tr>
                     <td>{i.quantity}</td>

@@ -4,8 +4,8 @@ import {AppContext} from "../../../appContext";
 import * as React from "react";
 import {FrequencyBar} from "./Overview";
 import {Route, Routes, useLocation, useParams} from "react-router-dom";
-import {useNavigate} from "react-router";
 import ReactEcharts, { EChartsOption, OptionSourceData } from "../../../ui/echarts";
+import {usePersistentQueryNavigate} from "../../../ui/hooks";
 
 export const ItemsTableRoutes = (props: { receipts: Array<Receipt> }) => {
     return <Routes>
@@ -19,20 +19,20 @@ export const ItemsTable = (props: { receipts: Array<Receipt> }) => {
     const { noscroll } = state || {};
 
     let { itemId } = useParams();
-    const navigate = useNavigate();
+    const navigate = usePersistentQueryNavigate();
 
     const [items, sortedReceipts] = useMemo(() => {
         const items: Record<string, ItemWithHistory> = {};
         props.receipts.forEach(r => {
             r.items?.forEach(i => {
                 if (i.article.vendorId in items) {
-                    items[i.article.vendorId].history.push({...i, receiptId: r.receiptId});
+                    items[i.article.vendorId].history.push({...i, receiptId: r.id, date: r.date});
                 } else {
                     items[i.article.vendorId] = {
                         id: i.article.vendorId,
                         label: i.article.label,
                         ean: i.article.ean,
-                        history: [{...i, receiptId: r.receiptId}]
+                        history: [{...i, receiptId: r.id, date: r.date}]
                     }
                 }
             })
@@ -46,7 +46,7 @@ export const ItemsTable = (props: { receipts: Array<Receipt> }) => {
 
     //const [selectedItem, setSelectedItem] = useState(items[0].id);
     const selectedItem = items.find(i => i.id == itemId);
-    function setSelectedItem(id: string) {id && navigate((itemId? '../' : '') + id, {state: {noscroll: true}})};
+    function setSelectedItem(id: string) {id && navigate((itemId? '../' : '') + encodeURIComponent(id), {state: {noscroll: true}})};
 
     const selectedRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
@@ -71,7 +71,7 @@ export const ItemsTable = (props: { receipts: Array<Receipt> }) => {
 
 function ItemDetails(props:{item: ItemWithHistory, dateRange: [string, string]}) {
 
-    const navigate = useNavigate();
+    const navigate = usePersistentQueryNavigate();
 
     const ctx = useContext(AppContext);
     const {item, dateRange} = props;
@@ -141,7 +141,7 @@ function ItemDetails(props:{item: ItemWithHistory, dateRange: [string, string]})
     const eventHandlers = useMemo(() => ({
         'click': (evt: any) => {
             if (evt.seriesId == 'purchases') {
-                navigate('../../receipts/'+evt.value.receiptId)
+                navigate('../../receipts/'+encodeURIComponent(evt.value.receiptId))
             }
             //console.log(JSON.stringify(evt, getCircularReplacer()));
         }

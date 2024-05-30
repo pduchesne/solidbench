@@ -2,15 +2,15 @@ import {useContext, useEffect, useMemo} from "react";
 import {AppContext} from "../../../appContext";
 import * as React from "react";
 import {ReceiptWithRetailer} from "../model";
-import {useNavigate} from "react-router";
 import ReactEcharts, {EChartsOption } from "../../../ui/echarts";
+import {usePersistentQueryNavigate} from "../../../ui/hooks";
 
 const AVG_SPAN_WEEKS = 4;
 const AVG_SPAN = AVG_SPAN_WEEKS * 7 * 24 * 60 * 60 * 1000;
 
 export const ExpensesChart = (props: { receipts: Array<ReceiptWithRetailer> }) => {
 
-    const navigate = useNavigate();
+    const navigate = usePersistentQueryNavigate();
 
     const ctx = useContext(AppContext);
 
@@ -75,7 +75,7 @@ export const ExpensesChart = (props: { receipts: Array<ReceiptWithRetailer> }) =
                     (idx - count) >= 0 &&
                     new Date(sortedReceipts[idx].date).getTime() - new Date(sortedReceipts[idx - count].date).getTime() < AVG_SPAN;
                     count++) {
-                    total += sortedReceipts[idx - count].totalAmount;
+                    total += sortedReceipts[idx - count].amount;
                 }
 
                 return [r.date, total / AVG_SPAN_WEEKS];
@@ -96,8 +96,8 @@ export const ExpensesChart = (props: { receipts: Array<ReceiptWithRetailer> }) =
             let lastWeek = retailerSum.at(-1);
 
             if (lastWeek && receiptDate.getTime() < lastWeek.start + 7 * 24 * 60 * 60 * 1000) {
-                lastWeek.sum += receipt.totalAmount;
-                lastWeek.receipts.push(receipt.receiptId);
+                lastWeek.sum += receipt.amount;
+                lastWeek.receipts.push(receipt.id);
             } else {
                 const weekStart = new Date(receipt.date);
                 weekStart.setHours(0);
@@ -108,8 +108,8 @@ export const ExpensesChart = (props: { receipts: Array<ReceiptWithRetailer> }) =
                 weekStart.setTime(weekStart.getTime() - diff);
                 retailerSum.push({
                     start: weekStart.getTime(),
-                    sum: receipt.totalAmount,
-                    receipts: [receipt.receiptId]
+                    sum: receipt.amount,
+                    receipts: [receipt.id]
                 })
             }
             return sumsPerRetailer;
@@ -141,7 +141,7 @@ export const ExpensesChart = (props: { receipts: Array<ReceiptWithRetailer> }) =
                             type: 'bar',
                             //smooth: true,
                             //symbol: 'none',
-                            data: sortedReceipts.map(r => [r.date, r.totalAmount])
+                            data: sortedReceipts.map(r => [r.date, r.amount])
                         },
 
     */

@@ -21,7 +21,7 @@ export async function parseZipExport(data: Blob) {
 
                 const item: ReceiptItem = {
                     quantity: parseFloat(record[14]),
-                    date: record[2],
+                    //date: record[2],
                     unitPrice: parseFloat(record[5]) + parseFloat(record[6]),
                     amount: parseFloat(record[9]) - shippingCosts, // substract shipping - to be added to receipt
                     article: {
@@ -36,12 +36,14 @@ export async function parseZipExport(data: Blob) {
                     receipt = receipts[receiptId];
                 } else {
                     receipt = {
-                        receiptId,
+                        id: receiptId,
                         date: record[2],
                         items: [],
-                        storeId: record[0],
-                        storeName: record[0],
-                        totalAmount: 0,
+                        store: {
+                            id: "amazon:"+record[0],
+                            name: record[0]
+                        },
+                        amount: 0,
                         shippingCosts: 0
                     };
                     receipts[receiptId] = receipt;
@@ -49,7 +51,7 @@ export async function parseZipExport(data: Blob) {
 
                 receipt.items.push(item);
                 receipt.shippingCosts += shippingCosts;
-                receipt.totalAmount += item.amount + shippingCosts
+                receipt.amount += item.amount + shippingCosts
             }
 
             /*

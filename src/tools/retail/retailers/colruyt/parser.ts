@@ -19,7 +19,7 @@ function parseLocaleNumber(str: string) {
     return parseFloat(str.replace(/\./g, "").replace(/\,/g, "."));
 }
 
-function parseLocaleDate(str: string) {
+export function parseLocaleDate(str: string) {
     // TODO use moment.js for generic locale date parsing
 
     // parse as DD/MM/YYYY
@@ -49,13 +49,12 @@ function parseReceipt(textItems: Array<TextItem>, startOffset: number): [Receipt
     assert(receiptId, 'Receipt ID is undefined');
 
     const receipt: Receipt = {
-        receiptId,
+        id: "colruyt:receipt/"+encodeURIComponent(receiptId),
         date: '',
         items: [],
         //returnedBottles: 0,
-        storeId: '',
-        storeName: '',
-        totalAmount: 0,
+        store: {id: "", name: ""},
+        amount: 0,
         shippingCosts: 0
     }
 
@@ -90,7 +89,6 @@ function parseReceipt(textItems: Array<TextItem>, startOffset: number): [Receipt
             quantity: 0,
             unitPrice: 0,
             amount: 0,
-            date: '',
             article: {label: '', vendorId: ''}
         };
 
@@ -110,8 +108,7 @@ function parseReceipt(textItems: Array<TextItem>, startOffset: number): [Receipt
                     quantity: 0,
                     unitPrice: 0,
 
-                    amount: 0,
-                    date: receipt.date
+                    amount: 0
                 };
                 currentMiddleY = middleY;
             } else if (isSameColumn(currentTextItem, nextTextItem)) {
@@ -123,16 +120,18 @@ function parseReceipt(textItems: Array<TextItem>, startOffset: number): [Receipt
 
             if (isColumn(currentTextItem, 0)) {
                 // Date
-                receipt.date = currentItem.date = parseLocaleDate(currentTextItem.str).toISOString();
+                // no need for a date on each item
+                // receipt.date = currentItem.date = parseLocaleDate(currentTextItem.str).toISOString();
+                if (!receipt.date) receipt.date = parseLocaleDate(currentTextItem.str).toISOString();
             }
 
             else if (isColumn(currentTextItem, 1))
                 // Store ID
-                receipt.storeId = currentTextItem.str;
+                receipt.store.id = "colruyt:store/"+encodeURIComponent(currentTextItem.str);
 
             else if (isColumn(currentTextItem, 2))
                 // Store Name
-                receipt.storeName = currentTextItem.str;
+                receipt.store.name = currentTextItem.str;
 
             else if (isColumn(currentTextItem, 3))
                 // Article ID
@@ -171,10 +170,10 @@ function parseReceipt(textItems: Array<TextItem>, startOffset: number): [Receipt
         assert(textItems[++currentOffset].str.toLowerCase().startsWith('facture'), "Unexpected cell: "+textItems[currentOffset].str);
 
         assert(textItems[++currentOffset].str.toLowerCase().startsWith('total'), "Unexpected cell: "+textItems[currentOffset].str);
-        receipt.totalAmount = parseLocaleNumber(textItems[currentOffset].str.split(':').pop()!);
+        receipt.amount = parseLocaleNumber(textItems[currentOffset].str.split(':').pop()!);
 
         // receipt IDs may be repeated - let's prepend the day
-        receipt.receiptId = new Date(receipt.date).toISOString().split('T')[0].replaceAll('-', '')+'-'+receipt.receiptId
+        receipt.id = new Date(receipt.date).toISOString().split('T')[0].replaceAll('-', '')+'-'+receipt.id
     } catch (err) {
         console.warn(err);
     }

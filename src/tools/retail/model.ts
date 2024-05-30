@@ -1,3 +1,4 @@
+import { retail } from "@hilats/data-modules";
 
 export type Article = {
     label: string;
@@ -11,14 +12,11 @@ export type Article = {
     }
 }
 
-export {VendorArticle, ReceiptItem, Receipt} from "../../ldo/retail.typings";
+export type ReceiptWithRetailer = retail.Receipt & { retailer: string };
 
-import {Receipt, ReceiptItem} from "../../ldo/retail.typings";
-
-export type ReceiptWithRetailer = Receipt & { retailer: string };
-
-export type ReceiptItemWithReceipt = ReceiptItem & {
-    receiptId: string
+export type ReceiptItemWithReceipt = retail.ReceiptItem & {
+    receiptId: string,
+    date: string
 }
 
 export type ItemWithHistory = {
@@ -27,3 +25,7 @@ export type ItemWithHistory = {
     ean?: string,
     history: ReceiptItemWithReceipt[]
 }
+
+export type Receipt = retail.Receipt;
+export type ReceiptItem = retail.ReceiptItem;
+export type VendorArticle = retail.VendorArticle;
