@@ -49,7 +49,7 @@ function parseReceipt(textItems: Array<TextItem>, startOffset: number): [Receipt
     assert(receiptId, 'Receipt ID is undefined');
 
     const receipt: Receipt = {
-        id: "colruyt:receipt/"+encodeURIComponent(receiptId),
+        id: "",
         date: '',
         items: [],
         //returnedBottles: 0,
@@ -173,7 +173,8 @@ function parseReceipt(textItems: Array<TextItem>, startOffset: number): [Receipt
         receipt.amount = parseLocaleNumber(textItems[currentOffset].str.split(':').pop()!);
 
         // receipt IDs may be repeated - let's prepend the day
-        receipt.id = new Date(receipt.date).toISOString().split('T')[0].replaceAll('-', '')+'-'+receipt.id
+        const uniqueId = new Date(receipt.date).toISOString().split('T')[0].replaceAll('-', '')+'-'+receiptId;
+        receipt.id = "colruyt:receipt/"+encodeURIComponent(uniqueId);
     } catch (err) {
         console.warn(err);
     }
