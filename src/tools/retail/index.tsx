@@ -8,11 +8,10 @@ GlobalWorkerOptions.workerSrc = PdfjsWorker;
 
 import {TabContext, TabList, TabPanel} from '@mui/lab';
 
-import { ReceiptWithRetailer} from "./model";
-import {MemoryReceiptsStorage, PodRetailStorage, ReceiptsStorage} from "./storage";
-import {useSession} from "@inrupt/solid-ui-react";
+import {ReceiptWithRetailer} from "./model";
+import {MemoryReceiptsStorage, PodRetailStorage} from "./storage";
 import {AppContext} from "../../appContext";
-import {ErrorBoundary, PromiseContainer} from "@hilats/react-utils";
+import {PromiseStateContainer, usePromiseFn} from "@hilats/react-utils";
 import Dropzone from "react-dropzone";
 import ExpensesChart from "./components/ExpensesChart";
 import ItemsTable from "./components/ItemsTable";
@@ -25,7 +24,7 @@ import OutlinedInput from "@mui/material/OutlinedInput/OutlinedInput";
 import MenuItem from "@mui/material/MenuItem/MenuItem";
 import Box from "@mui/material/Box/Box";
 import Chip from "@mui/material/Chip/Chip";
-import {usePersistentQueryNavigate} from "../../ui/hooks";
+import {useFixedSolidSession, usePersistentQueryNavigate} from "../../ui/hooks";
 import Import from "./components/Import";
 
 
@@ -34,34 +33,9 @@ export const RetailDashboardRoutes = () => {
     const {search} = useLocation();
 
     return <Routes>
-        <Route path="/:panelId/*" element={<RetailDashboard />} />
-        <Route path="*" element={<Navigate to={"overview"+decodeURIComponent(search)} replace={true} />} />
+        <Route path="/:panelId/*" element={<ShoppingDashboard/>}/>
+        <Route path="*" element={<Navigate to={"overview" + decodeURIComponent(search)} replace={true}/>}/>
     </Routes>
-}
-
-export const RetailDashboard = () => {
-
-    const {fetch} = useSession();
-    const appContext = useContext(AppContext);
-
-    const [params] = useSearchParams();
-    const retailStorage = useMemo(() => {
-        const externalInputs = params.getAll('input');
-        if (externalInputs?.length) {
-            return new MemoryReceiptsStorage({uris: externalInputs});
-        } else if (appContext.podUrl) {
-            return new PodRetailStorage(appContext.podUrl, {fetch});
-        } else
-            return undefined;
-    },
-        [appContext.podUrl, fetch]);
-    //const preferences$ = useMemo(() => retailStorage?.fetchPreferences(), [retailStorage]);
-
-    return <div className="retail">
-        <ErrorBoundary>
-            {retailStorage ? <ShoppingDashboardContainer receiptsStorage={retailStorage}/> : null}
-        </ErrorBoundary>
-    </div>
 }
 
 
@@ -81,97 +55,134 @@ export const FileDrop = (props: { onData: (blob: Blob) => void }) => {
     </>
 }
 
+// This is necessary to embed regular DOM elements
+const RemoveDomProps = (props: { children: ReactNode }) => <>{props.children}</>;
 
-export const ShoppingDashboardContainer = (props: { receiptsStorage: ReceiptsStorage }) => {
+export const ShoppingDashboard = (props: {}) => {
 
+    const {fetch} = useFixedSolidSession();
+    const appContext = useContext(AppContext);
+
+    const podStorage = useMemo(
+        () => appContext.podUrl ? new PodRetailStorage(appContext.podUrl, {fetch}) : undefined,
+        [appContext.podUrl, fetch]);
+
+    const [params] = useSearchParams();
+    const externalInputs = params.getAll('input');
+
+    const memoryStorage = useMemo(
+        () => externalInputs?.length ? new MemoryReceiptsStorage({uris: externalInputs}) : undefined,
+        // must concat array to have a constant value across renderings
+        [externalInputs.join(',')]);
+
+    //const preferences$ = useMemo(() => retailStorage?.fetchPreferences(), [retailStorage]);
+
+    const receiptsStorage = memoryStorage || podStorage;
+
+    const [selectedRetailers, setSelectedRetailers] = useState<string[]>([]);
 
     // TODO const history$ = useMemo(async () => selectedRetailers.length ? Promise.all(selectedRetailers.map(retailer => props.retailStorage.fetchHistory(retailer))) : [] as Receipt[][], [props.retailStorage, selectedRetailers]);
-    const histories$ = useMemo(async () => {
-            const retailers = await props.receiptsStorage.listRetailers();
-            const histories = await props.receiptsStorage.fetchHistories(retailers)
-                .then(receiptMap => Object.entries(receiptMap).reduce<ReceiptWithRetailer[]>((result, [retailer, receipts]) => {
-                    result.push(...receipts.map<ReceiptWithRetailer>(r => ({...r, retailer})));
-                    return result;
-                }, []))
+    const histories$ = usePromiseFn(async () => {
+            if (receiptsStorage) {
+                const retailers = await receiptsStorage.listRetailers();
+                setSelectedRetailers(retailers);
 
-            return [retailers, histories] as [string[], ReceiptWithRetailer[]];
+                if (retailers?.length) {
+                    const histories = await receiptsStorage.fetchHistories(retailers)
+                        .then(receiptMap => Object.entries(receiptMap).reduce<ReceiptWithRetailer[]>((result, [retailer, receipts]) => {
+                            result.push(...receipts.map<ReceiptWithRetailer>(r => ({...r, retailer})));
+                            return result;
+                        }, []))
+
+                    return [retailers, histories] as [string[], ReceiptWithRetailer[]];
+                } else {
+                    return [[], []] as [string[], ReceiptWithRetailer[]];
+                }
+            } else {
+                return undefined;
+            }
         },
-        [props.receiptsStorage]);
+        [receiptsStorage]);
 
-    return <PromiseContainer promise={histories$}>{([retailers, histories]) => retailers ?
-            <ShoppingDashboard receipts={histories} retailers={retailers}/> :
-            <div>No retailer history found</div>}
-        </PromiseContainer>
-
-}
-
-// This is necessary to embed regular DOM elements
-const RemoveDomProps=(props: {children: ReactNode}) => <>{props.children}</>;
-
-export const ShoppingDashboard = (props: { receipts: Array<ReceiptWithRetailer>, retailers: string[] }) => {
 
     const navigate = usePersistentQueryNavigate();
-    let { panelId } = useParams();
-    const tab = panelId || 'overview';
+    let {panelId} = useParams();
+    const tab = ((panelId == 'import' || histories$.result) && panelId) || 'overview';
 
     //const [tab, setTab] = useState('overview');
 
-    const [selectedRetailers, setSelectedRetailers] = useState<string[]>(props.retailers);
-
     const receipts = useMemo(() => {
-        return props.receipts.filter(r => selectedRetailers.indexOf(r.retailer) >= 0);
-    }, [props.receipts, selectedRetailers])
+        return histories$.result && histories$.result[1].filter(r => selectedRetailers.indexOf(r.retailer) >= 0)
+    }, [histories$.result, selectedRetailers])
 
     return <>
-        <Box className="vFlow">
+        <Box className="retail">
             <TabContext value={tab}>
                 <Box sx={{borderBottom: 1, borderColor: 'divider', flex: 'none'}}>
-                    <TabList style={{flex: '1 1 100%'}} onChange={(e, value) => navigate('../'+value)}>
+                    <TabList style={{flex: '1 1 100%'}} onChange={(e, value) => navigate('../' + value)}>
                         <Tab label="Overview" value="overview"/>
-                        <Tab label="Receipts" value="receipts"/>
-                        <Tab label="Frequent Items" value="frequent"/>
-                        <Tab label="Expenses" value="expenses"/>
+                        <Tab label="Receipts" value="receipts" disabled={!receipts}/>
+                        <Tab label="Frequent Items" value="frequent" disabled={!receipts}/>
+                        <Tab label="Expenses" value="expenses" disabled={!receipts}/>
                         <RemoveDomProps>
                             <>
-                            <div style={{flex: 1}}></div>
-                            <div onClick={(e) => e.stopPropagation()}>
-                                <Select
-                                    sx={{'& .MuiSelect-select': {padding: "5px 6px"}}}
-                                    style={{margin: '5px', float: 'inline-end'}}
-                                    multiple
-                                    value={selectedRetailers}
-                                    onChange={(evt) => {
-                                        setSelectedRetailers(typeof evt.target.value === 'string' ? evt.target.value.split(',') : evt.target.value);
-                                    }}
-                                    input={<OutlinedInput id="select-multiple-chip" label="Retailer"/>}
-                                    renderValue={(selected) => (
-                                        <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 0.5}}>
-                                            {selectedRetailers.map((value) => (
-                                                <Chip key={value} label={value}/>
-                                            ))}
-                                        </Box>
-                                    )}
-                                >
-                                    {props.retailers.map((name) => (
-                                        <MenuItem
-                                            key={name}
-                                            value={name}
-                                        >
-                                            {name}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                            </div>
+                                <div style={{flex: 1}}></div>
+                                <div onClick={(e) => e.stopPropagation()}>
+                                    <Select
+                                        disabled={!histories$.result}
+                                        sx={{'& .MuiSelect-select': {padding: "5px 6px"}}}
+                                        style={{margin: '5px', float: 'inline-end'}}
+                                        multiple
+                                        value={selectedRetailers}
+                                        onChange={(evt) => {
+                                            setSelectedRetailers(typeof evt.target.value === 'string' ? evt.target.value.split(',') : evt.target.value);
+                                        }}
+                                        input={<OutlinedInput id="select-multiple-chip" label="Retailer"/>}
+                                        renderValue={(selected) => (
+                                            <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 0.5}}>
+                                                {selectedRetailers.map((value) => (
+                                                    <Chip key={value} label={value}/>
+                                                ))}
+                                            </Box>
+                                        )}
+                                    >
+                                        {histories$.result ? histories$.result[0].map((name) => (
+                                            <MenuItem
+                                                key={name}
+                                                value={name}
+                                            >
+                                                {name}
+                                            </MenuItem>
+                                        )) : null}
+                                    </Select>
+                                </div>
                             </>
                         </RemoveDomProps>
                         <Tab label="Import" value="import"/>
                     </TabList>
 
                 </Box>
-                <TabPanel value="overview" className='vFlow'><Overview receipts={receipts}/></TabPanel>
-                <TabPanel value="receipts" className='vFlow'><ReceiptsTable receipts={receipts}/></TabPanel>
-                <TabPanel value="frequent" className='vFlow'><ItemsTable receipts={receipts}/></TabPanel>
-                <TabPanel value="expenses" className='vFlow'><ExpensesChart receipts={receipts}/></TabPanel>
+                <TabPanel value="overview" className='vFlow'>
+                    <PromiseStateContainer promiseState={histories$}>
+                        {(history) => (history && history[0].length) ?
+                            <Overview receipts={history[1]}/> :
+                            (podStorage ? <div className="paddedPanel">
+                                No retail data has been found in your pod. Use the Import tool to bring your
+                                personal retail data into your pod, or find it yourself using the pod browser.
+                            </div> : <div className="paddedPanel">
+                                Please log in to your pod to view the retail data in your pod, or use the Import
+                                tool to import and view some retailer data. (it will not be persisted unless you log
+                                in to your pod though)
+                            </div>)}
+                    </PromiseStateContainer>
+
+                </TabPanel>
+                {receipts ?
+                    <TabPanel value="receipts" className='vFlow'><ReceiptsTable receipts={receipts}/></TabPanel> : null}
+                {receipts ?
+                    <TabPanel value="frequent" className='vFlow'><ItemsTable receipts={receipts}/></TabPanel> : null}
+                {receipts ?
+                    <TabPanel value="expenses" className='vFlow'><ExpensesChart receipts={receipts}/></TabPanel> : null}
                 <TabPanel value="import" className='vFlow'><Import/></TabPanel>
             </TabContext>
         </Box></>

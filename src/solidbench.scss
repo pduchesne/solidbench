@@ -151,6 +151,10 @@ body {
     color: var(--theme-color1-front);
   }
 
+  .Mui-disabled {
+    color: var(--theme-shadow) !important;
+  }
+
   .MuiButtonGroup-root {
     & > .MuiInputBase-root:not(:first-child) {
       border-top-left-radius: 0;

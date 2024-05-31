@@ -35,11 +35,11 @@ export class PodRetailStorage extends PodStorage implements ReceiptsStorage {
     }
 
     async listRetailers() {
-        const retailers = await this.listContainerResources(PATH_RETAILER_PREFIX, {fetch: this.fetch})
+        const retailers = await this.listContainerResources(PATH_RETAILER_PREFIX, {fetch: this.fetch}).catch(_404undefined)
             .then(urls =>
-                urls.filter(url => url.endsWith('/'))
+                urls ? urls.filter(url => url.endsWith('/'))
                     .map(url => url.split('/').at(-2))
-                    .filter(name => !!name));
+                    .filter(name => !!name) : []);
 
         return retailers as string[];
     }
