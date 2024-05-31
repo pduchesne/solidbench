@@ -1,12 +1,12 @@
 import * as React from "react";
 import {FC, useContext, useMemo} from "react";
 import {ErrorBoundary} from "@hilats/react-utils";
-import {useSession} from "@inrupt/solid-ui-react";
 import {AppContext} from "../../appContext";
 import {MusicStorage} from "./storage";
 import {SpotifyProvider} from "./spotify";
 import {Route, Routes, useParams} from "react-router-dom";
 import {useNavigate} from "react-router";
+import {useFixedSolidSession} from "../../ui/hooks";
 
 export type MusicDataImporter<T = {}> = FC<T & {onClose: () => void}>;
 
@@ -24,7 +24,7 @@ const MUSICDATAPROVIDERS: Record<string, MusicDataProvider> = {
 
 export const MusicDashboard = () => {
 
-    const {fetch} = useSession();
+    const {fetch} = useFixedSolidSession();
     const appContext = useContext(AppContext);
 
     //const [importerAction, setimporterAction] = useState<{importer: MusicDataImporter<any>, props: any}>();
@@ -55,7 +55,7 @@ export const MusicImporter = () => {
 
 export const MusicDataDisplay = () => {
 
-    const {fetch} = useSession();
+    const {fetch} = useFixedSolidSession();
     const appContext = useContext(AppContext);
 
     const musicStorage = useMemo(() => appContext.podUrl ? new MusicStorage(appContext.podUrl, {fetch}) : undefined, [appContext.podUrl, fetch]);

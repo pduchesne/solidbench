@@ -39,7 +39,6 @@ import Dropzone from "react-dropzone";
 import {ABSURL_REGEX, assert, getParentUrl, MIME_REGISTRY, WELL_KNOWN_TYPES} from "@hilats/utils";
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import Markdown from "react-markdown";
-import {useSession} from "@inrupt/solid-ui-react";
 import Breadcrumbs from "@mui/material/Breadcrumbs/Breadcrumbs";
 import Link from "@mui/material/Link/Link";
 import Input from "@mui/material/Input/Input";
@@ -47,6 +46,7 @@ import {Link as RouterLink} from 'react-router-dom';
 
 import {MODULE_REGISTRY, retail} from "@hilats/data-modules";
 import {toast} from "react-toastify";
+import {useFixedSolidSession} from "../ui/hooks";
 
 export const PodBrowserPanel = () => {
 
@@ -147,8 +147,8 @@ export type ResourceAction = {
 
 export const PodBrowser = (props: { rootUrl?: string, fetch?: typeof fetch, displayMetadata?: boolean }) => {
 
-    const solidSession = useSession();
-    const fetch = props.fetch || solidSession.fetch;
+    const session = useFixedSolidSession();
+    const fetch = props.fetch || session.fetch;
 
     const [selectedResource, setSelectedResource] = useState<string | undefined>();
     const params = useParams();
@@ -270,7 +270,7 @@ export const PodBrowser = (props: { rootUrl?: string, fetch?: typeof fetch, disp
 
     return (
         (!podUrl && ROOT != '$EXT') ?
-            ( !RES_PATH ? <Navigate to="../welcome"/> : <div>Please login to browse your pod</div>):
+            ( !RES_PATH ? <Navigate to="../welcome"/> : <div className="paddedPanel">Please login to browse your pod</div>):
             <div className="vFlow fill podbrowser" onClick={anchorClickCallback}>
                 <div className="podbrowser-body">
                     {podUrl ?

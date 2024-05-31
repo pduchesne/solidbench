@@ -3,7 +3,7 @@ import {Link} from "react-router-dom";
 import {memo, useContext} from "react";
 import * as React from "react";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import {LogoutButton, useSession} from "@inrupt/solid-ui-react";
+import {LogoutButton} from "@inrupt/solid-ui-react";
 import {LoginMultiButton} from "./solid";
 import {AppContext} from "./appContext";
 import Button from "@mui/material/Button/Button";
@@ -15,6 +15,7 @@ import AppBar from "@mui/material/AppBar/AppBar";
 import Toolbar from "@mui/material/Toolbar/Toolbar";
 import Box from "@mui/material/Box/Box";
 import {useNavigate} from "react-router";
+import {useFixedSolidSession} from "./ui/hooks";
 
 export const ToolsMenu = () => {
     const popupState = usePopupState({variant: 'popover'})
@@ -63,7 +64,7 @@ const ProfileMenu = () => {
 
 
 export const AppNavBar = memo(() => {
-    const {session} = useSession();
+    const {session} = useFixedSolidSession();
 
     const navigate = useNavigate();
 

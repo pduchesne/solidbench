@@ -4,11 +4,11 @@ import {Sidenav} from "./sidenav";
 
 import {Navigate, Route, Routes, useLocation, useParams} from "react-router-dom";
 import {useNavigate} from "react-router";
-import {useSession} from "@inrupt/solid-ui-react";
 import {lazy, LazyExoticComponent, Suspense, useContext} from "react";
 import {AppContext} from "../../appContext";
 import { DEFAULTS } from "@hilats/react-utils";
 import { ToastContainer } from 'react-toastify';
+import {useFixedSolidSession} from "../../ui/hooks";
 
 DEFAULTS.loaderMessage = 'Loading data...';
 
@@ -36,7 +36,7 @@ export const DashboardRoutes = () => {
 export const PersonalDashboard = (props: {selectedPanel?: string }) => {
 
     const appContext = useContext(AppContext);
-    /*const {fetch} = */ useSession();
+    /*const {fetch} = */ useFixedSolidSession();
 
     const navigate = useNavigate();
 

@@ -7,8 +7,8 @@ import { DelhaizePanel } from "../retailers/delhaize/ImportPanel";
 import { AmazonPanel } from "../retailers/amazon/ImportPanel";
 import {toast} from "react-toastify";
 import {PodRetailStorage} from "../storage";
-import {useSession} from "@inrupt/solid-ui-react";
 import {AppContext} from "../../../appContext";
+import {useFixedSolidSession} from "../../../ui/hooks";
 
 /**
  * Import UI components for specific retailers
@@ -35,7 +35,7 @@ const ImportPanel = (props:{}) => {
     const [upload, setUpload] = useState<{ retailer: string, blob: Blob } | { retailer?: undefined }>({});
     const UploadComp = upload.retailer && RETAILERS[upload.retailer].comp;
 
-    const {fetch} = useSession();
+    const {fetch} = useFixedSolidSession();
     const appContext = useContext(AppContext);
 
     const retailStorage = useMemo(() => {

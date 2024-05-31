@@ -6,7 +6,7 @@ import * as React from 'react';
 import {memo, useCallback} from 'react';
 import {BrowserRouter, Navigate, Route, Routes} from 'react-router-dom';
 import './solidbench.scss';
-import {SessionProvider, useSession} from '@inrupt/solid-ui-react';
+import {SessionProvider} from '@inrupt/solid-ui-react';
 
 import {ErrorBoundary, DEFAULTS} from '@hilats/react-utils';
 import {createRoot} from "react-dom/client";
@@ -16,6 +16,7 @@ import {useNavigate} from "react-router";
 import {DashboardRoutes} from "./tools/personal-dashboard";
 import classNames from "classnames";
 import {AppThemeProvider} from "./theme";
+import {useFixedSolidSession} from "./ui/hooks";
 
 const routes = [
     {
@@ -62,7 +63,7 @@ const MemoSessionProvider = memo(SessionProvider);
 
 export const AppWithContext = memo(() => {
 
-    const session = useSession();
+    const session = useFixedSolidSession();
 
     /*
     useEffect(() => {

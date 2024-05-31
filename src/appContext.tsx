@@ -1,9 +1,9 @@
 import * as React from "react";
-import {useSession} from "@inrupt/solid-ui-react";
 import {memo, useEffect, useState} from "react";
 import {getPodUrls, ResourceCache} from "@hilats/solid-utils";
 import {Preferences} from "./tools/personal-dashboard/preferences";
 import {useDarkThemeDetector} from "@hilats/react-utils";
+import {useFixedSolidSession} from "./ui/hooks";
 
 export type AppContextType = {
     webId?: string,
@@ -27,7 +27,7 @@ function createInitAppContext(updateAppContextFn: (update: Partial<AppContextTyp
 export const AppContext = React.createContext<AppContextType>(createInitAppContext(() => null));
 
 export const AppContextProvider = memo((props: { children?: React.ReactNode }) => {
-    const {session} = useSession();
+    const {session} = useFixedSolidSession();
 
     //const params = new URLSearchParams(query);
 
@@ -55,7 +55,7 @@ export const AppContextProvider = memo((props: { children?: React.ReactNode }) =
             })
         },
         // run this only once
-        [session.info.webId]
+        [session.info.webId, session.info.isLoggedIn]
     );
 
     useEffect(
