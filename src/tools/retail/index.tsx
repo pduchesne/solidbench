@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useContext, useMemo, useState} from "react";
+import {ReactNode, useContext, useMemo, useState} from "react";
 import {GlobalWorkerOptions} from 'pdfjs-dist';
 // @ts-ignore
 import PdfjsWorker from "pdfjs-dist/build/pdf.worker.js";
@@ -105,6 +105,8 @@ export const ShoppingDashboardContainer = (props: { receiptsStorage: ReceiptsSto
 
 }
 
+// This is necessary to embed regular DOM elements
+const RemoveDomProps=(props: {children: ReactNode}) => <>{props.children}</>;
 
 export const ShoppingDashboard = (props: { receipts: Array<ReceiptWithRetailer>, retailers: string[] }) => {
 
@@ -124,49 +126,53 @@ export const ShoppingDashboard = (props: { receipts: Array<ReceiptWithRetailer>,
         <Box className="vFlow">
             <TabContext value={tab}>
                 <Box sx={{borderBottom: 1, borderColor: 'divider', flex: 'none'}}>
-                    <TabList style={{display: 'inline-flex'}} onChange={(e, value) => navigate('../'+value)} aria-label="lab API tabs example">
+                    <TabList style={{flex: '1 1 100%'}} onChange={(e, value) => navigate('../'+value)}>
                         <Tab label="Overview" value="overview"/>
                         <Tab label="Receipts" value="receipts"/>
                         <Tab label="Frequent Items" value="frequent"/>
                         <Tab label="Expenses" value="expenses"/>
-                        <div style={{width: '30px'}}></div>
+                        <RemoveDomProps>
+                            <>
+                            <div style={{flex: 1}}></div>
+                            <div onClick={(e) => e.stopPropagation()}>
+                                <Select
+                                    sx={{'& .MuiSelect-select': {padding: "5px 6px"}}}
+                                    style={{margin: '5px', float: 'inline-end'}}
+                                    multiple
+                                    value={selectedRetailers}
+                                    onChange={(evt) => {
+                                        setSelectedRetailers(typeof evt.target.value === 'string' ? evt.target.value.split(',') : evt.target.value);
+                                    }}
+                                    input={<OutlinedInput id="select-multiple-chip" label="Retailer"/>}
+                                    renderValue={(selected) => (
+                                        <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 0.5}}>
+                                            {selectedRetailers.map((value) => (
+                                                <Chip key={value} label={value}/>
+                                            ))}
+                                        </Box>
+                                    )}
+                                >
+                                    {props.retailers.map((name) => (
+                                        <MenuItem
+                                            key={name}
+                                            value={name}
+                                        >
+                                            {name}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </div>
+                            </>
+                        </RemoveDomProps>
                         <Tab label="Import" value="import"/>
                     </TabList>
-                    <Select
-                        sx={{'& .MuiSelect-select': {padding: "5px 6px"}}}
-                        style={{margin: '5px', float: 'inline-end'}}
-                        multiple
-                        value={selectedRetailers}
-                        onClick={(e) => e.stopPropagation()}
-                        onChange={(evt) => {
-                            setSelectedRetailers(typeof evt.target.value === 'string' ? evt.target.value.split(',') : evt.target.value);
-                            evt.stopPropagation();
-                        }}
-                        input={<OutlinedInput id="select-multiple-chip" label="Retailer"/>}
-                        renderValue={(selected) => (
-                            <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 0.5}}>
-                                {selectedRetailers.map((value) => (
-                                    <Chip key={value} label={value}/>
-                                ))}
-                            </Box>
-                        )}
-                    >
-                        {props.retailers.map((name) => (
-                            <MenuItem
-                                key={name}
-                                value={name}
-                            >
-                                {name}
-                            </MenuItem>
-                        ))}
-                    </Select>
 
                 </Box>
                 <TabPanel value="overview" className='vFlow'><Overview receipts={receipts}/></TabPanel>
                 <TabPanel value="receipts" className='vFlow'><ReceiptsTable receipts={receipts}/></TabPanel>
                 <TabPanel value="frequent" className='vFlow'><ItemsTable receipts={receipts}/></TabPanel>
                 <TabPanel value="expenses" className='vFlow'><ExpensesChart receipts={receipts}/></TabPanel>
-                <TabPanel value="import" className='vFlow'><Import /></TabPanel>
+                <TabPanel value="import" className='vFlow'><Import/></TabPanel>
             </TabContext>
         </Box></>
 
