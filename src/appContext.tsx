@@ -3,7 +3,7 @@ import {memo, useEffect, useState} from "react";
 import {getPodUrls, ResourceCache} from "@hilats/solid-utils";
 import {Preferences} from "./tools/personal-dashboard/preferences";
 import {useDarkThemeDetector} from "@hilats/react-utils";
-import {useFixedSolidSession} from "./ui/hooks";
+import {useFixedSolidSession} from "./solid/SessionProvider";
 
 export type AppContextType = {
     webId?: string,

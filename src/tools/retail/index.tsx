@@ -24,8 +24,9 @@ import OutlinedInput from "@mui/material/OutlinedInput/OutlinedInput";
 import MenuItem from "@mui/material/MenuItem/MenuItem";
 import Box from "@mui/material/Box/Box";
 import Chip from "@mui/material/Chip/Chip";
-import {useFixedSolidSession, usePersistentQueryNavigate} from "../../ui/hooks";
+import {usePersistentQueryNavigate} from "../../ui/hooks";
 import Import from "./components/Import";
+import {useFixedSolidSession} from "../../solid/SessionProvider";
 
 
 export const RetailDashboardRoutes = () => {

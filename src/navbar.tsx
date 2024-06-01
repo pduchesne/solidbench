@@ -15,7 +15,7 @@ import AppBar from "@mui/material/AppBar/AppBar";
 import Toolbar from "@mui/material/Toolbar/Toolbar";
 import Box from "@mui/material/Box/Box";
 import {useNavigate} from "react-router";
-import {useFixedSolidSession} from "./ui/hooks";
+import {useFixedSolidSession} from "./solid/SessionProvider";
 
 export const ToolsMenu = () => {
     const popupState = usePopupState({variant: 'popover'})

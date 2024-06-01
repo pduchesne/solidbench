@@ -46,7 +46,7 @@ import {Link as RouterLink} from 'react-router-dom';
 
 import {MODULE_REGISTRY, retail} from "@hilats/data-modules";
 import {toast} from "react-toastify";
-import {useFixedSolidSession} from "../ui/hooks";
+import {useFixedSolidSession} from "../solid/SessionProvider";
 
 export const PodBrowserPanel = () => {
 

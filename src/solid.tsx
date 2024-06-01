@@ -1,6 +1,5 @@
 import * as React from 'react';
 import {useCallback, useEffect, useMemo, useState} from 'react';
-import {LoginButton} from '@inrupt/solid-ui-react';
 import {
     createContainerAt,
     getFile,
@@ -16,6 +15,7 @@ import ButtonGroup from '@mui/material/ButtonGroup/ButtonGroup';
 import Button from '@mui/material/Button/Button';
 import Select from '@mui/material/Select/Select';
 import MenuItem from '@mui/material/MenuItem/MenuItem';
+import {LoginButton} from "./solid/LoginButton";
 
 const ISSUERS: Record<string, string> = {
     //"https://openid.sandbox-pod.datanutsbedrijf.be": "DNB Sandbox",

@@ -6,7 +6,8 @@ import {MusicStorage} from "./storage";
 import {SpotifyProvider} from "./spotify";
 import {Route, Routes, useParams} from "react-router-dom";
 import {useNavigate} from "react-router";
-import {useFixedSolidSession} from "../../ui/hooks";
+import {SPOTIFY_SCOPES_ALL, SpotifyAuthenticator, SpotifyContextProvider} from "./spotify/auth";
+import {useFixedSolidSession} from "../../solid/SessionProvider";
 
 export type MusicDataImporter<T = {}> = FC<T & {onClose: () => void}>;
 
@@ -32,12 +33,16 @@ export const MusicDashboard = () => {
     const musicStorage = useMemo(() => appContext.podUrl ? new MusicStorage(appContext.podUrl, {fetch}) : undefined, [appContext.podUrl, fetch]);
     //const preferences$ = useMemo(() => musicStorage?.fetchPreferences(), [musicStorage]);
     musicStorage
-    return <div className="retail">
-        <ImporterCards/>
-        <Routes>
-            <Route path="/import/:source" Component={MusicImporter}/>
-            <Route path="/" Component={MusicDataDisplay}/>
-        </Routes>
+    return <div className="music">
+        <SpotifyContextProvider clientId='7ca9684301bc4f62ac837fa96c00c179' redirectUrl={new URL('/personal-dashboard/music/spotify/auth', window.location.toString()).toString()} scopes={SPOTIFY_SCOPES_ALL}>
+            <ImporterCards/>
+            <Routes>
+                <Route path="/auth/spotify" element={<SpotifyAuthenticator />}/>
+                <Route path="/import/:source" Component={MusicImporter}/>
+                <Route path="/" Component={MusicDataDisplay}/>
+            </Routes>
+        </SpotifyContextProvider>
+
     </div>
 }
 

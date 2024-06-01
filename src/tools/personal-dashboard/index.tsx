@@ -8,7 +8,7 @@ import {lazy, LazyExoticComponent, Suspense, useContext} from "react";
 import {AppContext} from "../../appContext";
 import { DEFAULTS } from "@hilats/react-utils";
 import { ToastContainer } from 'react-toastify';
-import {useFixedSolidSession} from "../../ui/hooks";
+import {useFixedSolidSession} from "../../solid/SessionProvider";
 
 DEFAULTS.loaderMessage = 'Loading data...';
 

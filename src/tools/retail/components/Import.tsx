@@ -8,7 +8,7 @@ import { AmazonPanel } from "../retailers/amazon/ImportPanel";
 import {toast} from "react-toastify";
 import {PodRetailStorage} from "../storage";
 import {AppContext} from "../../../appContext";
-import {useFixedSolidSession} from "../../../ui/hooks";
+import {useFixedSolidSession} from "../../../solid/SessionProvider";
 
 /**
  * Import UI components for specific retailers
