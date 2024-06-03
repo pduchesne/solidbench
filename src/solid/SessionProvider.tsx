@@ -141,7 +141,7 @@ export function SessionProvider({
 
     useEffect(() => {
         if (restoreSession) {
-            contextHandleIncomingRedirect({url: new URL(window.location.href).origin, restorePreviousSession: restoreSession})
+            contextHandleIncomingRedirect({ /* TODO url: new URL(window.location.href).origin, */restorePreviousSession: restoreSession})
         }
     }, [
         session,

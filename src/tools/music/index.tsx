@@ -37,7 +37,7 @@ export const MusicDashboard = () => {
         <SpotifyContextProvider clientId='7ca9684301bc4f62ac837fa96c00c179' redirectUrl={new URL('/personal-dashboard/music/spotify/auth', window.location.toString()).toString()} scopes={SPOTIFY_SCOPES_ALL}>
             <ImporterCards/>
             <Routes>
-                <Route path="/auth/spotify" element={<SpotifyAuthenticator />}/>
+                <Route path="/spotify/auth" element={<SpotifyAuthenticator />}/>
                 <Route path="/import/:source" Component={MusicImporter}/>
                 <Route path="/" Component={MusicDataDisplay}/>
             </Routes>

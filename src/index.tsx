@@ -103,7 +103,7 @@ export const AppWithContext = memo(() => {
 
 export const App = memo(() => {
     const navigate = useNavigate();
-
+//@ts-ignore
     const sessionRestoreCb = useCallback((url: string) => {
         const host = new URL(url).host;
         const path = url.substring(url.indexOf(host) + host.length);
@@ -112,9 +112,10 @@ export const App = memo(() => {
     }, [ /* navigate TODO WARN this means the navigate function will never get updated, and therefore cannot be used for relative navigation*/ ]);
 
     return (
-        <MemoSessionProvider restorePreviousSession={true}
+        <MemoSessionProvider restorePreviousSession={false}
                              sessionId="solidbench-app"
-                             onSessionRestore={sessionRestoreCb}
+                             sessionRequestInProgress={false}
+                             //onSessionRestore={sessionRestoreCb}
                              // TODO loading the profile is useless as of now, but skipping it causes abug
                              // see https://github.com/inrupt/solid-ui-react/issues/970
                              //skipLoadingProfile={true}
