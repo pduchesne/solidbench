@@ -1,9 +1,9 @@
 import * as React from "react";
 import Button from "@mui/material/Button/Button";
 import {PromiseFnContainer} from "@hilats/react-utils";
-import {MusicDataImporter, MusicDataProvider} from "../index";
 import {useNavigate} from "react-router";
 import {useSpotifyContext} from "./auth";
+import {MusicDataImporter, MusicDataProvider} from "../components/ConnectSources";
 
 export const SpotifyCard = () => {
     const navigate = useNavigate();

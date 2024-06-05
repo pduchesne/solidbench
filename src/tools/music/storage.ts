@@ -1,35 +1,35 @@
 import {PodStorage} from "@hilats/solid-utils";
-import {_404undefined} from "@hilats/utils";
-
+import {music} from '@hilats/data-modules';
 
 export const PATH_PREFERENCES = 'preferences.json';
 export const PATH_ARTISTS = 'artists.json';
 export const PATH_TOP_ARTISTS = 'top_artists.json';
+export const PATH_PLAYLISTS = 'playlists.json';
 
 export type Preferences = any;
 
-export type Artist = {
-    name: string;
-    mb?: string;
-    sp?: string;
-    wd?: string;
-    lfm?: string;
-}
-export type Album = {
-    name: string;
-    artist: string;
-}
 
 export type TopArtists = {
     artist: string;
     yearly: {y: number, sum: number}[];
 }
 
-export class MusicStorage extends PodStorage {
+export interface MusicStorage {
+
+    fetchPlaylists(): Promise<music.Playlist[]>;
+}
+
+export class PodMusicStorage
+    extends PodStorage
+    implements MusicStorage  {
 
     constructor(podUri: string, options?: { fetch?: typeof fetch, podFolder?: string }) {
         const podFolder = options?.podFolder || 'music/';
         super(podUri + podFolder, options);
+    }
+
+    fetchPlaylists() {
+        return this.fetchJSON<music.Playlist[]>(PATH_PLAYLISTS).then(res => res || []);
     }
 
     fetchTopArtists() {
@@ -41,10 +41,41 @@ export class MusicStorage extends PodStorage {
     }
 
     fetchArtists() {
-        return this.fetchJSON<Artist[]>(PATH_ARTISTS);
+        return this.fetchJSON<music.MusicGroup[]>(PATH_ARTISTS);
     }
 
-    saveArtists(artists: Artist[]) {
+    saveArtists(artists: music.MusicGroup[]) {
         return this.putJSON(PATH_ARTISTS, artists);
     }
+}
+
+
+export class MemoryMusicStorage implements MusicStorage {
+
+    private _playlists$: Promise<music.Playlist[]>;
+
+    constructor(options: {uris?: string[], fetch?: typeof global.fetch}) {
+
+        this._playlists$ = Promise.resolve([]);
+
+        const {uris, fetch = global.fetch} = options;
+
+        if (uris) this._playlists$ = this._playlists$.then(async playlists => {
+            for (const uri of uris) {
+                // TODO check return content type ?
+                const ttlStr = await fetch(uri).then(resp => resp.text())
+                const parsedPlaylists = await music.DM_MUSIC.parseTriples([ttlStr], {base: uri});
+
+                playlists.push(...parsedPlaylists);
+            }
+            return playlists;
+        });
+    }
+
+    fetchPlaylists(): Promise<music.Playlist[]> {
+        return this._playlists$;
+    }
+
+
+
 }

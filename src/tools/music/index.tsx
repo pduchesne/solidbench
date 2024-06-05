@@ -1,45 +1,30 @@
 import * as React from "react";
-import {FC, useContext, useMemo} from "react";
-import {ErrorBoundary} from "@hilats/react-utils";
+import {useContext, useMemo} from "react";
 import {AppContext} from "../../appContext";
-import {MusicStorage} from "./storage";
-import {SpotifyProvider} from "./spotify";
-import {Route, Routes, useParams} from "react-router-dom";
-import {useNavigate} from "react-router";
+import {Navigate, Route, Routes, useLocation, useParams, useSearchParams} from "react-router-dom";
 import {SPOTIFY_SCOPES_ALL, SpotifyAuthenticator, SpotifyContextProvider} from "./spotify/auth";
 import {useFixedSolidSession} from "../../solid/SessionProvider";
-
-export type MusicDataImporter<T = {}> = FC<T & {onClose: () => void}>;
-
-export type ProviderCard<T> = FC<{ onAction:(props: T) => void}>;
-
-export type MusicDataProvider<T = {}> = { label: string, card: ProviderCard<T>, importer: MusicDataImporter<T> };
-
-/**
- * Import UI components for specific retailers
- */
-const MUSICDATAPROVIDERS: Record<string, MusicDataProvider> = {
-    spotify: SpotifyProvider,
-    lastfm: SpotifyProvider
-}
-
+import {usePersistentQueryNavigate} from "../../ui/hooks";
+import Box from "@mui/material/Box/Box";
+import {TabContext, TabList, TabPanel} from "@mui/lab";
+import Tab from "@mui/material/Tab/Tab";
+import {PlaylistsRoutes} from "./components/Playlists";
+import {MemoryMusicStorage, PodMusicStorage} from "./storage";
+import MusicHistory from "./components/MusicHistory";
+import MusicExplore from "./components/MusicExplore";
+import ConnectSources from "./components/ConnectSources";
 export const MusicDashboard = () => {
 
-    const {fetch} = useFixedSolidSession();
-    const appContext = useContext(AppContext);
+    const {search} = useLocation();
 
-    //const [importerAction, setimporterAction] = useState<{importer: MusicDataImporter<any>, props: any}>();
-
-    const musicStorage = useMemo(() => appContext.podUrl ? new MusicStorage(appContext.podUrl, {fetch}) : undefined, [appContext.podUrl, fetch]);
-    //const preferences$ = useMemo(() => musicStorage?.fetchPreferences(), [musicStorage]);
-    musicStorage
     return <div className="music">
-        <SpotifyContextProvider clientId='7ca9684301bc4f62ac837fa96c00c179' redirectUrl={new URL('/personal-dashboard/music/spotify/auth', window.location.toString()).toString()} scopes={SPOTIFY_SCOPES_ALL}>
-            <ImporterCards/>
+        <SpotifyContextProvider clientId='7ca9684301bc4f62ac837fa96c00c179'
+                                redirectUrl={new URL('/personal-dashboard/music/spotify/auth', window.location.toString()).toString()}
+                                scopes={SPOTIFY_SCOPES_ALL}>
             <Routes>
                 <Route path="/spotify/auth" element={<SpotifyAuthenticator />}/>
-                <Route path="/import/:source" Component={MusicImporter}/>
-                <Route path="/" Component={MusicDataDisplay}/>
+                <Route path="/:panelId/*" element={<MusicDataDisplay/>}/>
+                <Route path="*" element={<Navigate to={"overview" + decodeURIComponent(search)} replace={true}/>}/>
             </Routes>
         </SpotifyContextProvider>
 
@@ -47,40 +32,60 @@ export const MusicDashboard = () => {
 }
 
 
-export const MusicImporter = () => {
-
-    const {source} = useParams();
-    const navigate = useNavigate();
-
-    const Importer = MUSICDATAPROVIDERS[source!].importer;
-
-    return <div>CLOSE<Importer onClose={() => navigate('.', {replace: false})}/></div>
-}
-
 
 export const MusicDataDisplay = () => {
 
     const {fetch} = useFixedSolidSession();
     const appContext = useContext(AppContext);
 
-    const musicStorage = useMemo(() => appContext.podUrl ? new MusicStorage(appContext.podUrl, {fetch}) : undefined, [appContext.podUrl, fetch]);
-    //const preferences$ = useMemo(() => musicStorage?.fetchPreferences(), [musicStorage]);
-    musicStorage
-    return <ErrorBoundary>
-        <div>TODO</div>
-    </ErrorBoundary>
+    const podStorage = useMemo(
+        () => appContext.podUrl ? new PodMusicStorage(appContext.podUrl, {fetch}) : undefined,
+        [appContext.podUrl, fetch]);
+
+    const [params] = useSearchParams();
+    const externalInputs = params.getAll('input');
+
+    const memoryStorage = useMemo(
+        () => externalInputs?.length ? new MemoryMusicStorage({uris: externalInputs}) : undefined,
+        // must concat array to have a constant value across renderings
+        [externalInputs.join(',')]);
+
+//const preferences$ = useMemo(() => podStorage?.fetchPreferences(), [podStorage]);
+
+    const musicStorage = memoryStorage || podStorage;
+
+    const navigate = usePersistentQueryNavigate();
+    let {panelId} = useParams();
+
+    const tab = panelId || 'overview';
+
+    return <>
+        <Box className="retail">
+            <TabContext value={tab}>
+                <Box sx={{borderBottom: 1, borderColor: 'divider', flex: 'none'}}>
+                    <TabList style={{flex: '1 1 100%'}} onChange={(e, value) => navigate('../' + value)}>
+                        <Tab label="Overview" value="overview"/>
+                        <Tab label="Playlists" value="playlists" />
+                        <Tab label="History" value="history" />
+                        <Tab label="Explore" value="explore" />
+                        <Tab label="Connect" value="connect"/>
+                    </TabList>
+
+                </Box>
+                <TabPanel value="overview" className='vFlow'>
+                    Overview
+                </TabPanel>
+                {musicStorage ? <>
+                    <TabPanel value="playlists" className='vFlow'><PlaylistsRoutes storage={musicStorage}/></TabPanel>
+                    <TabPanel value="history" className='vFlow'><MusicHistory storage={musicStorage}/></TabPanel>
+                    <TabPanel value="explore" className='vFlow'><MusicExplore storage={musicStorage}/></TabPanel>
+                </> : null}
+
+                <TabPanel value="connect" className='vFlow'><ConnectSources/></TabPanel>
+            </TabContext>
+        </Box></>
 }
 
-export const ImporterCards = () => {
-    return <div className="hFlow dataproviders">
-        {Object.entries(MUSICDATAPROVIDERS).map(([retailer, config]) => {
-            return <div className="providerCard">
-                {config.label}
-                <config.card onAction={() => {
-                }}/>
-            </div>
-        })}
-    </div>
-}
+
 
 export default MusicDashboard;
