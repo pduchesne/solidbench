@@ -16,6 +16,7 @@ import {DashboardRoutes} from "./tools/personal-dashboard";
 import classNames from "classnames";
 import {AppThemeProvider} from "./theme";
 import {SessionProvider, useFixedSolidSession} from "./solid/SessionProvider";
+import {SolidAuth} from "./solid/auth";
 
 const routes = [
     {
@@ -87,6 +88,7 @@ export const AppWithContext = memo(() => {
                 <div className='vFlow'>
                     <ErrorBoundary>
                         <Routes>
+                            <Route path="/auth/solid" element={<SolidAuth />}/>
                             {routes.map((route, i) => (
                                 <Route path={route.path} key={i} element={<ErrorBoundary>
                                     <route.component/>
@@ -112,10 +114,10 @@ export const App = memo(() => {
     }, [ /* navigate TODO WARN this means the navigate function will never get updated, and therefore cannot be used for relative navigation*/ ]);
 
     return (
-        <MemoSessionProvider restorePreviousSession={false}
+        <MemoSessionProvider restorePreviousSession={url => url.indexOf('/auth') < 0}
                              sessionId="solidbench-app"
                              sessionRequestInProgress={false}
-                             //onSessionRestore={sessionRestoreCb}
+                             onSessionRestore={sessionRestoreCb}
                              // TODO loading the profile is useless as of now, but skipping it causes abug
                              // see https://github.com/inrupt/solid-ui-react/issues/970
                              //skipLoadingProfile={true}

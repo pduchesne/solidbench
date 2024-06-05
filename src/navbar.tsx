@@ -100,7 +100,7 @@ export const AppNavBar = memo(() => {
                                         /*, popUp: true */
                                     }
                                 }
-                                redirectUrl={new URL("/personal-dashboard", window.location.href).toString()}
+                                redirectUrl={new URL("/auth/solid", window.location.href).toString()}
                                 onError={console.log}
                             >
                                 <Button variant="contained" color="primary">

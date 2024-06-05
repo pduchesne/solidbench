@@ -46,7 +46,7 @@ export interface ISessionProvider {
     sessionRequestInProgress?: boolean;
     onError?: (error: Error) => void;
     /** @since 2.3.0 */
-    restorePreviousSession?: boolean;
+    restorePreviousSession?: boolean | ((url: string)=> boolean);
     /** @since 2.3.0 */
     onSessionRestore?: (url: string) => void;
     /**
@@ -89,20 +89,17 @@ export function SessionProvider({
     const [sessionRequestInProgress, setSessionRequestInProgress] =
         useState(defaultInProgress);
 
-    let currentLocation;
-
-    if (typeof window !== "undefined") {
-        currentLocation = window.location;
-    }
-
     const contextHandleIncomingRedirect = useCallback(async (options: IHandleIncomingRedirectOptions) => {
         setSessionRequestInProgress(true);
 
         let sessionInfo: ISessionInfo | undefined = undefined;
         try {
+            const {url = window.location.href} = options;
+            const restorePreviousSession = typeof restoreSession == 'function' ? restoreSession(url) : restoreSession;
+            console.log(`SOLIDAUTH : Handling Incoming Redirect [restore=${restorePreviousSession}] : ${url}`);
             sessionInfo = await handleIncomingRedirect({
-                url: window.location.href,
-                restorePreviousSession: restoreSession,
+                url,
+                restorePreviousSession,
                 ...options
             });
 
@@ -140,13 +137,16 @@ export function SessionProvider({
     }, [restoreSession, onError, skipLoadingProfile]);
 
     useEffect(() => {
-        if (restoreSession) {
-            contextHandleIncomingRedirect({ /* TODO url: new URL(window.location.href).origin, */restorePreviousSession: restoreSession})
+        const url = window.location.href
+        const restorePreviousSession = typeof restoreSession == 'function' ? restoreSession(url) : restoreSession;
+
+        if (restorePreviousSession) {
+            contextHandleIncomingRedirect({ url, restorePreviousSession});
         }
     }, [
         session,
         sessionId,
-        currentLocation,
+        window.location.href,
         restoreSession
     ]);
 
@@ -199,16 +199,7 @@ export function SessionProvider({
 }
 
 export function useSession() {
-    const { session, sessionRequestInProgress, fetch, login, logout } =
-        useContext(SessionContext);
-
-    return {
-        session,
-        sessionRequestInProgress,
-        fetch,
-        login,
-        logout,
-    };
+    return useContext(SessionContext);
 }
 
 

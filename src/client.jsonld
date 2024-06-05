@@ -5,7 +5,9 @@
   "redirect_uris": [
     "https://localhost:8000/",
     "https://localhost:8000/personal-dashboard",
+    "https://localhost:8000/auth/login",
     "https://192.168.1.58:8000/personal-dashboard",
+    "${process.env.ROOT_URL}/auth/login",
     "${process.env.ROOT_URL}/personal-dashboard",
     "${process.env.ROOT_URL}/",
     "${process.env.ROOT_URL}"
