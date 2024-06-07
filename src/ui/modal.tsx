@@ -1,6 +1,7 @@
 import Button from "@mui/material/Button/Button";
 import Modal from "@mui/material/Modal/Modal";
 import React, {useCallback, useState} from "react";
+import Input from "@mui/material/Input/Input";
 
 export type ModalComponent<T extends {}> = React.ComponentType<{values: T, onChange: (newValues: T) => void}>;
 
@@ -83,7 +84,15 @@ export function OtherModal(props: ModalProps) {
 
  */
 
-
+export const PasswordDialog: ModalComponent<{ password: string }> = (props) => {
+    return <div>
+        <Input placeholder="password"
+               value={props.values.password}
+               onChange={(e) => {
+                   props.onChange({...props.values, password: e.target.value})
+               }}/>
+    </div>
+}
 export function BasicModal(props: ModalProps) {
 
     return (

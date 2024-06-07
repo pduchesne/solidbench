@@ -15,14 +15,15 @@ function parseDate(dateStr: string, timeStr: string) {
     return new Date(dateStr + " " + timeStr);
 }
 
-export async function parseXlsxExport(data: Blob | Buffer) {
+export async function parseXlsxExport(data: Blob | Buffer, requestPassword: () => Promise<string>) {
 
     let buffer = data instanceof Buffer ? data : Buffer.from(await data.arrayBuffer());
 
     const isEncrypted = officeCrypto.isEncrypted(buffer);
 
     if (isEncrypted) {
-        buffer = await officeCrypto.decrypt(buffer, {password: 'g4qMBh'});
+        const password = await requestPassword();
+        buffer = await officeCrypto.decrypt(buffer, {password});
     }
 
     // [

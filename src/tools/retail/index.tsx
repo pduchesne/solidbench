@@ -14,7 +14,6 @@ import {ReceiptWithRetailer} from "./model";
 import {MemoryReceiptsStorage, PodRetailStorage} from "./storage";
 import {AppContext} from "../../appContext";
 import {PromiseStateContainer, usePromiseFn} from "@hilats/react-utils";
-import Dropzone from "react-dropzone";
 import ExpensesChart from "./components/ExpensesChart";
 import ItemsTable from "./components/ItemsTable";
 import ReceiptsTable from "./components/ReceiptsTable";
@@ -30,7 +29,6 @@ import {usePersistentQueryNavigate} from "../../ui/hooks";
 import Import from "./components/Import";
 import {useFixedSolidSession} from "../../solid/SessionProvider";
 
-
 export const RetailDashboardRoutes = () => {
 
     const {search} = useLocation();
@@ -39,23 +37,6 @@ export const RetailDashboardRoutes = () => {
         <Route path="/:panelId/*" element={<ShoppingDashboard/>}/>
         <Route path="*" element={<Navigate to={"overview" + decodeURIComponent(search)} replace={true}/>}/>
     </Routes>
-}
-
-
-export const FileDrop = (props: { onData: (blob: Blob) => void }) => {
-
-    return <>
-        <Dropzone onDrop={acceptedFiles => props.onData(acceptedFiles[0])}>
-            {({getRootProps, getInputProps}) => (
-                <section>
-                    <div {...getRootProps()}>
-                        <input {...getInputProps()} />
-                        <p>Drag 'n' drop some files here, or click to select files</p>
-                    </div>
-                </section>
-            )}
-        </Dropzone>
-    </>
 }
 
 // This is necessary to embed regular DOM elements

@@ -25,7 +25,7 @@ test('Parse using parser', async () => {
 
     let input = await readFileSync(`./static/case_02418898.xlsx`);
 
-    const receipts = await parseXlsxExport(input);
+    const receipts = await parseXlsxExport(input, () => Promise.resolve("g4qMBh"));
 
     receipts;
 })

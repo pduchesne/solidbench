@@ -8,23 +8,32 @@ import {usePersistentQueryNavigate} from "../../../ui/hooks";
 
 export const ReceiptsTableRoutes = (props: { receipts: Array<Receipt> }) => {
     return <Routes>
-        <Route path="/:receiptId" element={<ReceiptsTable {...props} />} />
-        <Route path="*" element={<ReceiptsTable {...props} />} />
+        <Route path="/:receiptId" element={<RoutedReceiptsTable {...props} />} />
+        <Route path="*" element={<RoutedReceiptsTable {...props} />} />
     </Routes>
 }
 
 
-export const ReceiptsTable = (props: { receipts: Array<Receipt> }) => {
+export const RoutedReceiptsTable = (props: { receipts: Array<Receipt> }) => {
 
     let { receiptId : pathReceiptId } = useParams();
     const navigate = usePersistentQueryNavigate();
 
-    const receiptIdx = pathReceiptId ? props.receipts.findIndex(r => r.id == pathReceiptId) : 0;
+    return <ReceiptsTable receipts={props.receipts}
+                          receiptId={pathReceiptId}
+                          onChange={(id) => navigate((pathReceiptId? '../' : '') + encodeURIComponent(id))}
+                          onItemSelect={(id) => navigate('../../frequent/'+encodeURIComponent(id))}
+    />
+}
+
+export const ReceiptsTable = (props: { receipts: Array<Receipt>, receiptId?: string, onChange: (receiptId: string) => void, onItemSelect?: (itemId: string) => void }) => {
+
+    const receiptIdx = props.receiptId ? props.receipts.findIndex(r => r.id == props.receiptId) : 0;
     const r = receiptIdx >=0 ? props.receipts[receiptIdx] : undefined;
 
     return r ? <div className="receiptsTable">
         <Pagination count={props.receipts.length} siblingCount={1} boundaryCount={1} page={receiptIdx+1}
-                    onChange={(e, page) => navigate((pathReceiptId? '../' : '') + encodeURIComponent(props.receipts[page - 1].id))}/>
+                    onChange={(e, page) => props.onChange(props.receipts[page - 1].id)}/>
         <div style={{padding: 10}}>
             <h2><FormattedDate isoDate={r.date} /> €{r.amount} {r.store.name} ({r.store.id})</h2>
             <table>
@@ -36,7 +45,7 @@ export const ReceiptsTable = (props: { receipts: Array<Receipt> }) => {
                     <th>Label</th>
                 </tr>
                 <tbody>{r.items?.map((i, idx) =>
-                    <tr key={idx} onClick={() => navigate('../../frequent/'+encodeURIComponent(i.article.vendorId))}>
+                    <tr key={idx} onClick={() => props.onItemSelect && props.onItemSelect(i.article.vendorId)}>
                         <td>{i.quantity}</td>
                         <td>{i.unitPrice}</td>
                         <td>{i.amount}</td>
