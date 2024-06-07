@@ -6,7 +6,9 @@ import PdfjsWorker from "pdfjs-dist/build/pdf.worker.js";
 
 GlobalWorkerOptions.workerSrc = PdfjsWorker;
 
-import {TabContext, TabList, TabPanel} from '@mui/lab';
+import TabContext from "@mui/lab/TabContext/TabContext";
+import TabList from "@mui/lab/TabList/TabList";
+import TabPanel from "@mui/lab/TabPanel/TabPanel";
 
 import {ReceiptWithRetailer} from "./model";
 import {MemoryReceiptsStorage, PodRetailStorage} from "./storage";
