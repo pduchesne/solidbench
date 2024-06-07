@@ -11,9 +11,12 @@ export const SpotifyCard = () => {
     const spotifyCtx = useSpotifyContext();
 
     return <div>
-        {spotifyCtx.authenticated ? <div>
-                <PromiseFnContainer promiseFn={() => spotifyCtx.sdk.currentUser.profile()} deps={[spotifyCtx.authenticated]}>
-                    {result => <>{result.id}</>}
+        {spotifyCtx.userProfile ? <div>
+                <div>{spotifyCtx.userProfile.display_name} [{spotifyCtx.userProfile.id}]</div>
+                <PromiseFnContainer promiseFn={() => spotifyCtx.sdk?.playlists.getUsersPlaylists(spotifyCtx.userProfile.id)} deps={[spotifyCtx.userProfile.id]}>
+                    {result => <>{result.items.map(pl => <div>
+                        <a href={pl.href}>{pl.name}</a> [{pl.tracks.total}]
+                    </div>)}</>}
                 </PromiseFnContainer>
                 <Button onClick={() => navigate('./import/spotify', { replace: false })}>Import Top Artists</Button>
             </div> :

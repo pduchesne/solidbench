@@ -2,7 +2,11 @@ import * as React from "react";
 import {useParams} from "react-router-dom";
 import {useNavigate} from "react-router";
 import {FC} from "react";
-import {SpotifyProvider} from "../spotify";
+import {SpotifyCard, SpotifyProvider} from "../spotify";
+import Accordion from "@mui/material/Accordion";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 export type MusicDataImporter<T = {}> = FC<T & {onClose: () => void}>;
 
@@ -42,8 +46,17 @@ export const MusicImporter = () => {
 }
 
 export const ConnectSources = (props: {}) => {
+    const [expanded, setExpanded] = React.useState<string>();
+
+    const handleSectionChange = (value?: string) => setExpanded(value == expanded ? undefined : value);
+
     return <div>
-        Connect Sources
+        <Accordion expanded={expanded === 'spotify'} onChange={() => handleSectionChange('spotify')}>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>Spotify</AccordionSummary>
+            <AccordionDetails>
+                <SpotifyCard/>
+            </AccordionDetails>
+        </Accordion>
     </div>
 }
 

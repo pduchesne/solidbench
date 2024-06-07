@@ -2,23 +2,26 @@ import * as React from "react";
 import {useContext, useMemo} from "react";
 import {AppContext} from "../../appContext";
 import {Navigate, Route, Routes, useLocation, useParams, useSearchParams} from "react-router-dom";
-import {SPOTIFY_SCOPES_ALL, SpotifyAuthenticator, SpotifyContextProvider} from "./spotify/auth";
+import {SPOTIFY_SCOPES_ALL, SpotifyAuthenticator, SpotifyContextProvider, useSpotifyContext} from "./spotify/auth";
 import {useFixedSolidSession} from "../../solid/SessionProvider";
 import {usePersistentQueryNavigate} from "../../ui/hooks";
 import Box from "@mui/material/Box/Box";
-import {TabContext, TabList, TabPanel} from "@mui/lab";
+import TabContext from "@mui/lab/TabContext/TabContext";
+import TabList from "@mui/lab/TabList/TabList";
+import TabPanel from "@mui/lab/TabPanel/TabPanel";
 import Tab from "@mui/material/Tab/Tab";
 import {PlaylistsRoutes} from "./components/Playlists";
 import {MemoryMusicStorage, PodMusicStorage} from "./storage";
 import MusicHistory from "./components/MusicHistory";
 import MusicExplore from "./components/MusicExplore";
 import ConnectSources from "./components/ConnectSources";
+import {SpotifyControlBar} from "./spotify/controls";
 export const MusicDashboard = () => {
 
     const {search} = useLocation();
 
     return <div className="music">
-        <SpotifyContextProvider clientId='7ca9684301bc4f62ac837fa96c00c179'
+        <SpotifyContextProvider clientId={process.env.SPOTIFY_CLIENTID!}
                                 redirectUrl={new URL('/personal-dashboard/music/spotify/auth', window.location.toString()).toString()}
                                 scopes={SPOTIFY_SCOPES_ALL}>
             <Routes>
@@ -37,6 +40,9 @@ export const MusicDataDisplay = () => {
 
     const {fetch} = useFixedSolidSession();
     const appContext = useContext(AppContext);
+
+    const spotifyCtx = useSpotifyContext();
+    const spotifyPlayer = spotifyCtx.usePlayer();
 
     const podStorage = useMemo(
         () => appContext.podUrl ? new PodMusicStorage(appContext.podUrl, {fetch}) : undefined,
@@ -69,6 +75,7 @@ export const MusicDataDisplay = () => {
                         <Tab label="History" value="history" />
                         <Tab label="Explore" value="explore" />
                         <Tab label="Connect" value="connect"/>
+                        {spotifyCtx.userProfile ? <SpotifyControlBar sdk={spotifyCtx.sdk}/> : null}
                     </TabList>
 
                 </Box>
@@ -76,7 +83,7 @@ export const MusicDataDisplay = () => {
                     Overview
                 </TabPanel>
                 {musicStorage ? <>
-                    <TabPanel value="playlists" className='vFlow'><PlaylistsRoutes storage={musicStorage}/></TabPanel>
+                    <TabPanel value="playlists" className='vFlow'><PlaylistsRoutes storage={musicStorage} player={spotifyPlayer}/></TabPanel>
                     <TabPanel value="history" className='vFlow'><MusicHistory storage={musicStorage}/></TabPanel>
                     <TabPanel value="explore" className='vFlow'><MusicExplore storage={musicStorage}/></TabPanel>
                 </> : null}

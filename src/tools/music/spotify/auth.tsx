@@ -1,28 +1,33 @@
-import {AuthorizationCodeWithPKCEStrategy, Scopes, SdkOptions, SpotifyApi} from "@spotify/web-api-ts-sdk";
+import {AuthorizationCodeWithPKCEStrategy, Scopes, SdkOptions, SpotifyApi, UserProfile} from "@spotify/web-api-ts-sdk";
 import {Navigate, useSearchParams} from "react-router-dom";
 import {memo, useCallback, useContext, useEffect, useMemo, useState} from "react";
 import * as React from "react";
+import {useSpotifyPlayer} from "./controls";
+import {MusicPlayer} from "../types";
+import {music} from "@hilats/data-modules";
 
 // Store the scopes as a const, because 'Scopes.all' returns a new array on each call
 export const SPOTIFY_SCOPES_ALL = Scopes.all;
 
 export type SpotifyContextType = {
     authenticate: () => void } & ({
-    authenticated: true,
-    sdk: SpotifyApi
+    userProfile: UserProfile,
+    sdk: SpotifyApi,
+    usePlayer: () => MusicPlayer | undefined
 } | {
-    authenticated: false,
+    usePlayer: () => MusicPlayer | undefined
+    userProfile?: undefined,
     sdk?: SpotifyApi
 });
 
 export const SpotifyContext = React.createContext<SpotifyContextType>({
-    authenticated: false,
-    authenticate: () => null
+    authenticate: () => null,
+    usePlayer: () => undefined
 });
 
 export const SpotifyContextProvider = memo((props: { clientId: string, redirectUrl: string, scopes: string[], config?: SdkOptions, children?: React.ReactNode }) => {
 
-    const [authenticated, setAuthenticated] = useState(false);
+    const [userProfile, setUserProfile] = useState<UserProfile>();
 
     const auth = useMemo( () => {
         return new AuthorizationCodeWithPKCEStrategy(props.clientId, props.redirectUrl, props.scopes)
@@ -32,8 +37,9 @@ export const SpotifyContextProvider = memo((props: { clientId: string, redirectU
     const authFn = useCallback( async () => {
         try {
             const authResponse = await internalSdk.authenticate();
+            const userProfile = authResponse.authenticated ? await internalSdk.currentUser.profile() : undefined;
 
-            setAuthenticated(authResponse.authenticated);
+            setUserProfile(userProfile);
         } catch (e: Error | unknown) {
 
             const error = e as Error;
@@ -43,19 +49,38 @@ export const SpotifyContextProvider = memo((props: { clientId: string, redirectU
                 console.error(e);
             }
 
-            setAuthenticated(false);
+            setUserProfile(undefined);
         }
     }, [internalSdk]);
 
     const spotifyContext: SpotifyContextType = {
         authenticate: authFn,
-        authenticated,
-        sdk: internalSdk
+        userProfile,
+        sdk: internalSdk,
+        usePlayer: () => {
+            const spotifyPlayer = useSpotifyPlayer(internalSdk);
+            return {
+                async play(item: music.MusicRecording): Promise<void> {
+                    const spotifyId = item.identifier?.find(id => id.startsWith('spotify:'));
+                    if (spotifyId && spotifyPlayer?.state.device.id) {
+                        await spotifyPlayer?.play(spotifyPlayer?.state.device.id, undefined, [spotifyId.replace('track/', 'track:')]);
+                    }
+                },
+                async pause(): Promise<void> {
+                    if (spotifyPlayer?.state.device.id) {
+                        await spotifyPlayer?.pause(spotifyPlayer?.state.device.id);
+                    }
+                }
+            }
+        }
     }
 
     useEffect( () => {
-        auth.getAccessToken().then(token => {
-            setAuthenticated(!!token);
+        auth.getAccessToken().then(async (token) => {
+            if (token) {
+                const userProfile = await internalSdk.currentUser.profile();
+                setUserProfile(userProfile);
+            }
         });
     }, [auth]);
 
