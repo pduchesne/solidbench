@@ -30,7 +30,6 @@ export const MusicDashboard = () => {
                 <Route path="*" element={<Navigate to={"overview" + decodeURIComponent(search)} replace={true}/>}/>
             </Routes>
         </SpotifyContextProvider>
-
     </div>
 }
 
@@ -75,7 +74,7 @@ export const MusicDataDisplay = () => {
                         <Tab label="History" value="history" />
                         <Tab label="Explore" value="explore" />
                         <Tab label="Connect" value="connect"/>
-                        {spotifyCtx.userProfile ? <SpotifyControlBar sdk={spotifyCtx.sdk}/> : null}
+                        {spotifyCtx.userProfile ? <SpotifyControlBar sdk={spotifyCtx.sdk} profile={spotifyCtx.userProfile}/> : null}
                     </TabList>
 
                 </Box>

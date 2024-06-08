@@ -1,16 +1,19 @@
 import {AuthorizationCodeWithPKCEStrategy, Scopes, SdkOptions, SpotifyApi, UserProfile} from "@spotify/web-api-ts-sdk";
-import {Navigate, useSearchParams} from "react-router-dom";
-import {memo, useCallback, useContext, useEffect, useMemo, useState} from "react";
+import {useSearchParams} from "react-router-dom";
+import {useCallback, useContext, useEffect, useMemo, useState} from "react";
 import * as React from "react";
 import {useSpotifyPlayer} from "./controls";
 import {MusicPlayer} from "../types";
 import {music} from "@hilats/data-modules";
+import {useNavigate} from "react-router";
 
 // Store the scopes as a const, because 'Scopes.all' returns a new array on each call
 export const SPOTIFY_SCOPES_ALL = Scopes.all;
 
 export type SpotifyContextType = {
-    authenticate: () => void } & ({
+    authenticate: () => Promise<UserProfile | undefined>,
+    logout: () => void
+} & ({
     userProfile: UserProfile,
     sdk: SpotifyApi,
     usePlayer: () => MusicPlayer | undefined
@@ -21,11 +24,12 @@ export type SpotifyContextType = {
 });
 
 export const SpotifyContext = React.createContext<SpotifyContextType>({
-    authenticate: () => null,
+    authenticate: () => Promise.resolve(undefined),
+    logout: () => null,
     usePlayer: () => undefined
 });
 
-export const SpotifyContextProvider = memo((props: { clientId: string, redirectUrl: string, scopes: string[], config?: SdkOptions, children?: React.ReactNode }) => {
+export const SpotifyContextProvider = (props: { clientId: string, redirectUrl: string, scopes: string[], config?: SdkOptions, children?: React.ReactNode }) => {
 
     const [userProfile, setUserProfile] = useState<UserProfile>();
 
@@ -37,9 +41,10 @@ export const SpotifyContextProvider = memo((props: { clientId: string, redirectU
     const authFn = useCallback( async () => {
         try {
             const authResponse = await internalSdk.authenticate();
-            const userProfile = authResponse.authenticated ? await internalSdk.currentUser.profile() : undefined;
+            const newUserProfile = authResponse.authenticated ? (await internalSdk.currentUser.profile()) : undefined;
 
-            setUserProfile(userProfile);
+            setUserProfile(newUserProfile);
+            return newUserProfile;
         } catch (e: Error | unknown) {
 
             const error = e as Error;
@@ -50,15 +55,23 @@ export const SpotifyContextProvider = memo((props: { clientId: string, redirectU
             }
 
             setUserProfile(undefined);
+            return undefined;
         }
-    }, [internalSdk]);
+    }, [internalSdk, setUserProfile]);
+
+    const logout = useCallback( async () => {
+        internalSdk.logOut();
+        setUserProfile(undefined);
+    }, [internalSdk, setUserProfile]);
+
+    const spotifyPlayer = useSpotifyPlayer(internalSdk, userProfile);
 
     const spotifyContext: SpotifyContextType = {
         authenticate: authFn,
+        logout,
         userProfile,
         sdk: internalSdk,
         usePlayer: () => {
-            const spotifyPlayer = useSpotifyPlayer(internalSdk);
             return {
                 async play(item: music.MusicRecording): Promise<void> {
                     const spotifyId = item.identifier?.find(id => id.startsWith('spotify:'));
@@ -76,16 +89,17 @@ export const SpotifyContextProvider = memo((props: { clientId: string, redirectU
     }
 
     useEffect( () => {
+        //internalSdk.currentUser.profile().then(setUserProfile);
         auth.getAccessToken().then(async (token) => {
             if (token) {
-                const userProfile = await internalSdk.currentUser.profile();
-                setUserProfile(userProfile);
+                const newUserProfile = await internalSdk.currentUser.profile();
+                setUserProfile(newUserProfile);
             }
         });
     }, [auth]);
 
     return <SpotifyContext.Provider value={spotifyContext}>{props.children}</SpotifyContext.Provider>;
-})
+}
 
 
 export function useSpotifyContext() {
@@ -101,10 +115,12 @@ export function SpotifyAuthenticator(props: {}) {
 
     const [searchParams] = useSearchParams();
 
+    const navigate = useNavigate();
+
     const code = searchParams.get("code");
     if (code) {
-        spotifyCtx.authenticate();
+        spotifyCtx.authenticate().then((profile) => navigate("/personal-dashboard/music"));
     }
 
-    return <Navigate to="/personal-dashboard/music" />
+    return null;
 }

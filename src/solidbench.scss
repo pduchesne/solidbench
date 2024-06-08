@@ -141,6 +141,39 @@ body {
   //width: 100%;
   //position: absolute;
 
+  .music-control-bar {
+    @extend .hFlow;
+    overflow: hidden;
+    margin: auto 0;
+    font-size: 90%;
+    padding: 3px;
+    border: 1px solid var(--theme-border2);
+    border-radius: 8px;
+    background-color: var(--theme-back2);
+
+    .logo, .action {
+      flex: none
+    }
+
+    .title {
+      height: fit-content;
+      margin: auto;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    &>* {
+      vertical-align: middle;
+    }
+
+    .MuiSelect-select {
+      padding: 2px;
+    }
+
+    .MuiInputBase-root {
+      font-size: inherit
+    }
+  }
 
   /**
   Material UI overrides

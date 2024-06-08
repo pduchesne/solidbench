@@ -11,10 +11,11 @@ export const SpotifyCard = () => {
     const spotifyCtx = useSpotifyContext();
 
     return <div>
-        {spotifyCtx.userProfile ? <div>
-                <div>{spotifyCtx.userProfile.display_name} [{spotifyCtx.userProfile.id}]</div>
+        {spotifyCtx.userProfile ?
+            <div>
+                <div>{spotifyCtx.userProfile.display_name} [{spotifyCtx.userProfile.id}] <Button onClick={() => spotifyCtx.logout()}>Disconnect</Button></div>
                 <PromiseFnContainer promiseFn={() => spotifyCtx.sdk?.playlists.getUsersPlaylists(spotifyCtx.userProfile.id)} deps={[spotifyCtx.userProfile.id]}>
-                    {result => <>{result.items.map(pl => <div>
+                    {result => <>{result.items.map(pl => <div key={pl.id}>
                         <a href={pl.href}>{pl.name}</a> [{pl.tracks.total}]
                     </div>)}</>}
                 </PromiseFnContainer>
