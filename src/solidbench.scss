@@ -347,6 +347,17 @@ svg {
 .retail {
   @extend .vFlow;
 
+  .retail-overview {
+    @extend .hFlow;
+    @extend .paddedPanel;
+
+    .card {
+      height: fit-content;
+      flex: 0 1 fit-content;
+      margin: 5px;
+    }
+  }
+
   .dataproviders {
 
     .dataprovider {

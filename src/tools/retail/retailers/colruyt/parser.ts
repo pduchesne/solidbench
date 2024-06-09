@@ -3,8 +3,48 @@ import {assert} from "@hilats/utils";
 import {getDocument, PDFDocumentProxy} from "pdfjs-dist";
 import {Receipt, ReceiptItem} from "../../model";
 
-function findNextReceiptIdx(items: Array<TextItem>, offset: number = 0) {
-    return items.findIndex((i, idx) => idx >= offset && i.str.startsWith('Ticket de caisse '));
+const TOKENS: Record<string, {
+    LANGTEST: string,
+    TICKET_START: string,
+    DISCOUNT: string,
+    BOTTLES: string,
+    BILL: string,
+    TOTAL: string
+}> = {
+    'FR': {
+        LANGTEST: 'Tickets de caisse',
+        TICKET_START: 'Ticket de caisse ',
+        DISCOUNT: 'reduction publi',
+        BOTTLES: 'vidanges',
+        BILL: 'facture',
+        TOTAL: 'total'
+    },
+    'NL': {
+        LANGTEST: 'Kastickets',
+        TICKET_START: 'Kasticket: ',
+        DISCOUNT: 'publikorting',
+        BOTTLES: 'leeggoed',
+        BILL: 'factuur',
+        TOTAL: 'totaal'
+    }
+}
+
+
+function guessLanguage(items: Array<TextItem>) {
+    const languages = Object.keys(TOKENS);
+
+    for (const item of items) {
+        for (const l of languages) {
+            if (item.str.startsWith(TOKENS[l].LANGTEST))
+                return l;
+        }
+    }
+
+    return undefined;
+}
+
+function findNextReceiptIdx(items: Array<TextItem>, offset: number = 0, lang: string) {
+    return items.findIndex((i, idx) => idx >= offset && i.str.startsWith(TOKENS[lang].TICKET_START));
 }
 
 function cellMiddleY(item: TextItem) {
@@ -24,16 +64,19 @@ export function parseLocaleDate(str: string) {
 
     // parse as DD/MM/YYYY
     const [DD, MM, YYYY] = str.split('/').map((n) => parseInt(n));
-    return new Date(YYYY, MM, DD);
+    return new Date(YYYY, MM-1, DD);
 }
 
 export function parseDoc(items: Array<TextItem>): Receipt[] {
     let nextReceiptIdx = -1;
 
+    const lang = guessLanguage(items);
+    assert(lang, "Failed to guess the receipts PDF language");
+
     const receipts: Receipt[] = [];
     let currentOffset = 0;
-    while ( (nextReceiptIdx = findNextReceiptIdx(items, currentOffset)) >= 0) {
-        const [receipt, nextOffset] = parseReceipt(items, nextReceiptIdx);
+    while ( (nextReceiptIdx = findNextReceiptIdx(items, currentOffset, lang)) >= 0) {
+        const [receipt, nextOffset] = parseReceipt(items, nextReceiptIdx, lang);
         receipts.push(receipt);
         currentOffset = nextOffset;
     }
@@ -41,7 +84,7 @@ export function parseDoc(items: Array<TextItem>): Receipt[] {
     return receipts;
 }
 
-function parseReceipt(textItems: Array<TextItem>, startOffset: number): [Receipt, number] {
+function parseReceipt(textItems: Array<TextItem>, startOffset: number, lang: string): [Receipt, number] {
 
     let currentOffset = startOffset;
 
@@ -97,7 +140,7 @@ function parseReceipt(textItems: Array<TextItem>, startOffset: number): [Receipt
             const currentTextItem = textItems[currentOffset]
             const nextTextItem = textItems[currentOffset + 1];
 
-            if (currentTextItem.str.toLowerCase().startsWith('reduction publi'))
+            if (currentTextItem.str.toLowerCase().startsWith(TOKENS[lang].DISCOUNT))
                 break;
 
             const middleY = cellMiddleY(currentTextItem);
@@ -162,14 +205,14 @@ function parseReceipt(textItems: Array<TextItem>, startOffset: number): [Receipt
                 currentItem.amount = parseLocaleNumber(currentTextItem.str);
         }
 
-        assert(textItems[currentOffset].str.toLowerCase().startsWith('reduction publi'), "Unexpected cell: "+textItems[currentOffset].str);
+        assert(textItems[currentOffset].str.toLowerCase().startsWith(TOKENS[lang].DISCOUNT), "Unexpected cell: "+textItems[currentOffset].str);
 
-        assert(textItems[++currentOffset].str.toLowerCase().startsWith('vidanges'), "Unexpected cell: "+textItems[currentOffset].str);
+        assert(textItems[++currentOffset].str.toLowerCase().startsWith(TOKENS[lang].BOTTLES), "Unexpected cell: "+textItems[currentOffset].str);
         //receipt.returnedBottles = parseLocaleNumber(textItems[currentOffset].str.split(':').pop()!);
 
-        assert(textItems[++currentOffset].str.toLowerCase().startsWith('facture'), "Unexpected cell: "+textItems[currentOffset].str);
+        assert(textItems[++currentOffset].str.toLowerCase().startsWith(TOKENS[lang].BILL), "Unexpected cell: "+textItems[currentOffset].str);
 
-        assert(textItems[++currentOffset].str.toLowerCase().startsWith('total'), "Unexpected cell: "+textItems[currentOffset].str);
+        assert(textItems[++currentOffset].str.toLowerCase().startsWith(TOKENS[lang].TOTAL), "Unexpected cell: "+textItems[currentOffset].str);
         receipt.amount = parseLocaleNumber(textItems[currentOffset].str.split(':').pop()!);
 
         // receipt IDs may be repeated - let's prepend the day

@@ -36,11 +36,11 @@ export async function parseZipExport(data: Blob) {
                     receipt = receipts[receiptId];
                 } else {
                     receipt = {
-                        id: receiptId,
+                        id: 'amazon:receipt/'+encodeURIComponent(receiptId),
                         date: record[2],
                         items: [],
                         store: {
-                            id: "amazon:"+record[0],
+                            id: "amazon:store/"+encodeURIComponent(record[0]),
                             name: record[0]
                         },
                         amount: 0,

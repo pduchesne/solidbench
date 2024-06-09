@@ -145,7 +145,7 @@ export class PodRetailStorage extends PodStorage implements ReceiptsStorage {
 export function getVendorId(receiptId: string) {
     try {
         const url = new URL(receiptId);
-        if (url.origin) return url.host;
+        if (url.host) return url.host;
         else if (url.protocol) return url.protocol.slice(0, -1);
     } catch (err) {
         // it's not aURL
