@@ -1,5 +1,6 @@
 import {PodStorage} from "@hilats/solid-utils";
 import {music} from '@hilats/data-modules';
+import {fetch} from "@inrupt/solid-client-authn-browser";
 
 export const PATH_PREFERENCES = 'preferences.json';
 export const PATH_ARTISTS = 'artists.json';
@@ -52,10 +53,12 @@ export class PodMusicStorage
 
 export class MemoryMusicStorage implements MusicStorage {
 
+    private _uris: string[];
     private _playlists$: Promise<music.Playlist[]>;
 
-    constructor(options: {uris?: string[], fetch?: typeof global.fetch}) {
+    constructor(options: {uris: string[], fetch?: typeof global.fetch}) {
 
+        this._uris = options.uris;
         this._playlists$ = Promise.resolve([]);
 
         const {uris, fetch = global.fetch} = options;
@@ -77,5 +80,7 @@ export class MemoryMusicStorage implements MusicStorage {
     }
 
 
-
+    get uris(): string[] {
+        return this._uris;
+    }
 }

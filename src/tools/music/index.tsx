@@ -16,6 +16,8 @@ import MusicHistory from "./components/MusicHistory";
 import MusicExplore from "./components/MusicExplore";
 import ConnectSources from "./components/ConnectSources";
 import {SpotifyControlBar} from "./spotify/controls";
+import Alert from "@mui/material/Alert";
+import Overview from "./components/Overview";
 export const MusicDashboard = () => {
 
     const {search} = useLocation();
@@ -78,8 +80,14 @@ export const MusicDataDisplay = () => {
                     </TabList>
 
                 </Box>
+                {musicStorage instanceof MemoryMusicStorage ?  <Alert variant='outlined' severity="info">Viewing information from {musicStorage.uris.join(', ')}</Alert> : null}
                 <TabPanel value="overview" className='vFlow'>
-                    Overview
+                    {(musicStorage ? <Overview storage={musicStorage}/> : <div className="paddedPanel">
+                        Please log in to your pod to view the retail data in your pod, or use the Connect
+                        tool to import and view some music provider data. (it will not be persisted unless you log
+                        in to your pod though)
+                    </div>)}
+
                 </TabPanel>
                 {musicStorage ? <>
                     <TabPanel value="playlists" className='vFlow'><PlaylistsRoutes storage={musicStorage} player={spotifyPlayer}/></TabPanel>

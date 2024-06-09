@@ -9,7 +9,7 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 
 export const PlaylistsRoutes = (props: { storage: MusicStorage, player?: MusicPlayer }) => {
     return <Routes>
-        <Route path="/:itemId" element={<Playlist {...props} />} />
+        <Route path="/:itemId" element={<Playlists {...props} />} />
         <Route path="*" element={<Playlists {...props} />} />
     </Routes>
 }
@@ -19,13 +19,21 @@ export const Playlists = (props: {storage: MusicStorage, player?: MusicPlayer}) 
     const navigate = usePersistentQueryNavigate();
     const playlists$ = usePromiseFn(() => props.storage.fetchPlaylists(),[props.storage])
 
-    return <div>
-        <PromiseStateContainer promiseState={playlists$}>
-            {(playlists) => <div>
-                {playlists.map(pl => <div><a onClick={(e) => {navigate('./'+pl.id); e.preventDefault();}}>{pl.id}</a></div>)}
+    let { itemId } = useParams();
+
+    return <PromiseStateContainer promiseState={playlists$}>
+            {(playlists) => <div className="playlists">
+                <div className="playlists-list">
+                {playlists.map(pl =>
+                    <div className={itemId == pl.id ? 'selected' : undefined}><a onClick={(e) => {navigate( (itemId ? '../' : './') + pl.id); e.preventDefault();}}>{pl.name || ('['+pl.id+']')}</a></div>
+                )}
+                </div>
+                <div className="playlist-details">
+                    <Playlist player={props.player} playlist={playlists.find(pl =>pl.id == itemId)} />
+                </div>
             </div>}
         </PromiseStateContainer>
-    </div>
+
 }
 
 export const MusicRecording = (props: {item: music.MusicRecording, player?: MusicPlayer}) => {
@@ -35,20 +43,13 @@ export const MusicRecording = (props: {item: music.MusicRecording, player?: Musi
     </div>
 }
 
-export const Playlist = (props: {storage: MusicStorage, player?: MusicPlayer}) => {
-    let { itemId } = useParams();
+export const Playlist = (props: {player?: MusicPlayer, playlist?: music.Playlist}) => {
 
-    const playlist$ = usePromiseFn(() => props.storage.fetchPlaylists().then(pls => pls.find(p => p.id == itemId)) as Promise<music.Playlist | undefined>,[props.storage])
-
-    return <div>
-        <PromiseStateContainer promiseState={playlist$}>
-            {(playlist) => playlist ? <div>
-                <h3>{playlist.id} - {playlist.name}</h3>
+    return props.playlist ? <div>
+                <h3>{props.playlist.name || ('['+props.playlist.id+']')}</h3>
                 <div>
-                    {playlist.items.map(i =>
+                    {props.playlist.items.map(i =>
                         <MusicRecording item={i} player={props.player}/>)}
                 </div>
-            </div> : null}
-        </PromiseStateContainer>
-    </div>
+            </div> : null
 }

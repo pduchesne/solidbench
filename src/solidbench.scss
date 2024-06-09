@@ -22,6 +22,9 @@
   --link-color: #0942b3;
   --link-hover-color: #0749cc;
 
+  --alert-info-bg: #cbdbff;
+  --alert-info-color: #02369a;
+
   --resource-icon-size: 80px;
 
 
@@ -50,6 +53,9 @@
 
   --link-color: #4478cc;
   --link-hover-color: #1e63ff;
+
+  --alert-info-bg: #021032;
+  --alert-info-color: #7993c5;
 
   .monaco-editor {
     .line-numbers.active-line-number {
@@ -179,6 +185,17 @@ body {
   Material UI overrides
   */
 
+  .MuiAlert-root {
+    padding: 0px 16px;
+    margin: 5px;
+
+    &.MuiAlert-colorInfo {
+      color: var(--alert-info-color);
+      border-color: var(--alert-info-color);
+      background-color: var(--alert-info-bg);
+    }
+  }
+
   .MuiInputBase-root {
     background-color: var(--theme-color1-button);
     color: var(--theme-color1-front);
@@ -286,6 +303,21 @@ body {
   }
 }
 
+.flex-wrap-card-container {
+  @extend .hFlow;
+  @extend .paddedPanel;
+  flex-wrap: wrap;
+
+  .card {
+    height: fit-content;
+    flex: 1 1 0;
+    margin: 5px;
+
+    min-width: 400px;
+    border: 1px solid var(--theme-border2);
+  }
+}
+
 
 .absolute-fill {
   position: absolute;
@@ -348,14 +380,7 @@ svg {
   @extend .vFlow;
 
   .retail-overview {
-    @extend .hFlow;
-    @extend .paddedPanel;
-
-    .card {
-      height: fit-content;
-      flex: 0 1 fit-content;
-      margin: 5px;
-    }
+    @extend .flex-wrap-card-container;
   }
 
   .dataproviders {
@@ -649,6 +674,38 @@ svg {
   }
 }
 
+
+.music {
+
+  .music-overview {
+    @extend .flex-wrap-card-container;
+  }
+
+  .playlists {
+    @extend .hFlow;
+    background-color: var(--theme-back2);
+    border-radius: 5px;
+    margin: 5px;
+
+    .playlists-list {
+      flex: 0 1 fit-content;
+      max-width: 30%;
+
+      border-right: 1px solid var(--theme-border2);
+
+      &>div {
+        padding: 3px 10px;
+        &.selected {
+          background-color: var(--theme-selection);
+        }
+      }
+    }
+
+    .playlist-details {
+      @extend .paddedPanel;
+    }
+  }
+}
 
 .itemsTable {
   @extend .hFlow;

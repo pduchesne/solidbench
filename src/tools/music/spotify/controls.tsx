@@ -84,20 +84,26 @@ export const useSpotifyPlayer = (sdk: SpotifyApi, profile?: UserProfile) => {
     }, [sdk, profile]);
 
     const updateQueue = useCallback(async () => {
-        const queue = await sdk.player.getUsersQueue();
+        if (profile) {
+            const queue = await sdk.player.getUsersQueue();
 
-        setPlayerstate((previousState) => ({
-            ...previousState!,
-            queue}));
-    }, [sdk]);
+            setPlayerstate((previousState) => ({
+                ...previousState!,
+                queue
+            }));
+        }
+    }, [sdk, profile]);
 
     const updateDevices = useCallback(async () => {
-        const devices = await sdk.player.getAvailableDevices();
+        if (profile) {
+            const devices = await sdk.player.getAvailableDevices();
 
-        setPlayerstate((previousState) => ({
-            ...previousState!,
-            devices}));
-    }, [sdk]);
+            setPlayerstate((previousState) => ({
+                ...previousState!,
+                devices
+            }));
+        }
+    }, [sdk, profile]);
 
     useEffect( () => {updateQueue()}, [playerstate?.currentlyPlaying?.item?.id] );
 
@@ -136,11 +142,13 @@ export const useSpotifyPlayer = (sdk: SpotifyApi, profile?: UserProfile) => {
     }, [sdk, play, pause, profile]);
 
     useEffect(() => {
-        const timeout = setInterval(updateState, 5000);
+        if (profile) {
+            const timeout = setInterval(updateState, 5000);
 
-        return () => {
-            clearInterval(timeout);
-        }
+            return () => {
+                clearInterval(timeout);
+            }
+        } else return undefined;
     }, [profile]);
 
     return playerstate;
