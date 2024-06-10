@@ -108,6 +108,7 @@ export const ShoppingDashboard = (props: {}) => {
                         <Tab label="Receipts" value="receipts" disabled={!receipts}/>
                         <Tab label="Frequent Items" value="frequent" disabled={!receipts}/>
                         <Tab label="Expenses" value="expenses" disabled={!receipts}/>
+                        <Tab label="Import" value="import"/>
                         <RemoveDomProps>
                             <>
                                 <div style={{flex: 1}}></div>
@@ -142,7 +143,6 @@ export const ShoppingDashboard = (props: {}) => {
                                 </div>
                             </>
                         </RemoveDomProps>
-                        <Tab label="Import" value="import"/>
                     </TabList>
 
                 </Box>

@@ -102,141 +102,720 @@
 <colruyt:receipts/1001>
     sdo:dateIssued "2018-12-08T23:00:00.000Z"^^xsd:dateTime;
     sdo:item
-            [
-                sdo:amount 1.005E1;
-                sdo:product
-                          [
-                              sdo:name
-                                          "Livre Pok\u00e9mon - Aventure sur mesure XXL";
-                              sdo:productID "colruyt:product/742822"
-                          ];
-                sdo:orderQuantity 1;
-                sdo:price 1.005E1
-            ],
-            [
-                sdo:amount 1.39E0;
-                sdo:product
-                          [
-                              sdo:name "Bracelet glowsticks dans un \u00e9tui";
-                              sdo:productID "colruyt:product/726125"
-                          ];
-                sdo:orderQuantity 1;
-                sdo:price 1.39E0
-            ],
-            [
-                sdo:amount 12;
-                sdo:product
-                          [
-                              sdo:name "Livre Quad je serai grand, je serai FR";
-                              sdo:productID "colruyt:product/771632"
-                          ];
-                sdo:orderQuantity 1;
-                sdo:price 12
-            ],
-            [
-                sdo:amount 3.79E0;
-                sdo:product
-                          [
-                              sdo:name "Livre Le petit assistant de St Nicolas";
-                              sdo:productID "colruyt:product/744301"
-                          ];
-                sdo:orderQuantity 1;
-                sdo:price 3.79E0
-            ],
-            [
-                sdo:amount 4.95E0;
-                sdo:product
-                          [
-                              sdo:name "Playmobil 9218 DuoPack Policier voleur";
-                              sdo:productID "colruyt:product/718225"
-                          ];
-                sdo:orderQuantity 1;
-                sdo:price 4.95E0
-            ],
-            [
-                sdo:amount 5;
-                sdo:product
-                          [
-                              sdo:name "Livre PETIT POILU POCHE 18 SUPERPOILU";
-                              sdo:productID "colruyt:product/775099"
-                          ];
-                sdo:orderQuantity 1;
-                sdo:price 5
-            ],
-            [
-                sdo:amount 5;
-                sdo:product
-                          [
-                              sdo:name
-                                          "Livre Petit Poilu Poche 16 blues y\u00e9ti FR";
-                              sdo:productID "colruyt:product/769151"
-                          ];
-                sdo:orderQuantity 1;
-                sdo:price 5
-            ],
-            [
-                sdo:amount 5;
-                sdo:product
-                          [
-                              sdo:name "Livre PETIT POILU POCHE 20 MADAME";
-                              sdo:productID "colruyt:product/775102"
-                          ];
-                sdo:orderQuantity 1;
-                sdo:price 5
-            ],
-            [
-                sdo:amount 5;
-                sdo:product
-                          [
-                              sdo:name "Livre PETIT POILU POCHE 19 LE PRINCE";
-                              sdo:productID "colruyt:product/775101"
-                          ];
-                sdo:orderQuantity 1;
-                sdo:price 5
-            ],
-            [
-                sdo:amount 5.2E0;
-                sdo:product
-                          [
-                              sdo:name "Livre Souliers saint Nicolas, FR";
-                              sdo:productID "colruyt:product/775107"
-                          ];
-                sdo:orderQuantity 1;
-                sdo:price 5.2E0
-            ],
-            [
-                sdo:amount 5.69E0;
-                sdo:product
-                          [
-                              sdo:name "Livre 100 jeux Saint-Nicolas, FR";
-                              sdo:productID "colruyt:product/744302"
-                          ];
-                sdo:orderQuantity 1;
-                sdo:price 5.69E0
-            ],
-            [
-                sdo:amount 6;
-                sdo:product
-                          [ sdo:name "Tampon 3D Pyjamasques"; sdo:productID "colruyt:product/761056" ];
-                sdo:orderQuantity 2;
-                sdo:price 3
-            ],
-            [
-                sdo:amount 7.49E0;
-                sdo:product
-                          [
-                              sdo:name "Ballon, illooms led balloons marble";
-                              sdo:productID "colruyt:product/708614"
-                          ];
-                sdo:orderQuantity 1;
-                sdo:price 7.49E0
-            ];
+                   [
+                       sdo:amount 1.005E1;
+                       sdo:product
+                                  [
+                                      sdo:name
+                                                    "Livre Pok\u00e9mon - Aventure sur mesure XXL";
+                                      sdo:productID "colruyt:product/742822"
+                                  ];
+                       sdo:orderQuantity 1;
+                       sdo:price 1.005E1
+                   ],
+                   [
+                       sdo:amount 1.39E0;
+                       sdo:product
+                                  [
+                                      sdo:name "Bracelet glowsticks dans un \u00e9tui";
+                                      sdo:productID "colruyt:product/726125"
+                                  ];
+                       sdo:orderQuantity 1;
+                       sdo:price 1.39E0
+                   ],
+                   [
+                       sdo:amount 12;
+                       sdo:product
+                                  [
+                                      sdo:name "Livre Quad je serai grand, je serai FR";
+                                      sdo:productID "colruyt:product/771632"
+                                  ];
+                       sdo:orderQuantity 1;
+                       sdo:price 12
+                   ],
+                   [
+                       sdo:amount 3.79E0;
+                       sdo:product
+                                  [
+                                      sdo:name "Livre Le petit assistant de St Nicolas";
+                                      sdo:productID "colruyt:product/744301"
+                                  ];
+                       sdo:orderQuantity 1;
+                       sdo:price 3.79E0
+                   ],
+                   [
+                       sdo:amount 4.95E0;
+                       sdo:product
+                                  [
+                                      sdo:name "Playmobil 9218 DuoPack Policier voleur";
+                                      sdo:productID "colruyt:product/718225"
+                                  ];
+                       sdo:orderQuantity 1;
+                       sdo:price 4.95E0
+                   ],
+                   [
+                       sdo:amount 5;
+                       sdo:product
+                                  [
+                                      sdo:name "Livre PETIT POILU POCHE 18 SUPERPOILU";
+                                      sdo:productID "colruyt:product/775099"
+                                  ];
+                       sdo:orderQuantity 1;
+                       sdo:price 5
+                   ],
+                   [
+                       sdo:amount 5;
+                       sdo:product
+                                  [
+                                      sdo:name
+                                                    "Livre Petit Poilu Poche 16 blues y\u00e9ti FR";
+                                      sdo:productID "colruyt:product/769151"
+                                  ];
+                       sdo:orderQuantity 1;
+                       sdo:price 5
+                   ],
+                   [
+                       sdo:amount 5;
+                       sdo:product
+                                  [
+                                      sdo:name "Livre PETIT POILU POCHE 20 MADAME";
+                                      sdo:productID "colruyt:product/775102"
+                                  ];
+                       sdo:orderQuantity 1;
+                       sdo:price 5
+                   ],
+                   [
+                       sdo:amount 5;
+                       sdo:product
+                                  [
+                                      sdo:name "Livre PETIT POILU POCHE 19 LE PRINCE";
+                                      sdo:productID "colruyt:product/775101"
+                                  ];
+                       sdo:orderQuantity 1;
+                       sdo:price 5
+                   ],
+                   [
+                       sdo:amount 5.2E0;
+                       sdo:product
+                                  [
+                                      sdo:name "Livre Souliers saint Nicolas, FR";
+                                      sdo:productID "colruyt:product/775107"
+                                  ];
+                       sdo:orderQuantity 1;
+                       sdo:price 5.2E0
+                   ],
+                   [
+                       sdo:amount 5.69E0;
+                       sdo:product
+                                  [
+                                      sdo:name "Livre 100 jeux Saint-Nicolas, FR";
+                                      sdo:productID "colruyt:product/744302"
+                                  ];
+                       sdo:orderQuantity 1;
+                       sdo:price 5.69E0
+                   ],
+                   [
+                       sdo:amount 6;
+                       sdo:product
+                                  [ sdo:name "Tampon 3D Pyjamasques"; sdo:productID "colruyt:product/761056" ];
+                       sdo:orderQuantity 2;
+                       sdo:price 3
+                   ],
+                   [
+                       sdo:amount 7.49E0;
+                       sdo:product
+                                  [
+                                      sdo:name "Ballon, illooms led balloons marble";
+                                      sdo:productID "colruyt:product/708614"
+                                  ];
+                       sdo:orderQuantity 1;
+                       sdo:price 7.49E0
+                   ];
     sdo:location <colruyt:store/4241>;
     sdo:amount 8.106E1 .
 
-
 <colruyt:store/4241>
     sdo:name "DREAMLAND HUY".
+
+<colruyt:receipts/10001>
+    sdo:dateIssued "2020-09-09T22:00:00.000Z"^^xsd:dateTime;
+    sdo:item
+                   [
+                       sdo:amount 2.09E0;
+                       sdo:product
+                                  [
+                                      sdo:name "BONI Tagliatelle aux oeufs frais 500g";
+                                      sdo:productID "colruyt:product/27805"
+                                  ];
+                       sdo:orderQuantity 1;
+                       sdo:price 2.09E0
+                   ],
+                   [
+                       sdo:amount 2.29E0;
+                       sdo:product
+                                  [
+                                      sdo:name "BONI mayo traditionelle 350ml";
+                                      sdo:productID "colruyt:product/12179"
+                                  ];
+                       sdo:orderQuantity 1;
+                       sdo:price 2.29E0
+                   ],
+                   [
+                       sdo:amount 4.19E0;
+                       sdo:product
+                                  [
+                                      sdo:name
+                                                    "ROCHEFORT beurre de laiterie sal\u00e9 250g";
+                                      sdo:productID "colruyt:product/26719"
+                                  ];
+                       sdo:orderQuantity 1;
+                       sdo:price 4.19E0
+                   ],
+                   [
+                       sdo:amount 5.99E0;
+                       sdo:product
+                                  [
+                                      sdo:name
+                                                    "COLLA MAE.FORM. Parmigia.Regg.bloc \u00b1300g";
+                                      sdo:productID "colruyt:product/5144"
+                                  ];
+                       sdo:orderQuantity 3.01E0;
+                       sdo:price 1.99E0
+                   ],
+                   [
+                       sdo:amount 8.11E0;
+                       sdo:product
+                                  [
+                                      sdo:name "BH hachis prepare boeuf+porc";
+                                      sdo:productID "colruyt:product/10091"
+                                  ];
+                       sdo:orderQuantity 8.29E0;
+                       sdo:price 9.7E-1
+                   ];
+    sdo:location <colruyt:store/3521> ;
+    sdo:amount 2.457E1 .
+
+<colruyt:receipts/10002>
+    sdo:dateIssued "2020-09-23T22:00:00.000Z"^^xsd:dateTime;
+    sdo:item
+                   [
+                       sdo:amount 2.09E0;
+                       sdo:product
+                                  [
+                                      sdo:name "BONI Tagliatelle aux oeufs frais 500g";
+                                      sdo:productID "colruyt:product/27805"
+                                  ];
+                       sdo:orderQuantity 1;
+                       sdo:price 2.09E0
+                   ],
+                   [
+                       sdo:amount 2.29E0;
+                       sdo:product
+                                  [
+                                      sdo:name "BONI mayo traditionelle 350ml";
+                                      sdo:productID "colruyt:product/12179"
+                                  ];
+                       sdo:orderQuantity 1;
+                       sdo:price 2.29E0
+                   ],
+                   [
+                       sdo:amount 4.19E0;
+                       sdo:product
+                                  [
+                                      sdo:name
+                                                    "ROCHEFORT beurre de laiterie sal\u00e9 250g";
+                                      sdo:productID "colruyt:product/26719"
+                                  ];
+                       sdo:orderQuantity 1;
+                       sdo:price 4.19E0
+                   ],
+                   [
+                       sdo:amount 5.99E0;
+                       sdo:product
+                                  [
+                                      sdo:name
+                                                    "COLLA MAE.FORM. Parmigia.Regg.bloc \u00b1300g";
+                                      sdo:productID "colruyt:product/5144"
+                                  ];
+                       sdo:orderQuantity 3.01E0;
+                       sdo:price 1.99E0
+                   ],
+                   [
+                       sdo:amount 8.11E0;
+                       sdo:product
+                                  [
+                                      sdo:name "BH hachis prepare boeuf+porc";
+                                      sdo:productID "colruyt:product/10091"
+                                  ];
+                       sdo:orderQuantity 8.29E0;
+                       sdo:price 9.7E-1
+                   ];
+    sdo:location <colruyt:store/3521> ;
+    sdo:amount 2.457E1 .
+
+<colruyt:receipts/10003>
+    sdo:dateIssued "2020-10-19T22:00:00.000Z"^^xsd:dateTime;
+    sdo:item
+                   [
+                       sdo:amount 2.09E0;
+                       sdo:product
+                                  [
+                                      sdo:name "BONI Tagliatelle aux oeufs frais 500g";
+                                      sdo:productID "colruyt:product/27805"
+                                  ];
+                       sdo:orderQuantity 1;
+                       sdo:price 2.09E0
+                   ],
+                   [
+                       sdo:amount 2.29E0;
+                       sdo:product
+                                  [
+                                      sdo:name "BONI mayo traditionelle 350ml";
+                                      sdo:productID "colruyt:product/12179"
+                                  ];
+                       sdo:orderQuantity 1;
+                       sdo:price 2.29E0
+                   ],
+                   [
+                       sdo:amount 4.19E0;
+                       sdo:product
+                                  [
+                                      sdo:name
+                                                    "ROCHEFORT beurre de laiterie sal\u00e9 250g";
+                                      sdo:productID "colruyt:product/26719"
+                                  ];
+                       sdo:orderQuantity 1;
+                       sdo:price 4.19E0
+                   ],
+                   [
+                       sdo:amount 5.99E0;
+                       sdo:product
+                                  [
+                                      sdo:name
+                                                    "COLLA MAE.FORM. Parmigia.Regg.bloc \u00b1300g";
+                                      sdo:productID "colruyt:product/5144"
+                                  ];
+                       sdo:orderQuantity 3.01E0;
+                       sdo:price 1.99E0
+                   ],
+                   [
+                       sdo:amount 8.11E0;
+                       sdo:product
+                                  [
+                                      sdo:name "BH hachis prepare boeuf+porc";
+                                      sdo:productID "colruyt:product/10091"
+                                  ];
+                       sdo:orderQuantity 8.29E0;
+                       sdo:price 9.7E-1
+                   ];
+    sdo:location <colruyt:store/3521> ;
+    sdo:amount 2.457E1 .
+
+<colruyt:receipts/10004>
+    sdo:dateIssued "2020-11-03T22:00:00.000Z"^^xsd:dateTime;
+    sdo:item
+                   [
+                       sdo:amount 2.09E0;
+                       sdo:product
+                                  [
+                                      sdo:name "BONI Tagliatelle aux oeufs frais 500g";
+                                      sdo:productID "colruyt:product/27805"
+                                  ];
+                       sdo:orderQuantity 1;
+                       sdo:price 2.09E0
+                   ],
+                   [
+                       sdo:amount 2.29E0;
+                       sdo:product
+                                  [
+                                      sdo:name "BONI mayo traditionelle 350ml";
+                                      sdo:productID "colruyt:product/12179"
+                                  ];
+                       sdo:orderQuantity 1;
+                       sdo:price 2.29E0
+                   ],
+                   [
+                       sdo:amount 4.19E0;
+                       sdo:product
+                                  [
+                                      sdo:name
+                                                    "ROCHEFORT beurre de laiterie sal\u00e9 250g";
+                                      sdo:productID "colruyt:product/26719"
+                                  ];
+                       sdo:orderQuantity 1;
+                       sdo:price 4.19E0
+                   ],
+                   [
+                       sdo:amount 5.99E0;
+                       sdo:product
+                                  [
+                                      sdo:name
+                                                    "COLLA MAE.FORM. Parmigia.Regg.bloc \u00b1300g";
+                                      sdo:productID "colruyt:product/5144"
+                                  ];
+                       sdo:orderQuantity 3.01E0;
+                       sdo:price 1.99E0
+                   ],
+                   [
+                       sdo:amount 8.11E0;
+                       sdo:product
+                                  [
+                                      sdo:name "BH hachis prepare boeuf+porc";
+                                      sdo:productID "colruyt:product/10091"
+                                  ];
+                       sdo:orderQuantity 8.29E0;
+                       sdo:price 9.7E-1
+                   ];
+    sdo:location <colruyt:store/3521> ;
+    sdo:amount 2.457E1 .
+
+<colruyt:receipts/10005>
+    sdo:dateIssued "2020-11-29T22:00:00.000Z"^^xsd:dateTime;
+    sdo:item
+                   [
+                       sdo:amount 2.09E0;
+                       sdo:product
+                                  [
+                                      sdo:name "BONI Tagliatelle aux oeufs frais 500g";
+                                      sdo:productID "colruyt:product/27805"
+                                  ];
+                       sdo:orderQuantity 1;
+                       sdo:price 2.09E0
+                   ],
+                   [
+                       sdo:amount 2.29E0;
+                       sdo:product
+                                  [
+                                      sdo:name "BONI mayo traditionelle 350ml";
+                                      sdo:productID "colruyt:product/12179"
+                                  ];
+                       sdo:orderQuantity 1;
+                       sdo:price 2.29E0
+                   ],
+                   [
+                       sdo:amount 4.19E0;
+                       sdo:product
+                                  [
+                                      sdo:name
+                                                    "ROCHEFORT beurre de laiterie sal\u00e9 250g";
+                                      sdo:productID "colruyt:product/26719"
+                                  ];
+                       sdo:orderQuantity 1;
+                       sdo:price 4.19E0
+                   ],
+                   [
+                       sdo:amount 5.99E0;
+                       sdo:product
+                                  [
+                                      sdo:name
+                                                    "COLLA MAE.FORM. Parmigia.Regg.bloc \u00b1300g";
+                                      sdo:productID "colruyt:product/5144"
+                                  ];
+                       sdo:orderQuantity 3.01E0;
+                       sdo:price 1.99E0
+                   ],
+                   [
+                       sdo:amount 8.11E0;
+                       sdo:product
+                                  [
+                                      sdo:name "BH hachis prepare boeuf+porc";
+                                      sdo:productID "colruyt:product/10091"
+                                  ];
+                       sdo:orderQuantity 8.29E0;
+                       sdo:price 9.7E-1
+                   ];
+    sdo:location <colruyt:store/3521> ;
+    sdo:amount 2.457E1 .
+
+<colruyt:receipts/10006>
+    sdo:dateIssued "2020-12-05T22:00:00.000Z"^^xsd:dateTime;
+    sdo:item
+                   [
+                       sdo:amount 2.09E0;
+                       sdo:product
+                                  [
+                                      sdo:name "BONI Tagliatelle aux oeufs frais 500g";
+                                      sdo:productID "colruyt:product/27805"
+                                  ];
+                       sdo:orderQuantity 1;
+                       sdo:price 2.09E0
+                   ],
+                   [
+                       sdo:amount 2.29E0;
+                       sdo:product
+                                  [
+                                      sdo:name "BONI mayo traditionelle 350ml";
+                                      sdo:productID "colruyt:product/12179"
+                                  ];
+                       sdo:orderQuantity 1;
+                       sdo:price 2.29E0
+                   ],
+                   [
+                       sdo:amount 4.19E0;
+                       sdo:product
+                                  [
+                                      sdo:name
+                                                    "ROCHEFORT beurre de laiterie sal\u00e9 250g";
+                                      sdo:productID "colruyt:product/26719"
+                                  ];
+                       sdo:orderQuantity 1;
+                       sdo:price 4.19E0
+                   ],
+                   [
+                       sdo:amount 5.99E0;
+                       sdo:product
+                                  [
+                                      sdo:name
+                                                    "COLLA MAE.FORM. Parmigia.Regg.bloc \u00b1300g";
+                                      sdo:productID "colruyt:product/5144"
+                                  ];
+                       sdo:orderQuantity 3.01E0;
+                       sdo:price 1.99E0
+                   ],
+                   [
+                       sdo:amount 8.11E0;
+                       sdo:product
+                                  [
+                                      sdo:name "BH hachis prepare boeuf+porc";
+                                      sdo:productID "colruyt:product/10091"
+                                  ];
+                       sdo:orderQuantity 8.29E0;
+                       sdo:price 9.7E-1
+                   ];
+    sdo:location <colruyt:store/3521> ;
+    sdo:amount 2.457E1 .
+
+<colruyt:receipts/10007>
+    sdo:dateIssued "2020-12-20T22:00:00.000Z"^^xsd:dateTime;
+    sdo:item
+                   [
+                       sdo:amount 2.09E0;
+                       sdo:product
+                                  [
+                                      sdo:name "BONI Tagliatelle aux oeufs frais 500g";
+                                      sdo:productID "colruyt:product/27805"
+                                  ];
+                       sdo:orderQuantity 1;
+                       sdo:price 2.09E0
+                   ],
+                   [
+                       sdo:amount 2.29E0;
+                       sdo:product
+                                  [
+                                      sdo:name "BONI mayo traditionelle 350ml";
+                                      sdo:productID "colruyt:product/12179"
+                                  ];
+                       sdo:orderQuantity 1;
+                       sdo:price 2.29E0
+                   ],
+                   [
+                       sdo:amount 4.19E0;
+                       sdo:product
+                                  [
+                                      sdo:name
+                                                    "ROCHEFORT beurre de laiterie sal\u00e9 250g";
+                                      sdo:productID "colruyt:product/26719"
+                                  ];
+                       sdo:orderQuantity 1;
+                       sdo:price 4.19E0
+                   ],
+                   [
+                       sdo:amount 5.99E0;
+                       sdo:product
+                                  [
+                                      sdo:name
+                                                    "COLLA MAE.FORM. Parmigia.Regg.bloc \u00b1300g";
+                                      sdo:productID "colruyt:product/5144"
+                                  ];
+                       sdo:orderQuantity 3.01E0;
+                       sdo:price 1.99E0
+                   ],
+                   [
+                       sdo:amount 8.11E0;
+                       sdo:product
+                                  [
+                                      sdo:name "BH hachis prepare boeuf+porc";
+                                      sdo:productID "colruyt:product/10091"
+                                  ];
+                       sdo:orderQuantity 8.29E0;
+                       sdo:price 9.7E-1
+                   ];
+    sdo:location <colruyt:store/3521> ;
+    sdo:amount 2.457E1 .
+
+<colruyt:receipts/10008>
+    sdo:dateIssued "2021-02-09T22:00:00.000Z"^^xsd:dateTime;
+    sdo:item
+                   [
+                       sdo:amount 2.09E0;
+                       sdo:product
+                                  [
+                                      sdo:name "BONI Tagliatelle aux oeufs frais 500g";
+                                      sdo:productID "colruyt:product/27805"
+                                  ];
+                       sdo:orderQuantity 1;
+                       sdo:price 2.09E0
+                   ],
+                   [
+                       sdo:amount 2.29E0;
+                       sdo:product
+                                  [
+                                      sdo:name "BONI mayo traditionelle 350ml";
+                                      sdo:productID "colruyt:product/12179"
+                                  ];
+                       sdo:orderQuantity 1;
+                       sdo:price 2.29E0
+                   ],
+                   [
+                       sdo:amount 4.19E0;
+                       sdo:product
+                                  [
+                                      sdo:name
+                                                    "ROCHEFORT beurre de laiterie sal\u00e9 250g";
+                                      sdo:productID "colruyt:product/26719"
+                                  ];
+                       sdo:orderQuantity 1;
+                       sdo:price 4.19E0
+                   ],
+                   [
+                       sdo:amount 5.99E0;
+                       sdo:product
+                                  [
+                                      sdo:name
+                                                    "COLLA MAE.FORM. Parmigia.Regg.bloc \u00b1300g";
+                                      sdo:productID "colruyt:product/5144"
+                                  ];
+                       sdo:orderQuantity 3.01E0;
+                       sdo:price 1.99E0
+                   ],
+                   [
+                       sdo:amount 8.11E0;
+                       sdo:product
+                                  [
+                                      sdo:name "BH hachis prepare boeuf+porc";
+                                      sdo:productID "colruyt:product/10091"
+                                  ];
+                       sdo:orderQuantity 8.29E0;
+                       sdo:price 9.7E-1
+                   ];
+    sdo:location <colruyt:store/3521> ;
+    sdo:amount 2.457E1 .
+
+<colruyt:receipts/10009>
+    sdo:dateIssued "2021-03-09T22:00:00.000Z"^^xsd:dateTime;
+    sdo:item
+                   [
+                       sdo:amount 2.09E0;
+                       sdo:product
+                                  [
+                                      sdo:name "BONI Tagliatelle aux oeufs frais 500g";
+                                      sdo:productID "colruyt:product/27805"
+                                  ];
+                       sdo:orderQuantity 1;
+                       sdo:price 2.09E0
+                   ],
+                   [
+                       sdo:amount 2.29E0;
+                       sdo:product
+                                  [
+                                      sdo:name "BONI mayo traditionelle 350ml";
+                                      sdo:productID "colruyt:product/12179"
+                                  ];
+                       sdo:orderQuantity 1;
+                       sdo:price 2.29E0
+                   ],
+                   [
+                       sdo:amount 4.19E0;
+                       sdo:product
+                                  [
+                                      sdo:name
+                                                    "ROCHEFORT beurre de laiterie sal\u00e9 250g";
+                                      sdo:productID "colruyt:product/26719"
+                                  ];
+                       sdo:orderQuantity 1;
+                       sdo:price 4.19E0
+                   ],
+                   [
+                       sdo:amount 5.99E0;
+                       sdo:product
+                                  [
+                                      sdo:name
+                                                    "COLLA MAE.FORM. Parmigia.Regg.bloc \u00b1300g";
+                                      sdo:productID "colruyt:product/5144"
+                                  ];
+                       sdo:orderQuantity 3.01E0;
+                       sdo:price 1.99E0
+                   ],
+                   [
+                       sdo:amount 8.11E0;
+                       sdo:product
+                                  [
+                                      sdo:name "BH hachis prepare boeuf+porc";
+                                      sdo:productID "colruyt:product/10091"
+                                  ];
+                       sdo:orderQuantity 8.29E0;
+                       sdo:price 9.7E-1
+                   ];
+    sdo:location <colruyt:store/3521> ;
+    sdo:amount 2.457E1 .
+
+<colruyt:receipts/10010>
+    sdo:dateIssued "2021-05-15T22:00:00.000Z"^^xsd:dateTime;
+    sdo:item
+                   [
+                       sdo:amount 2.09E0;
+                       sdo:product
+                                  [
+                                      sdo:name "BONI Tagliatelle aux oeufs frais 500g";
+                                      sdo:productID "colruyt:product/27805"
+                                  ];
+                       sdo:orderQuantity 1;
+                       sdo:price 2.09E0
+                   ],
+                   [
+                       sdo:amount 2.29E0;
+                       sdo:product
+                                  [
+                                      sdo:name "BONI mayo traditionelle 350ml";
+                                      sdo:productID "colruyt:product/12179"
+                                  ];
+                       sdo:orderQuantity 1;
+                       sdo:price 2.29E0
+                   ],
+                   [
+                       sdo:amount 4.19E0;
+                       sdo:product
+                                  [
+                                      sdo:name
+                                                    "ROCHEFORT beurre de laiterie sal\u00e9 250g";
+                                      sdo:productID "colruyt:product/26719"
+                                  ];
+                       sdo:orderQuantity 1;
+                       sdo:price 4.19E0
+                   ],
+                   [
+                       sdo:amount 5.99E0;
+                       sdo:product
+                                  [
+                                      sdo:name
+                                                    "COLLA MAE.FORM. Parmigia.Regg.bloc \u00b1300g";
+                                      sdo:productID "colruyt:product/5144"
+                                  ];
+                       sdo:orderQuantity 3.01E0;
+                       sdo:price 1.99E0
+                   ],
+                   [
+                       sdo:amount 8.11E0;
+                       sdo:product
+                                  [
+                                      sdo:name "BH hachis prepare boeuf+porc";
+                                      sdo:productID "colruyt:product/10091"
+                                  ];
+                       sdo:orderQuantity 8.29E0;
+                       sdo:price 9.7E-1
+                   ];
+    sdo:location <colruyt:store/3521> ;
+    sdo:amount 2.457E1 .
 
 <colruyt:receipts/10031>
     sdo:dateIssued "2023-09-09T22:00:00.000Z"^^xsd:dateTime;
@@ -440,10 +1019,6 @@
             ];
     sdo:location <colruyt:store/3521> ;
     sdo:amount 8.405E1 .
-
-<colruyt:store/3521>
-    sdo:name "CADI BEN-AHIN".
-
 
 <colruyt:receipts/10121>
     sdo:dateIssued "2020-08-02T22:00:00.000Z"^^xsd:dateTime;

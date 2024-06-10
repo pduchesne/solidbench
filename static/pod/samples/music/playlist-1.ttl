@@ -6,7 +6,7 @@
 :001
     a sdo:MusicPlaylist;
     sdo:description "For example purposes";
-    sdo:name "A groovy playlist";
+    sdo:name "A fine playlist";
     sdo:track
             [
                 sdo:byArtist [ sdo:identifier wd:Q392; sdo:name "Bob Dylan" ];
@@ -19,3 +19,11 @@
                 sdo:name "Blowin' in the Wind"
             ],
         [ sdo:identifier tr:7eYYxblNEZKKeTT0HBQbXO; sdo:name "Kozmic Blues" ].
+
+
+:002
+    a sdo:MusicPlaylist;
+    sdo:description "For example purposes";
+    sdo:name "Another playlist";
+    sdo:track
+            [ sdo:identifier tr:7ni78Vjslqo2VxiDOahYlV; sdo:name "The Revolution Will Not Be Televised" ].
