@@ -5,7 +5,7 @@ import {useSolidContainer, useSolidFile} from "../solid";
 import {PromiseStateContainer} from "@hilats/react-utils";
 import {ScanMetadata, scanResource} from "../tools/scanner";
 import Button from "@mui/material/Button/Button";
-import {_404undefined} from "@hilats/utils";
+import {Card, CardContent, CardHeader} from "@mui/material";
 
 const SHAPES = {
     "retail:Receipt": `
@@ -53,38 +53,56 @@ export function PodOverview(props: { folderUrl: string, fetch?: typeof fetch }) 
     }, [props.folderUrl, containerAccessor])
 
     return <div className="scan-results">
-        <div><Button onClick={performScan}>Scan</Button></div>
+        <h3 style={{flex: "none", width: "100%", height: "fit-content"}}>Pod Overview <Button variant="contained" onClick={performScan}>Scan My Pod</Button></h3>
         <PromiseStateContainer promiseState={scanMetadata$}>
             {(scanResult) => scanResult ? (
                 <>
-                    <div>
-                        Total size : {scanResult.size}
-                    </div>
-                    <div>
-                        Types :
-                        <table>
-                            <tbody>
-                            {Object.entries(scanResult.types).map(([type, count]) => <tr>
-                                <td>{type}</td>
-                                <td>{count}</td>
-                            </tr>)}
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                        Shapes :
-                        <table>
-                            <tbody>
-                            {Object.entries(scanResult.shapes).map(([shape, count]) => <tr>
-                                <td>{shape}</td>
-                                <td>{count}</td>
-                            </tr>)}
-                            </tbody>
-                        </table>
-                    </div>
+                    <Card className="card">
+                        <CardHeader title="Stats"/>
+                        <CardContent>
+                            <table>
+                                <tr>
+                                    <td>Total Size</td>
+                                    <td>{scanResult.size}b</td>
+                                </tr>
+                                <tr>
+                                    <td>Resources</td>
+                                    <td>{Object.entries(scanResult.types).reduce((sum, [type, nb]) => sum + nb, 0)}</td>
+                                </tr>
+                            </table>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="card">
+                        <CardHeader title="Content Types"/>
+                        <CardContent>
+                            <table>
+                                <tbody>
+                                {Object.entries(scanResult.types).map(([type, count]) => <tr>
+                                    <td>{type}</td>
+                                    <td>{count}</td>
+                                </tr>)}
+                                </tbody>
+                            </table>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="card">
+                        <CardHeader title="Known Shapes"/>
+                        <CardContent>
+                            <table>
+                                <tbody>
+                                {Object.entries(scanResult.shapes).map(([shape, count]) => <tr>
+                                    <td>{shape}</td>
+                                    <td>{count}</td>
+                                </tr>)}
+                                </tbody>
+                            </table>
+                        </CardContent>
+                    </Card>
                 </>
             ) : <div>
-                No scan results yet
+            No scan results yet
             </div>}
         </PromiseStateContainer></div>
 }

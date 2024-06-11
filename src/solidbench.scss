@@ -442,7 +442,8 @@ svg {
 .podbrowser {
 
   .scan-results {
-    @extend .paddedPanel;
+    @extend .flex-wrap-card-container;
+
     table {
       border: 1px solid var(--theme-back2);
     }
