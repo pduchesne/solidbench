@@ -3,7 +3,6 @@ import {Link} from "react-router-dom";
 import {memo, useContext} from "react";
 import * as React from "react";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import {LogoutButton} from "@inrupt/solid-ui-react";
 import {LoginMultiButton} from "./solid";
 import {AppContext} from "./appContext";
 import Button from "@mui/material/Button/Button";
@@ -16,6 +15,7 @@ import Toolbar from "@mui/material/Toolbar/Toolbar";
 import Box from "@mui/material/Box/Box";
 import {useNavigate} from "react-router";
 import {useFixedSolidSession} from "./solid/SessionProvider";
+import { LogoutButton } from "./solid/LogoutButton";
 
 export const ToolsMenu = () => {
     const popupState = usePopupState({variant: 'popover'})
@@ -96,7 +96,7 @@ export const AppNavBar = memo(() => {
                                         //clientId: "https://highlatitud.es/app/annotations.jsonld",
                                         //redirectUrl: new URL("/", window.location.href).toString(),
 
-                                        tokenType: 'Bearer'
+                                        //tokenType: 'Bearer'
                                         /*, popUp: true */
                                     }
                                 }
