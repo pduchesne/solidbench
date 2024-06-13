@@ -202,6 +202,6 @@ export async function enrichArticles(articles: VendorArticle[], eanMap: ColruytE
 
 export function enrichArticlesFromCache(articles: VendorArticle[]) {
     articles.forEach(a => {
-        if (!a.ean) a.ean = !(a.vendorId in colruytIdMap) ? undefined : colruytIdMap[a.vendorId].off ? colruytIdMap[a.vendorId].off : colruytIdMap[a.vendorId].eans?.length > 0 ? colruytIdMap[a.vendorId].eans[0] : undefined;
+        if (!a.gtin) a.gtin = !(a.vendorId in colruytIdMap) ? undefined : colruytIdMap[a.vendorId].off ? colruytIdMap[a.vendorId].off : colruytIdMap[a.vendorId].eans?.length > 0 ? colruytIdMap[a.vendorId].eans[0] : undefined;
     })
 }

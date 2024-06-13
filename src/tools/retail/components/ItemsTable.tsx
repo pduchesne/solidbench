@@ -31,7 +31,7 @@ export const ItemsTable = (props: { receipts: Array<Receipt> }) => {
                     items[i.article.vendorId] = {
                         id: i.article.vendorId,
                         label: i.article.label,
-                        ean: i.article.ean,
+                        gtin: i.article.gtin,
                         history: [{...i, receiptId: r.id, date: r.date}]
                     }
                 }
@@ -60,7 +60,7 @@ export const ItemsTable = (props: { receipts: Array<Receipt> }) => {
                      className={selectedItem?.id == i.id ? "selected" : undefined}
                      ref={selectedItem?.id == i.id ? selectedRef : undefined}>
                     <FrequencyBar width='3em' freq={i.history.length} maxFreq={items[0].history.length}/>
-                    {i.label} {i.ean ? 'EAN' : null}
+                    {i.label} {i.gtin ? 'GTIN' : null}
                 </div>)}
         </div>
         {selectedItem ? <ItemDetails item={selectedItem} dateRange={[sortedReceipts[0].date, sortedReceipts[props.receipts.length - 1].date]}/> : null}
@@ -157,8 +157,8 @@ function ItemDetails(props:{item: ItemWithHistory, dateRange: [string, string]})
                 <td><a href={'https://www.colruyt.be/fr/produits/' + item.id}>{item.id}</a></td>
             </tr>
             <tr>
-                <td>EAN</td>
-                <td><a href={'https://www.colruyt.be/fr/produits/' + item.id}>{item.ean || null}</a></td>
+                <td>GTIN</td>
+                <td><a href={'https://www.colruyt.be/fr/produits/' + item.id}>{item.gtin || null}</a></td>
             </tr>
             </tbody>
         </table>

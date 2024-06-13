@@ -22,7 +22,7 @@ export type ReceiptItemWithReceipt = retail.ReceiptItem & {
 export type ItemWithHistory = {
     id: string,
     label: string,
-    ean?: string,
+    gtin?: string,
     history: ReceiptItemWithReceipt[]
 }
 

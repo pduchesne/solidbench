@@ -126,8 +126,8 @@ test('Process Colruyt MD', async () => {
         let offs : any[] | undefined = existingProducts[i.commercialArticleNumber]?.offs;
         if (!offs) {
             offs = [];
-            for (let ean of (gtin || [])) {
-                const off = await fetchFoodFacts(ean).catch(_404undefined);
+            for (let gtinid of (gtin || [])) {
+                const off = await fetchFoodFacts(gtinid).catch(_404undefined);
                 off && offs.push(off);
             }
             offs = offs.sort((o1, o2) => ((o1.completeness || 0) > (o2.completeness || 0)) ? -1 : 1);
