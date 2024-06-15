@@ -891,26 +891,6 @@
                 sdo:price 2.15E0
             ],
             [
-                sdo:amount 2.29E0;
-                sdo:product
-                          [
-                              sdo:name "BONI Tagliatelle aux oeufs frais 500g";
-                              sdo:productID "colruyt:product/27805"
-                          ];
-                sdo:orderQuantity 1;
-                sdo:price 2.29E0
-            ],
-            [
-                sdo:amount 2.29E0;
-                sdo:product
-                          [
-                              sdo:name "BONI mayo traditionelle 350ml";
-                              sdo:productID "colruyt:product/12179"
-                          ];
-                sdo:orderQuantity 1;
-                sdo:price 2.29E0
-            ],
-            [
                 sdo:amount 2.39E0;
                 sdo:product
                           [ sdo:name "BONI BIO tagliatelle 250g"; sdo:productID "colruyt:product/22161" ];
@@ -966,17 +946,6 @@
                 sdo:price 1.34E0
             ],
             [
-                sdo:amount 4.39E0;
-                sdo:product
-                          [
-                              sdo:name
-                                          "ROCHEFORT beurre de laiterie sal\u00e9 250g";
-                              sdo:productID "colruyt:product/26719"
-                          ];
-                sdo:orderQuantity 1;
-                sdo:price 4.39E0
-            ],
-            [
                 sdo:amount 5.99E0;
                 sdo:product
                           [
@@ -1018,7 +987,7 @@
                 sdo:price 9.8E-1
             ];
     sdo:location <colruyt:store/3521> ;
-    sdo:amount 8.405E1 .
+    sdo:amount 7.508E1 .
 
 <colruyt:receipts/10121>
     sdo:dateIssued "2020-08-02T22:00:00.000Z"^^xsd:dateTime;
