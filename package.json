@@ -61,9 +61,10 @@
         "@emotion/styled": "^11.11.0",
         "@hilats/data-modules": "file:../toolkit-ts/data-modules",
         "@hilats/monaco-language-turtle": "../monaco-language-turtle",
-        "@hilats/react-utils": "file:../toolkit-ts/react-utils",
-        "@hilats/solid-utils": "file:../toolkit-ts/solid-utils",
-        "@hilats/utils": "file:../toolkit-ts/utils",
+        "@hilats/react-utils": "0.0.3",
+        "@hilats/solid-utils": "0.0.3",
+        "@hilats/utils": "0.0.3",
+        "@hilats/annotations-react-ui": "0.0.1",
         "@inrupt/solid-client": "^2.0.0",
         "@inrupt/solid-ui-react": "^3.0.0",
         "@inrupt/vocab-common-rdf": "^1.0.5",
@@ -105,9 +106,14 @@
         "timers-browserify": "^2.0.12"
     },
     "resolutions": {
+        "@hilats/data-modules": "file:../toolkit-ts/data-modules",
+        "@hilats/react-utils": "file:../toolkit-ts/react-utils",
+        "@hilats/solid-utils": "file:../toolkit-ts/solid-utils",
         "@hilats/utils": "file:../toolkit-ts/utils",
+        "@hilats/annotations-react-ui": "file:../web-annotations/annotations-react-ui",
+        "@hilats/annotations-core": "file:../web-annotations/annotations-core",
         "parse-asn1": "5.1.6",
-            "wrap-ansi": "7.0.0",
-            "string-width": "4.1.0"
+        "wrap-ansi": "7.0.0",
+        "string-width": "4.1.0"
     }
 }
