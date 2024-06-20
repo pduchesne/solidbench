@@ -37,13 +37,14 @@ export class ColruytProductDb {
         try {
             for (let page = start; max < 0 || page * pageSize < max; page++) {
 
+                //logger.info(`Fetching page ${page}...`);
                 const {productsFound, products} = await this.fetchProducts(page, pageSize);
                 if (max == -1) max = productsFound;
                 results.push(...products);
 
                 //logger.info(`Found ${results.length} products, total ${productsFound}`);
 
-                //await setTimeout(1000);
+                //await new Promise(resolve => setTimeout(resolve, 1000));
             }
         } catch (err) {
             console.warn(err);
@@ -64,13 +65,14 @@ export class ColruytProductDb {
         headers['Origin'] = 'https://www.colruyt.be';
         headers['Referer'] = 'https://www.colruyt.be/';
         headers['Accept-Encoding'] = 'hbr, deflate, gzip, x-gzip';
-        headers['Cookie'] = this.cookies.join(';')
+        if (this.cookies.length) headers['Cookie'] = this.cookies.join(';') ;
         return fetch(url, {headers}).then(resp => {
             const cookies = resp.headers.getSetCookie();
             this.cookies = cookies.map(c => c.split(';')[0]);
             return resp;
-        }).then(throwOnHttpStatus).then(resp => resp.json()).catch(err => {
+        }).then(throwOnHttpStatus).then(resp => resp.json()).catch( (err) => {
             console.warn(`Request failed : ${url}`);
+            console.warn(`Error : ${err}`);
             throw err;
         });
     }
