@@ -1,12 +1,9 @@
 //import test from 'node:test';
-import {ColruytProductDb, enrichReceipts, getProductEAN} from "./services";
+import {enrichReceipts, getProductEAN} from "./services";
 import * as fs from "node:fs";
 import {parsePdfData} from "./parser";
 import {ColruytDbStorage} from "../colruytdb/storage";
 import {getLogger} from "log4js";
-import {existsSync, readdirSync, readFileSync, writeFileSync,} from "node:fs";
-import {fetchFoodFacts} from "../../off";
-import {_404undefined} from "@hilats/utils";
 
 jest.setTimeout(3000000);
 

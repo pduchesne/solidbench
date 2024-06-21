@@ -195,7 +195,7 @@ export const ExpensesChart = (props: { receipts: Array<ReceiptWithRetailer> }) =
     const eventHandlers = useMemo(() => ({
         'click': (evt: any) => {
             if (evt.value.receipts) {
-                navigate('../receipts/'+evt.value.receipts[0])
+                navigate('../receipts/'+encodeURIComponent(evt.value.receipts[0]))
             }
             //console.log(JSON.stringify(evt, getCircularReplacer()));
         }

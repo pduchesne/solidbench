@@ -3,8 +3,12 @@ import {useMemo} from "react";
 import * as React from "react";
 import {Card, CardContent, CardHeader} from "@mui/material";
 import { getVendorId } from "../storage";
+import {useNavigate} from "react-router";
+import {getEcoscore, getNutriscore, SCORE_COLORS} from "../off";
 
 export const Overview = (props: { receipts: Array<Receipt> }) => {
+
+    const navigate = useNavigate();
 
     const items = useMemo(() => {
         const items: Record<string, ItemWithHistory> = {};
@@ -16,6 +20,7 @@ export const Overview = (props: { receipts: Array<Receipt> }) => {
                     items[i.article.vendorId] = {
                         id: i.article.vendorId,
                         label: i.article.label,
+                        gtin: i.article.gtin,
                         history: [{...i, receiptId: r.id, date: r.date}]
                     }
                 }
@@ -27,8 +32,10 @@ export const Overview = (props: { receipts: Array<Receipt> }) => {
 
     return <div className="retail-overview">
         <Stats receipts={props.receipts}/>
-        <OldFavourites items={items}/>
-        <RecentItems items={items}/>
+        <OldFavourites items={items} onItemSelect={(id) => navigate('../frequent/'+encodeURIComponent(id))}/>
+        <RecentItems items={items} onItemSelect={(id) => navigate('../frequent/'+encodeURIComponent(id))}/>
+        <EcoscoreOverview items={items} onItemSelect={(id) => navigate('../frequent/'+encodeURIComponent(id))}/>
+        <NutriscoreOverview items={items} onItemSelect={(id) => navigate('../frequent/'+encodeURIComponent(id))}/>
     </div>
 }
 
@@ -74,7 +81,8 @@ export function Stats(props: {receipts: Receipt[]}) {
 
 
 
-export function OldFavourites(props: {items: ItemWithHistory[]}) {
+export function OldFavourites(props: {items: ItemWithHistory[], onItemSelect?: (itemId: string) => void}) {
+
     const oldfavorites = useMemo(() => {
         return props.items.filter(
             i => i.history.length > 8 &&
@@ -87,7 +95,7 @@ export function OldFavourites(props: {items: ItemWithHistory[]}) {
             <CardHeader title="Old time favorites"/>
             <CardContent>
                 {oldfavorites.slice(0, 10).map(i => (
-                    <div key={i.id}>
+                    <div key={i.id} onClick={() => props.onItemSelect && props.onItemSelect(i.id)} className="actionableItem">
                         <FrequencyBar width='3em' freq={i.history.length} maxFreq={oldfavorites[0].history.length}/>
                         <FormattedDate isoDate={i.history.at(-1)!.date} />
                         {i.label} </div>))}
@@ -95,7 +103,7 @@ export function OldFavourites(props: {items: ItemWithHistory[]}) {
         </Card> : null;
 }
 
-export function RecentItems(props: {items: ItemWithHistory[]}) {
+export function RecentItems(props: {items: ItemWithHistory[], onItemSelect?: (itemId: string) => void}) {
     const recentItems = useMemo(() => {
         return props.items.sort((i1, i2) => i2.history.at(-1)!.date.localeCompare(i1.history.at(-1)!.date))
     }, [props.items]);
@@ -105,11 +113,38 @@ export function RecentItems(props: {items: ItemWithHistory[]}) {
             <CardHeader title="Recently bought"/>
             <CardContent>
                 {recentItems.slice(0, 10).map(i => (
-                    <div key={i.id}>
+                    <div key={i.id} onClick={() => props.onItemSelect && props.onItemSelect(i.id)} className="actionableItem">
                         <FormattedDate isoDate={i.history.at(-1)!.date} />
                         {i.label} </div>))}
             </CardContent>
         </Card> : null
+}
+
+export function EcoscoreOverview(props: {items: ItemWithHistory[], onItemSelect?: (itemId: string) => void}) {
+    const worstItems = useMemo(() => {
+        return props.items.sort((i1, i2) => {
+            const ecoscore1 = getEcoscore(i1.gtin, true);
+            const ecoscore2 = getEcoscore(i2.gtin, true);
+            const weight1 = (ecoscore1 ? ecoscore1.charCodeAt(0)-96 : 0) * (1 + i1.history.length / 10);
+            const weight2 = (ecoscore2 ? ecoscore2.charCodeAt(0)-96 : 0) * (1 + i2.history.length / 10);
+
+            return weight2 - weight1;
+        })
+    }, [props.items]);
+
+    return worstItems.length > 0 ?
+        <Card className="card">
+            <CardHeader title="Ecoscore"/>
+            <CardContent>
+                {worstItems.slice(0, 10).map(i => (
+                    <div key={i.id} onClick={() => props.onItemSelect && props.onItemSelect(i.id)}
+                         className="actionableItem">
+                        <div title={`${getEcoscore(i.gtin)} - ${i.history.length}`}
+                             style={{display: 'inline-block', width: '3em', height: '1em', backgroundColor: SCORE_COLORS[getEcoscore(i.gtin) || '']}} />
+                            {i.label} </div>
+                        ))}
+                    </CardContent>
+                    </Card> : null
 }
 
 
@@ -117,6 +152,34 @@ export function FrequencyBar(props: {freq: number, maxFreq: number, width?: stri
     return <div title={""+props.freq}  className="frequencyBar" style={{width: props.width, height: props.height || '1em'}}>
         <div style={{width: (100*props.freq/props.maxFreq)+'%'}}/>
     </div>
+}
+
+
+export function NutriscoreOverview(props: {items: ItemWithHistory[], onItemSelect?: (itemId: string) => void}) {
+    const worstItems = useMemo(() => {
+        return props.items.sort((i1, i2) => {
+            const nutriscore1 = getNutriscore(i1.gtin, true);
+            const nutriscore2 = getNutriscore(i2.gtin, true);
+            const weight1 = (nutriscore1 ? nutriscore1.charCodeAt(0)-96 : 0) * (1 + i1.history.length / 10);
+            const weight2 = (nutriscore2 ? nutriscore2.charCodeAt(0)-96 : 0) * (1 + i2.history.length / 10);
+
+            return weight2 - weight1;
+        })
+    }, [props.items]);
+
+    return worstItems.length > 0 ?
+        <Card className="card">
+            <CardHeader title="Nutriscore"/>
+            <CardContent>
+                {worstItems.slice(0, 10).map(i => (
+                    <div key={i.id} onClick={() => props.onItemSelect && props.onItemSelect(i.id)}
+                         className="actionableItem">
+                        <div title={`${getNutriscore(i.gtin)} - ${i.history.length}`}
+                             style={{display: 'inline-block', width: '3em', height: '1em', backgroundColor: SCORE_COLORS[getNutriscore(i.gtin) || '']}} />
+                        {i.label} </div>
+                ))}
+            </CardContent>
+        </Card> : null
 }
 
 export function FormattedDate(props: {isoDate: string}) {

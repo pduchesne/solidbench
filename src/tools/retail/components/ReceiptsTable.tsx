@@ -45,12 +45,12 @@ export const ReceiptsTable = (props: { receipts: Array<Receipt>, receiptId?: str
                     <th>Label</th>
                 </tr>
                 <tbody>{r.items?.map((i, idx) =>
-                    <tr key={idx} onClick={() => props.onItemSelect && props.onItemSelect(i.article.vendorId)}>
+                    <tr key={idx}>
                         <td>{i.quantity}</td>
                         <td>{i.unitPrice}</td>
                         <td>{i.amount}</td>
                         <td>{i.article.vendorId}</td>
-                        <td>{i.article.label}</td>
+                        <td onClick={() => props.onItemSelect && props.onItemSelect(i.article.vendorId)} className="actionableItem">{i.article.label}</td>
                     </tr>)}
                 </tbody>
             </table>

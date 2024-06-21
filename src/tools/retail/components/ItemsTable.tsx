@@ -7,6 +7,9 @@ import {Route, Routes, useLocation, useParams} from "react-router-dom";
 import ReactEcharts, { EChartsOption, OptionSourceData } from "../../../ui/echarts";
 import {usePersistentQueryNavigate} from "../../../ui/hooks";
 
+import classNames from "classnames";
+import {getEcoscore, getNutriscore} from "../off";
+
 export const ItemsTableRoutes = (props: { receipts: Array<Receipt> }) => {
     return <Routes>
         <Route path="/:itemId" element={<ItemsTable {...props} />} />
@@ -57,10 +60,11 @@ export const ItemsTable = (props: { receipts: Array<Receipt> }) => {
         <div className='itemsList'>
             {items.map((i, idx) =>
                 <div key={i.id} onClick={() => setSelectedItem(i.id)}
-                     className={selectedItem?.id == i.id ? "selected" : undefined}
+                     className={classNames({selected: selectedItem?.id == i.id, actionableItem: true})}
                      ref={selectedItem?.id == i.id ? selectedRef : undefined}>
                     <FrequencyBar width='3em' freq={i.history.length} maxFreq={items[0].history.length}/>
-                    {i.label} {i.gtin ? 'GTIN' : null}
+                    <span style={{width: "1em", display: 'inline-block'}}>{i.gtin ? <img src="/images/logos/open-food-facts.svg"/> : null}</span>
+                    {i.label}
                 </div>)}
         </div>
         {selectedItem ? <ItemDetails item={selectedItem} dateRange={[sortedReceipts[0].date, sortedReceipts[props.receipts.length - 1].date]}/> : null}
@@ -147,21 +151,29 @@ function ItemDetails(props:{item: ItemWithHistory, dateRange: [string, string]})
         }
     }), []);
 
+    const nutriscore = getNutriscore(item.gtin);
+    const ecoscore = getEcoscore(item.gtin);
 
     return <div className='itemsDetails'>
-        <h2><a href={'https://www.colruyt.be/fr/produits/' + item.id}>{item.label}</a></h2>
-        <table>
-            <tbody>
-            <tr>
-                <td>Vendor Id</td>
-                <td><a href={'https://www.colruyt.be/fr/produits/' + item.id}>{item.id}</a></td>
-            </tr>
-            <tr>
-                <td>GTIN</td>
-                <td><a href={'https://www.colruyt.be/fr/produits/' + item.id}>{item.gtin || null}</a></td>
-            </tr>
-            </tbody>
-        </table>
+        <h2>{item.label}</h2>
+        <div>
+            <table style={{display: "inline-block"}}>
+                <tbody>
+                <tr>
+                    <td>Vendor Id</td>
+                    <td><a href={'https://www.colruyt.be/fr/produits/' + item.id} target='_blank'>{item.id}</a></td>
+                </tr>
+                {item.gtin ?
+                    <tr>
+                        <td>GTIN</td>
+                        <td><a href={'https://openfoodfacts.org/product/' + item.gtin} target='_blank'>{item.gtin}</a>
+                        </td>
+                    </tr> : null}
+                </tbody>
+            </table>
+            {(nutriscore && nutriscore != 'not-applicable') ? <img style={{height: "2.5em", margin: "0px 10px"}} src={'/images/logos/Nutri-score-' + nutriscore.toUpperCase() + '.svg'}/> : null}
+            {(ecoscore && ecoscore != 'not-applicable')? <img style={{height: "2.5em", margin: "0px 10px"}} src={'/images/logos/ecoscore-' + ecoscore.toLowerCase() + '.svg'}/> : null}
+        </div>
         <ReactEcharts theme={ctx.theme == 'dark' ? 'dark' : undefined} option={chartOptions} onEvents={eventHandlers}/>
     </div>
 }

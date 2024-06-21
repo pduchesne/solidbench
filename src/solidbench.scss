@@ -147,6 +147,14 @@ body {
   //width: 100%;
   //position: absolute;
 
+  .actionableItem {
+    cursor: pointer;
+
+    &:hover {
+      background-color: var(--theme-hover);
+    }
+  }
+
   .music-control-bar {
     @extend .hFlow;
     overflow: hidden;
@@ -379,7 +387,7 @@ svg {
 .retail {
   @extend .vFlow;
 
-  .retail-overview {
+  .retail-overview, .retail-scores {
     @extend .flex-wrap-card-container;
   }
 
@@ -726,6 +734,11 @@ svg {
 
       &.selected {
         background-color: var(--theme-selection)
+      }
+
+      img {
+        height: 1em;
+        vertical-align: middle;
       }
     }
   }

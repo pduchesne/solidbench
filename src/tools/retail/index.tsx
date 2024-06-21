@@ -28,6 +28,7 @@ import Chip from "@mui/material/Chip/Chip";
 import {usePersistentQueryNavigate} from "../../ui/hooks";
 import Import from "./components/Import";
 import {useFixedSolidSession} from "../../solid/SessionProvider";
+import Scores from "./components/Scores";
 
 export const RetailDashboardRoutes = () => {
 
@@ -108,6 +109,7 @@ export const ShoppingDashboard = (props: {}) => {
                         <Tab label="Receipts" value="receipts" disabled={!receipts}/>
                         <Tab label="Frequent Items" value="frequent" disabled={!receipts}/>
                         <Tab label="Expenses" value="expenses" disabled={!receipts}/>
+                        <Tab label="Scores" value="scores" disabled={!receipts}/>
                         <Tab label="Import" value="import"/>
                         <RemoveDomProps>
                             <>
@@ -167,6 +169,8 @@ export const ShoppingDashboard = (props: {}) => {
                     <TabPanel value="frequent" className='vFlow'><ItemsTable receipts={receipts}/></TabPanel> : null}
                 {receipts ?
                     <TabPanel value="expenses" className='vFlow'><ExpensesChart receipts={receipts}/></TabPanel> : null}
+                {receipts ?
+                    <TabPanel value="scores" className='vFlow'><Scores receipts={receipts}/></TabPanel> : null}
                 <TabPanel value="import" className='vFlow'><Import/></TabPanel>
             </TabContext>
         </Box></>

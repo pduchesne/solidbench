@@ -2,8 +2,20 @@ import {throwOnHttpStatus} from "@hilats/utils";
 
 const OFF_APIV2_ROOT = 'https://world.openfoodfacts.net/api/v2'
 
+const OFF_RECORDS: Record<string, OffMetadata> = require('./off_records.json');
+
+export const SCORE_COLORS = {
+    '': "#676767",
+    'not-applicable': "#c8c8c8",
+    a:"#038141",
+    b: "#85bb2f",
+    c: "#fecb02",
+    d: "#ee8100",
+    e:"#e63e11"
+}
+
 export type OffMetadata = {
-    "categories_tags": string[],
+    //"categories_tags": string[],
     "code": string,
     //"completeness": number,
     "ecoscore_grade": string,
@@ -54,4 +66,12 @@ export async function fetchFoodFacts(gtin: string) {
     const data = await fetch(OFF_APIV2_ROOT + '/product/' + gtin + '?fields=code,product_name,nutriscore_data,categories_tags,ecoscore_grade,food_groups,image_url,nutrient_levels,nutriscore_grade,completeness').then(throwOnHttpStatus).then(resp => resp.json());
 
     return data?.product as (OffMetadata | undefined);
+}
+
+export function getEcoscore(gtin: string | undefined, ignoreNotApplicable?: boolean): (keyof typeof SCORE_COLORS) | undefined {
+    return gtin && OFF_RECORDS[gtin] && (!ignoreNotApplicable || OFF_RECORDS[gtin].ecoscore_grade != 'not-applicable') ? OFF_RECORDS[gtin].ecoscore_grade as keyof typeof SCORE_COLORS : undefined;
+}
+
+export function getNutriscore(gtin?: string | undefined, ignoreNotApplicable?: boolean): (keyof typeof SCORE_COLORS) | undefined {
+    return gtin && OFF_RECORDS[gtin] && (!ignoreNotApplicable || OFF_RECORDS[gtin].nutriscore_grade != 'not-applicable') ? OFF_RECORDS[gtin].nutriscore_grade as keyof typeof SCORE_COLORS : undefined;
 }
