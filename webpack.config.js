@@ -97,7 +97,9 @@ module.exports = (env, argv) => {
                     'react-dom': path.resolve(__dirname, 'node_modules/react-dom'),
                     stream: path.resolve(__dirname, 'node_modules/stream-browserify'),
                     'monaco-editor': path.resolve(__dirname, 'node_modules/monaco-editor'),
-                    process: "process/browser"
+                    process: "process/browser",
+                'react-pdf': path.resolve(__dirname, 'node_modules/react-pdf'),
+                'video.js': path.resolve(__dirname, 'node_modules/video.js'),
 
 
                 /*

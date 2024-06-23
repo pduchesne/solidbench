@@ -59,12 +59,12 @@
     "dependencies": {
         "@emotion/react": "^11.11.1",
         "@emotion/styled": "^11.11.0",
+        "@hilats/annotations-react-ui": "file:../web-annotations/annotations-react-ui",
         "@hilats/data-modules": "file:../toolkit-ts/data-modules",
         "@hilats/monaco-language-turtle": "../monaco-language-turtle",
         "@hilats/react-utils": "0.0.3",
         "@hilats/solid-utils": "0.0.3",
         "@hilats/utils": "0.0.3",
-        "@hilats/annotations-react-ui": "0.0.1",
         "@inrupt/solid-client": "^2.0.0",
         "@inrupt/solid-ui-react": "^3.0.0",
         "@inrupt/vocab-common-rdf": "^1.0.5",
@@ -112,8 +112,6 @@
         "@hilats/utils": "file:../toolkit-ts/utils",
         "@hilats/annotations-react-ui": "file:../web-annotations/annotations-react-ui",
         "@hilats/annotations-core": "file:../web-annotations/annotations-core",
-        "parse-asn1": "5.1.6",
-        "wrap-ansi": "7.0.0",
-        "string-width": "4.1.0"
+        "parse-asn1": "5.1.6"
     }
 }

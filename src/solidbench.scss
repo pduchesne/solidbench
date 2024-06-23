@@ -445,6 +445,66 @@ svg {
     border-radius: 3px;
     z-index: 10;
   }
+
+
+  .itemsTable {
+    @extend .hFlow;
+
+    .itemsList {
+      @extend .paddedPanel;
+      flex: 1;
+
+      &>div {
+        text-wrap: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        &:hover {
+          background-color: var(--theme-hover);
+        }
+
+        &.selected {
+          background-color: var(--theme-selection)
+        }
+
+        img {
+          height: 1em;
+          vertical-align: middle;
+        }
+      }
+    }
+
+    .itemsDetails {
+      @extend .paddedPanel;
+      flex: 3;
+    }
+  }
+
+
+  .receiptsTable {
+    @extend .paddedPanel;
+  }
+
+  .frequencyBar {
+    display: inline-block;
+    border: 1px solid var(--theme-border1);
+    position: relative;
+    vertical-align: middle;
+    margin: 2px 5px;
+
+    &>div {
+      display: inline-block;
+      background-color: green;
+      height: 100%;
+    }
+  }
+
+  .itemDate {
+    display: inline-block;
+    font-size: 90%;
+    color: var(--theme-front2);
+    margin: 2px 5px;
+  }
 }
 
 .podbrowser {
@@ -683,7 +743,6 @@ svg {
   }
 }
 
-
 .music {
 
   .music-overview {
@@ -716,61 +775,46 @@ svg {
   }
 }
 
-.itemsTable {
-  @extend .hFlow;
+.annotations {
 
-  .itemsList {
-    @extend .paddedPanel;
-    flex: 1;
+  @import "node_modules/@hilats/annotations-react-ui/scss/annotations.scss";
 
-    &>div {
-      text-wrap: nowrap;
+  .annotations-list {
+    @extend .sidenav;
+  }
+
+  .resource-viewer {
+    .viewer-html {
+      background-color: white;
       overflow: hidden;
-      text-overflow: ellipsis;
-
-      &:hover {
-        background-color: var(--theme-hover);
-      }
-
-      &.selected {
-        background-color: var(--theme-selection)
-      }
-
-      img {
-        height: 1em;
-        vertical-align: middle;
-      }
     }
   }
-
-  .itemsDetails {
-    @extend .paddedPanel;
-    flex: 3;
-  }
 }
 
 
-.receiptsTable {
-  @extend .paddedPanel;
+
+
+/**
+Copied from web-annotations/annotations-app
+ */
+
+.annotationsLayer {
+  z-index: 100;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
 }
 
-.frequencyBar {
-  display: inline-block;
-  border: 1px solid var(--theme-border1);
-  position: relative;
-  vertical-align: middle;
-  margin: 2px 5px;
-
-  &>div {
-    display: inline-block;
-    background-color: green;
-    height: 100%;
-  }
+.CodeMirror {
+  border: 1px solid #eee;
+  height: auto !important;
+  width: auto;
 }
 
-.itemDate {
-  display: inline-block;
-  font-size: 90%;
-  color: var(--theme-front2);
-  margin: 2px 5px;
+.react-pdf__Page__textContent {
+  top: 0 !important;
+  left: inherit !important;
+  transform: inherit !important;
 }
