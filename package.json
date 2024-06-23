@@ -41,12 +41,13 @@
         "jest-junit": "^16.0.0",
         "jest-transform-stub": "^2.0.0",
         "monaco-editor-webpack-plugin": "^7.1.0",
-        "node-sass": "9.0.0",
+        "node-sass": "^9.0.0",
         "patch-package": "^8.0.0",
         "prettier": "^3.0.3",
         "sass-loader": "14.2.1",
         "shx": "^0.3.4",
         "style-loader": "^3.3.1",
+        "terser-webpack-plugin": "^5.3.10",
         "ts-jest": "^29.1.2",
         "ts-loader": "9.5.1",
         "tsx": "^4.10.4",
@@ -105,6 +106,8 @@
     },
     "resolutions": {
         "@hilats/utils": "file:../toolkit-ts/utils",
-        "parse-asn1": "5.1.6"
+        "parse-asn1": "5.1.6",
+            "wrap-ansi": "7.0.0",
+            "string-width": "4.1.0"
     }
 }
