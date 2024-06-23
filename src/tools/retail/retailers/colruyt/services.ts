@@ -2,7 +2,7 @@ import * as cheerio from 'cheerio';
 import {fetchFoodFacts} from "../../off";
 import {Receipt, VendorArticle} from "../../model";
 import {ColruytEanMap} from "../colruytdb/storage";
-import {proxify_url, throwOnHttpStatus} from "@hilats/utils";
+import {DEFAULT_PROXIFIER, throwOnHttpStatus} from "@hilats/utils";
 
 const colruytIdMap: ColruytIdEanMap = require('./colruyt_id_ean_map.json');
 
@@ -94,7 +94,7 @@ export async function getProductEAN(colruytId: string) {
 
 export async function getHtmlFragment(url: string, selector: string) {
 
-    const proxied_url = proxify_url(new URL(url), new URL("/proxy", window.location.href).toString());
+    const proxied_url = DEFAULT_PROXIFIER.proxifier(url);
     const htmlStr = await fetch(proxied_url).then(resp => resp.text()).catch(err => {
         console.log(`Failed to fetch ${proxied_url} : ${err}`);
         if (err.code == 'UND_ERR_SOCKET') {

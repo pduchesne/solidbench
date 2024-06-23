@@ -4,6 +4,12 @@ import {getPodUrls, ResourceCache} from "@hilats/solid-utils";
 import {Preferences} from "./tools/personal-dashboard/preferences";
 import {useDarkThemeDetector} from "@hilats/react-utils";
 import {useFixedSolidSession} from "./solid/SessionProvider";
+import {createProxifier, DEFAULT_PROXIFIER} from "@hilats/utils";
+
+// TODO make this configurable in env file
+const PROXY_URL = "https://demo.highlatitud.es/proxy";
+
+DEFAULT_PROXIFIER.proxifier = createProxifier(PROXY_URL);
 
 export type AppContextType = {
     webId?: string,
@@ -12,6 +18,7 @@ export type AppContextType = {
     preferences: Preferences,
     theme?: string,
     updateCtx: (update: Partial<AppContextType>) => void;
+    proxifier?: (url: string) => string
 };
 
 function createInitAppContext(updateAppContextFn: (update: Partial<AppContextType>) => void): AppContextType {
@@ -20,7 +27,8 @@ function createInitAppContext(updateAppContextFn: (update: Partial<AppContextTyp
         preferences: {
             pods: [],
             theme: 'auto'
-        }
+        },
+        proxifier: DEFAULT_PROXIFIER.proxifier
     };
 }
 
