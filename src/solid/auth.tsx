@@ -1,19 +1,19 @@
 import {useSession} from "./SessionProvider";
-import React, {useEffect, useState} from "react";
-import {PromiseContainer} from "@hilats/react-utils";
-import {Navigate} from "react-router-dom";
+import React, {useEffect} from "react";
+import {useNavigate} from "react-router-dom";
 
 export function SolidAuth(props: {}) {
     const session = useSession();
 
-    const [authResponse, setAuthResponse] = useState<Promise<any>>();
+    const navigate = useNavigate();
 
     useEffect(() => {
-        setAuthResponse(session.handleIncomingRedirect({restorePreviousSession: true}));
-    }, [session]);
+       session.handleIncomingRedirect({restorePreviousSession: false}).then(resp => {
+           // TODO keep track of the original URL and redirect ?
+           navigate('/personal/dashboard');
+       });
+    }, []);
 
 
-    return authResponse ? <PromiseContainer promise={authResponse}>
-        {() => <Navigate to={'/personal/dashboard'} />}
-    </PromiseContainer> : null
+    return <div>Authenticating...</div>
 }

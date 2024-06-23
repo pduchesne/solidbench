@@ -1,7 +1,7 @@
 import {ReactElement, SetStateAction, Dispatch, ReactNode, useCallback, useContext, useMemo} from "react";
-import React, { createContext, useState, useEffect } from "react";
+import React, {createContext, useState, useEffect} from "react";
 
-import type { Session } from "@inrupt/solid-client-authn-browser";
+import type {Session} from "@inrupt/solid-client-authn-browser";
 import {
     fetch,
     login,
@@ -12,10 +12,11 @@ import {
     IHandleIncomingRedirectOptions
 } from "@inrupt/solid-client-authn-browser";
 
-import type {
+import {
     SolidDataset,
     ProfileAll,
     WithServerResourceInfo,
+    getProfileAll,
 } from "@inrupt/solid-client";
 import {ISessionInfo} from "@inrupt/solid-client-authn-core";
 
@@ -46,7 +47,7 @@ export interface ISessionProvider {
     sessionRequestInProgress?: boolean;
     onError?: (error: Error) => void;
     /** @since 2.3.0 */
-    restorePreviousSession?: boolean | ((url: string)=> boolean);
+    restorePreviousSession?: boolean | ((url: string) => boolean);
     /** @since 2.3.0 */
     onSessionRestore?: (url: string) => void;
     /**
@@ -68,56 +69,79 @@ export function SessionProvider({
                                     skipLoadingProfile,
                                     onSessionRestore,
                                 }: ISessionProvider): ReactElement {
+    // session restore will be attempted depending on the evaluation of restorePreviousSession
+    // if no 'restorePreviousSession' is provided, it is attempted if a onSessionRestore callback is provided
     const restoreSession =
         restorePreviousSession || typeof onSessionRestore !== "undefined";
+
     const [session, setSession] = useState<Session>(getDefaultSession);
+
+    // keep the profile in a state
     const [profile, setProfile] =
         useState<ProfileAll<SolidDataset & WithServerResourceInfo>>();
 
+    // register the onSessionRestore listener on the session
     useEffect(() => {
-        if (onSessionRestore !== undefined) {
-            session.events.on(EVENTS.SESSION_RESTORED, onSessionRestore);
+        const listener = onSessionRestore !== undefined ?
+            session.events.on(EVENTS.SESSION_RESTORED, onSessionRestore) :
+            undefined
+
+        return () => {
+            //@ts-ignore
+            listener && session.events.off(EVENTS.SESSION_RESTORED, onSessionRestore);
         }
     }, [onSessionRestore, session.events]);
 
     const defaultInProgress =
         typeof defaultSessionRequestInProgress === "undefined"
+            // If loggedin is true, we're not making a session request.
             ? !session.info.isLoggedIn
             : defaultSessionRequestInProgress;
 
-    // If loggedin is true, we're not making a session request.
+    // keep track of the session in progress state
     const [sessionRequestInProgress, setSessionRequestInProgress] =
         useState(defaultInProgress);
 
-    const contextHandleIncomingRedirect = useCallback(async (options: IHandleIncomingRedirectOptions) => {
+    // main function that handles incoming auth redirects
+    const contextHandleIncomingRedirect = useCallback(async (options: IHandleIncomingRedirectOptions) =>
+        {
+
         setSessionRequestInProgress(true);
 
         let sessionInfo: ISessionInfo | undefined = undefined;
         try {
+            // url default to the current url
             const {url = window.location.href} = options;
-            const restorePreviousSession = typeof restoreSession == 'function' ? restoreSession(url) : restoreSession;
+
+            // shall we try to restore a session ?
+            // first check if an explicit options.restorePreviousSession has been passed
+            const restorePreviousSession =
+                options.restorePreviousSession !== undefined ? options.restorePreviousSession :
+                typeof restoreSession == 'function' ? restoreSession(url) :
+                restoreSession;
             console.log(`SOLIDAUTH : Handling Incoming Redirect [restore=${restorePreviousSession}] : ${url}`);
+
+            // do the auth check
             sessionInfo = await handleIncomingRedirect({
                 url,
                 restorePreviousSession,
                 ...options
             });
 
-            /*
-            if (skipLoadingProfile === true) {
-                    return;
-                }
 
-                // If handleIncomingRedirect logged the session in, we know what the current
-                // user's WebID is.
-                if (sessionInfo?.webId !== undefined) {
+            if (sessionInfo?.webId !== undefined) {
+                // user is logged in
+
+                if (!skipLoadingProfile) {
+                    // load the profile proactively
                     const profiles = await getProfileAll(sessionInfo?.webId, {
                         fetch: session.fetch,
                     });
 
                     setProfile(profiles);
                 }
-             */
+            }
+
         } catch (error) {
             if (onError) {
                 onError(error as Error);
@@ -128,26 +152,23 @@ export function SessionProvider({
             setSessionRequestInProgress(false);
         }
 
+        // TODO why is this needed ?
         getDefaultSession().events.on("logout", () => {
-            // TODO force a refresh
             setSession(getDefaultSession());
         });
 
         return sessionInfo;
-    }, [restoreSession, onError, skipLoadingProfile]);
+    },
+        [restoreSession, onError, skipLoadingProfile]
+    );
 
     useEffect(() => {
-        const url = window.location.href
-        const restorePreviousSession = typeof restoreSession == 'function' ? restoreSession(url) : restoreSession;
-
-        if (restorePreviousSession) {
-            contextHandleIncomingRedirect({ url, restorePreviousSession});
-        }
+        contextHandleIncomingRedirect({});
     }, [
-        session,
-        sessionId,
-        window.location.href,
-        restoreSession
+        //session,
+        //sessionId,
+        //window.location.href,
+        contextHandleIncomingRedirect
     ]);
 
 
@@ -199,7 +220,8 @@ export function SessionProvider({
 }
 
 export function useSession() {
-    return useContext(SessionContext);
+    const session = useContext(SessionContext);
+    return {...session};
 }
 
 
@@ -219,7 +241,7 @@ useEffect( () => {
 }, [session.sessionRequestInProgress, session.session.info.webId, session.session.info.isLoggedIn, session.session.info.sessionId]);
 */
 
-    useEffect( () => {
+    useEffect(() => {
         if (!session.session.info.isLoggedIn) {
             session.session.info.webId = undefined;
         }

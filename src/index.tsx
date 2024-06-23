@@ -103,18 +103,25 @@ export const AppWithContext = memo(() => {
     </AppThemeProvider>
 })
 
+// try to restore session only if current url is not an auth endpoint
+const shouldRestoreSession = (url: string) => url.indexOf('/auth') < 0 ;
+
 export const App = memo(() => {
     const navigate = useNavigate();
-//@ts-ignore
-    const sessionRestoreCb = useCallback((url: string) => {
-        const host = new URL(url).host;
-        const path = url.substring(url.indexOf(host) + host.length);
+
+    // callback for when a session has been restored
+    // should redirect to the URL present before the auth restoration
+    const sessionRestoreCb = useCallback((url_before_auth: string) => {
+        // we want to navigate in react-router terms
+        // --> extract the path and use react-router navigate
+        const host = new URL(url_before_auth).host;
+        const path = url_before_auth.substring(url_before_auth.indexOf(host) + host.length);
         navigate(path);
         // See this issue for navigate : https://github.com/remix-run/react-router/issues/7634
     }, [ /* navigate TODO WARN this means the navigate function will never get updated, and therefore cannot be used for relative navigation*/ ]);
 
     return (
-        <MemoSessionProvider restorePreviousSession={url => url.indexOf('/auth') < 0}
+        <MemoSessionProvider restorePreviousSession={shouldRestoreSession}
                              sessionId="solidbench-app"
                              sessionRequestInProgress={false}
                              onSessionRestore={sessionRestoreCb}
