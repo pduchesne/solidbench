@@ -156,12 +156,15 @@ export function getVendorId(receiptId: string) {
 
 export class MemoryReceiptsStorage implements ReceiptsStorage {
 
+    private _uris: string[];
     private _receipts$: Promise<ReceiptsMap>;
     
-    constructor(options: {uris?: string[], receiptMap?: ReceiptsMap, receipts?: Receipt[], fetch?: typeof global.fetch}) {
+    constructor(options: {uris: string[], receiptMap?: ReceiptsMap, receipts?: Receipt[], fetch?: typeof global.fetch}) {
 
         const {uris, receipts, receiptMap, fetch = global.fetch} = options;
-        
+
+        this._uris = options.uris;
+
         if (receiptMap)
             this._receipts$ = Promise.resolve(receiptMap);
         else
@@ -219,6 +222,9 @@ export class MemoryReceiptsStorage implements ReceiptsStorage {
         return this._receipts$;
     }
 
+    get uris(): string[] {
+        return this._uris;
+    }
 
 }
 

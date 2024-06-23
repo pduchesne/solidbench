@@ -67,7 +67,7 @@ export const MusicDataDisplay = () => {
     const tab = panelId || 'overview';
 
     return <>
-        <Box className="retail">
+        <Box>
             <TabContext value={tab}>
                 <Box sx={{borderBottom: 1, borderColor: 'divider', flex: 'none'}}>
                     <TabList style={{flex: '1 1 100%'}} onChange={(e, value) => navigate('../' + value)}>

@@ -29,6 +29,7 @@ import {usePersistentQueryNavigate} from "../../ui/hooks";
 import Import from "./components/Import";
 import {useFixedSolidSession} from "../../solid/SessionProvider";
 import Scores from "./components/Scores";
+import Alert from "@mui/material/Alert";
 
 export const RetailDashboardRoutes = () => {
 
@@ -148,6 +149,7 @@ export const ShoppingDashboard = (props: {}) => {
                     </TabList>
 
                 </Box>
+                {receiptsStorage instanceof MemoryReceiptsStorage ?  <Alert variant='outlined' severity="info">Viewing information from {receiptsStorage.uris.join(', ')}</Alert> : null}
                 <TabPanel value="overview" className='vFlow'>
                     <PromiseStateContainer promiseState={histories$}>
                         {(history) => (history && history[0].length) ?

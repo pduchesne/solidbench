@@ -44,7 +44,7 @@ import Link from "@mui/material/Link/Link";
 import Input from "@mui/material/Input/Input";
 import {Link as RouterLink} from 'react-router-dom';
 
-import {MODULE_REGISTRY, retail} from "@hilats/data-modules";
+import {MODULE_REGISTRY} from "@hilats/data-modules";
 import {toast} from "react-toastify";
 import {useFixedSolidSession} from "../solid/SessionProvider";
 
@@ -407,7 +407,6 @@ export const FileViewer = (props: { uri: string, content: Blob | string, edition
                         </div>);
                 })
             })
-            retail.DM_RETAIL.matches(props.content)
         }
     }, [contentType]);
 
