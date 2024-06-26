@@ -7,6 +7,8 @@ import {ScanMetadata, scanResource} from "../tools/scanner";
 import Button from "@mui/material/Button/Button";
 import {Card, CardContent, CardHeader} from "@mui/material";
 
+// TODO use MODULE_REGISTRY to infer these
+
 const SHAPES = {
     "retail:Receipt": `
 start = @<Receipt>
@@ -21,6 +23,12 @@ start = @<Annotation>
 <Annotation> {
   a [<http://www.w3.org/ns/oa#Annotation>] ;
 }
+`,
+    "sdo:MusicPlaylist": `
+start = @<Playlist>
+
+<Playlist> 
+    { a [<https://schema.org/MusicPlaylist>] }
 `
 }
 
