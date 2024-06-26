@@ -1,14 +1,13 @@
 import * as React from "react";
 import {useSearchParams} from "react-router-dom";
 import {useFixedSolidSession} from "../../solid/SessionProvider";
-import {useContext, useEffect, useMemo, useState} from "react";
+import {useCallback, useContext, useEffect, useMemo, useRef, useState} from "react";
 import {AppContext} from "../../appContext";
 import {AnnotationStorage, MemoryAnnotationStorage, PodAnnotationStorage} from "./storage";
 import Alert from "@mui/material/Alert";
 import {PromiseStateContainer, usePromiseFn} from "@hilats/react-utils";
-import {Annotation, DM_ANNOTATIONS, getElemOrArray, resolveWebResourceRef, WebResource} from "@hilats/annotations-core";
-import { AnnotationViewer } from "@hilats/annotations-react-ui";
-import {MODULE_REGISTRY} from "@hilats/data-modules";
+import {Annotation, getElemOrArray, resolveWebResourceRef, WebResource} from "@hilats/annotations-core";
+import {AnnotationViewer, ScrollableRef} from "@hilats/annotations-react-ui";
 
 
 import { pdfjs } from 'react-pdf';
@@ -16,9 +15,6 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
     'pdfjs-dist/build/pdf.worker.min.js',
     import.meta.url,
 ).toString();
-
-
-MODULE_REGISTRY.registerModule(DM_ANNOTATIONS);
 
 export const AnnotationsDashboard = () => {
 
@@ -48,7 +44,7 @@ export const AnnotationsDisplay = () => {
     const externalInputs = params.getAll('input');
 
     const memoryStorage = useMemo(
-        () => externalInputs?.length ? new MemoryAnnotationStorage({uris: externalInputs}) : undefined,
+        () => externalInputs?.length ? new MemoryAnnotationStorage({uris: externalInputs, fetch}) : undefined,
         // must concat array to have a constant value across renderings
         [externalInputs.join(',')]);
 
@@ -60,7 +56,7 @@ export const AnnotationsDisplay = () => {
 
     const annotations$ = usePromiseFn(async () => annotationStorage?.fetchAnnotations(), [annotationStorage])
 
-
+    const scrollableRef = useRef<ScrollableRef>(null);
 
     const [selectedResource, setSelectedResource] = useState<WebResource>();
 
@@ -70,6 +66,11 @@ export const AnnotationsDisplay = () => {
         selectedAnnotation && setSelectedResource(resolveWebResourceRef(getElemOrArray(selectedAnnotation.target)[0]))
     }, [selectedAnnotation]);
 
+    const selectAnnotationCb = useCallback((a: Annotation) => {
+        setSelectedAnnotation(a);
+        scrollableRef.current?.scrollTo && scrollableRef.current.scrollTo(a);
+    }, [scrollableRef.current]);
+
     return <div className="annotations vFlow">
         {annotationStorage instanceof MemoryAnnotationStorage ?
             <Alert variant='outlined' severity="info">Viewing information
@@ -78,7 +79,7 @@ export const AnnotationsDisplay = () => {
             <div className="annotations-list">
                 <PromiseStateContainer promiseState={annotations$}>
                     {annotations => <>
-                        {(annotations || []).map(a => <div onClick={() => setSelectedAnnotation(a)}>
+                        {(annotations || []).map(a => <div onClick={() => selectAnnotationCb(a)}>
                             {a.title}
                         </div>)}
                     </>}
@@ -92,6 +93,7 @@ export const AnnotationsDisplay = () => {
                             <AnnotationViewer resource={selectedResource}
                                               annotations={annotations}
                                               highlightedAnnotations={selectedAnnotation ? [selectedAnnotation] : []}
+                                              ref={scrollableRef}
                             />}
                     </PromiseStateContainer> : null}
             </div>

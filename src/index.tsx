@@ -17,6 +17,10 @@ import classNames from "classnames";
 import {AppThemeProvider} from "./theme";
 import {SessionProvider, useFixedSolidSession} from "./solid/SessionProvider";
 import {SolidAuth} from "./solid/auth";
+import {MODULE_REGISTRY} from "@hilats/data-modules";
+import {DM_ANNOTATIONS} from "@hilats/annotations-core";
+
+MODULE_REGISTRY.registerModule(DM_ANNOTATIONS);
 
 const routes = [
     {
