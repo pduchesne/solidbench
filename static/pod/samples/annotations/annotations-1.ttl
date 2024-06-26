@@ -1,0 +1,48 @@
+@prefix : <#>.
+@prefix sdo: <https://schema.org/>.
+@prefix wd: <https://www.wikidata.org/wiki/>.
+@prefix tr: <https://open.spotify.com/track/>.
+
+:001
+    a o:Annotation;
+    dc:title "Annotating a PDF";
+    dct:created "2023-08-02T07:07:12.362Z"^^xsd:dateTime;
+    dct:modified "2023-08-02T07:07:12.362Z"^^xsd:dateTime;
+    o:hasBody [ a o:TextualBody; rdf:value "A Test Annotation" ];
+    o:hasTarget
+            [
+                a o:SpecificResource;
+                o:hasSelector
+                        [
+                            a o:FragmentSelector;
+                            dct:conformsTo rfc:rfc3778;
+                            rdf:value "page=1&viewrect=114,363,461,273"
+                        ];
+                o:hasSource
+                <https://www.w3.org/2013/04/odw/ODW13-CrossLinks-Pres.pdf>
+            ].
+
+:002
+    a o:Annotation;
+    dc:title "Annotating HTML";
+    dct:created "2023-07-30T11:28:53.844Z"^^xsd:dateTime;
+    dct:modified "2023-07-30T11:28:53.844Z"^^xsd:dateTime;
+    o:hasBody [ a o:TextualBody; rdf:value "Another Annotation, on HTML" ];
+    o:hasTarget
+            [
+                a o:SpecificResource;
+                dc:format "text/html";
+                o:hasSelector
+                        [
+                            a o:XPathSelector;
+                            rdf:value
+                            "//DIV[@id='content']/DIV/DIV/PRE[16]/text()[3]";
+                            o:refinedBy
+                                    [
+                                        a o:TextPositionSelector;
+                                        o:end "284"^^xsd:nonNegativeInteger;
+                                        o:start "64"^^xsd:nonNegativeInteger
+                                    ]
+                        ];
+                o:hasSource html:rfc2616
+            ].
