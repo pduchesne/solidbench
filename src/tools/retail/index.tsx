@@ -149,7 +149,7 @@ export const ShoppingDashboard = (props: {}) => {
                     </TabList>
 
                 </Box>
-                {receiptsStorage instanceof MemoryReceiptsStorage ?  <Alert variant='outlined' severity="info">Viewing information from {receiptsStorage.uris.join(', ')}</Alert> : null}
+                {receiptsStorage instanceof MemoryReceiptsStorage ?  <Alert variant='outlined' severity="info" style={{flex: "none"}}>Viewing information from {receiptsStorage.uris.join(', ')}</Alert> : null}
                 <TabPanel value="overview" className='vFlow'>
                     <PromiseStateContainer promiseState={histories$}>
                         {(history) => (history && history[0].length) ?

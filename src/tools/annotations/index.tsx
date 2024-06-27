@@ -73,7 +73,7 @@ export const AnnotationsDisplay = () => {
 
     return <div className="annotations vFlow">
         {annotationStorage instanceof MemoryAnnotationStorage ?
-            <Alert variant='outlined' severity="info">Viewing information
+            <Alert variant='outlined' severity="info" style={{flex: "none"}}>Viewing information
                 from {annotationStorage.uris.join(', ')}</Alert> : null}
         <div className="hFlow">
             <div className="annotations-list">
