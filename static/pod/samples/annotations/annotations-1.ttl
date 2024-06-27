@@ -1,7 +1,12 @@
 @prefix : <#>.
 @prefix sdo: <https://schema.org/>.
-@prefix wd: <https://www.wikidata.org/wiki/>.
-@prefix tr: <https://open.spotify.com/track/>.
+@prefix o: <http://www.w3.org/ns/oa#>.
+@prefix dc: <http://purl.org/dc/elements/1.1/>.
+@prefix dct: <http://purl.org/dc/terms/>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix rfc: <http://tools.ietf.org/rfc/>.
+@prefix html: <https://datatracker.ietf.org/doc/html/>.
 
 :001
     a o:Annotation;
