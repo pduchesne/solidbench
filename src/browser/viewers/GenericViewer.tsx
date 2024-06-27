@@ -4,6 +4,7 @@ import IFrameViewer from "./IFrameViewer";
 import MarkdownViewer from "./MarkdownViewer";
 import MonacoEditor from "./MonacoEditor";
 import {ResourceAction} from "../pod-browser";
+import AsciiDocViewer from "./AsciidocViewer";
 
 export type ContentViewerProps = {
     uri?: string,
@@ -16,6 +17,7 @@ export type ContentViewer = React.ComponentType<ContentViewerProps>;
 const VIEWERS: Record<string, ContentViewer> = {
     [WELL_KNOWN_TYPES.html] : IFrameViewer,
     [WELL_KNOWN_TYPES.md] : MarkdownViewer,
+    [WELL_KNOWN_TYPES.adoc] : AsciiDocViewer,
 
     // Certain types don't need a viewer, they go straight into the editor
     [WELL_KNOWN_TYPES.ttl] : MonacoEditor,
