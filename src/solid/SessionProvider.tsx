@@ -50,6 +50,7 @@ export interface ISessionProvider {
     restorePreviousSession?: boolean | ((url: string) => boolean);
     /** @since 2.3.0 */
     onSessionRestore?: (url: string) => void;
+    onSessionLogin?: () => void;
     /**
      * @since 2.8.2
      * @experimental
@@ -68,6 +69,7 @@ export function SessionProvider({
                                     restorePreviousSession,
                                     skipLoadingProfile,
                                     onSessionRestore,
+                                    onSessionLogin
                                 }: ISessionProvider): ReactElement {
     // session restore will be attempted depending on the evaluation of restorePreviousSession
     // if no 'restorePreviousSession' is provided, it is attempted if a onSessionRestore callback is provided
@@ -82,15 +84,21 @@ export function SessionProvider({
 
     // register the onSessionRestore listener on the session
     useEffect(() => {
-        const listener = onSessionRestore !== undefined ?
+        const restoreListener = onSessionRestore !== undefined ?
             session.events.on(EVENTS.SESSION_RESTORED, onSessionRestore) :
+            undefined
+
+        const loginListener = onSessionLogin !== undefined ?
+            session.events.on(EVENTS.LOGIN, onSessionLogin) :
             undefined
 
         return () => {
             //@ts-ignore
-            listener && session.events.off(EVENTS.SESSION_RESTORED, onSessionRestore);
+            restoreListener && session.events.off(EVENTS.SESSION_RESTORED, onSessionRestore);
+            //@ts-ignore
+            loginListener && session.events.off(EVENTS.LOGIN, onSessionLogin);
         }
-    }, [onSessionRestore, session.events]);
+    }, [onSessionLogin, onSessionRestore, session.events]);
 
     const defaultInProgress =
         typeof defaultSessionRequestInProgress === "undefined"
@@ -163,12 +171,17 @@ export function SessionProvider({
     );
 
     useEffect(() => {
-        contextHandleIncomingRedirect({});
+        const restorePreviousSession =
+            restoreSession == undefined ? false : (typeof restoreSession == 'function' ? restoreSession(window.location.href) : restoreSession);
+        if (restorePreviousSession) {
+            contextHandleIncomingRedirect({restorePreviousSession});
+        }
     }, [
         //session,
         //sessionId,
         //window.location.href,
-        contextHandleIncomingRedirect
+        contextHandleIncomingRedirect,
+        restoreSession
     ]);
 
 

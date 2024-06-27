@@ -1,16 +1,13 @@
 import {useSession} from "./SessionProvider";
 import React, {useEffect} from "react";
-import {useNavigate} from "react-router-dom";
 
 export function SolidAuth(props: {}) {
     const session = useSession();
 
-    const navigate = useNavigate();
-
     useEffect(() => {
        session.handleIncomingRedirect({restorePreviousSession: false}).then(resp => {
-           // TODO keep track of the original URL and redirect ?
-           navigate('/personal/dashboard');
+           // no need to navigate here ; post-login navigation is handled by the onLogin event handler
+           // TODO shouldn't the whole post-login navigation be handled here, including restored sessions ?
        });
     }, []);
 

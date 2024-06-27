@@ -129,6 +129,7 @@ export const App = memo(() => {
                              sessionId="solidbench-app"
                              sessionRequestInProgress={false}
                              onSessionRestore={sessionRestoreCb}
+                             onSessionLogin={() => navigate('/personal/dashboard')}
                              // TODO loading the profile is useless as of now, but skipping it causes abug
                              // see https://github.com/inrupt/solid-ui-react/issues/970
                              //skipLoadingProfile={true}
