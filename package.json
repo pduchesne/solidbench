@@ -20,6 +20,7 @@
     "devDependencies": {
         "@jest/globals": "^29.7.0",
         "@ldo/cli": "^0.0.1-alpha.23",
+        "@types/chrome": "^0.0.268",
         "@types/codemirror": "^5.60.12",
         "@types/csv-parse": "^1.2.2",
         "@types/jest": "^29.5.12",

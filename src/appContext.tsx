@@ -6,7 +6,8 @@ import {useDarkThemeDetector} from "@hilats/react-utils";
 import {useFixedSolidSession} from "./solid/SessionProvider";
 import {createProxifier, DEFAULT_PROXIFIER} from "@hilats/utils";
 
-// TODO make this configurable in env file
+// TODO make these configurable in env file
+const EXTENSION_ID = 'bgpjelbiopechflolhlgnkmkpajlppip';
 const PROXY_URL = "https://demo.highlatitud.es/proxy";
 
 DEFAULT_PROXIFIER.proxifier = createProxifier(PROXY_URL);
@@ -18,7 +19,8 @@ export type AppContextType = {
     preferences: Preferences,
     theme?: string,
     updateCtx: (update: Partial<AppContextType>) => void;
-    proxifier?: (url: string) => string
+    proxifier?: (url: string) => string,
+    extensionVersion?: string
 };
 
 function createInitAppContext(updateAppContextFn: (update: Partial<AppContextType>) => void): AppContextType {
@@ -74,8 +76,25 @@ export const AppContextProvider = memo((props: { children?: React.ReactNode }) =
             const actualTheme = prefTheme == 'auto' ? (isDarkTheme ? 'dark' : undefined) : prefTheme;
             appContext.updateCtx({theme: actualTheme})
         },
-        // run this only once
         [appContext.preferences, isDarkTheme]
+    );
+
+    useEffect(
+        () => {
+            if (typeof chrome != 'undefined') {
+                chrome.runtime.sendMessage(EXTENSION_ID, {type: 'version'}, (response: any) => {
+                    if (!response) {
+                        console.warn('Extension not found');
+                        return;
+                    }
+                    appContext.updateCtx({
+                        extensionVersion: response.version
+                    });
+                });
+            }
+        },
+        // run this only once
+        []
     );
 
     return <AppContext.Provider value={appContext}>{props.children}</AppContext.Provider>;

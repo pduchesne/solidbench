@@ -28,7 +28,7 @@
         "allowJs": true,
         "composite": true,
         "incremental": true,
-        "types": ["node", "jest"],
+        "types": ["node", "jest", "chrome"],
 
         "outDir": "dist/lib",
         "declarationDir": "dist/types",
