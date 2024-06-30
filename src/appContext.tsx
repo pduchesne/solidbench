@@ -81,7 +81,7 @@ export const AppContextProvider = memo((props: { children?: React.ReactNode }) =
 
     useEffect(
         () => {
-            if (typeof chrome != 'undefined') {
+            if (typeof chrome != 'undefined' && chrome.runtime) {
                 chrome.runtime.sendMessage(EXTENSION_ID, {type: 'version'}, (response: any) => {
                     if (!response) {
                         console.warn('Extension not found');
