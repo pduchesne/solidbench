@@ -11,6 +11,7 @@ import {AnnotationViewer, ScrollableRef} from "@hilats/annotations-react-ui";
 
 
 import { pdfjs } from 'react-pdf';
+import Input from "@mui/material/Input";
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
     'pdfjs-dist/build/pdf.worker.min.js',
     import.meta.url,
@@ -79,13 +80,20 @@ export const AnnotationsDisplay = () => {
             <div className="annotations-list">
                 <PromiseStateContainer promiseState={annotations$}>
                     {annotations => <>
-                        {(annotations || []).map(a => <div onClick={() => selectAnnotationCb(a)}>
+                        {(annotations || []).map(a => <div key={a.id} onClick={() => selectAnnotationCb(a)}>
                             {a.title}
                         </div>)}
                     </>}
                 </PromiseStateContainer>
             </div>
             <div className="resource-viewer">
+                {selectedResource?.type == 'SpecificResource' ?
+                    <div>
+                        <Input defaultValue={selectedResource.source}
+                                onChange={(e) => setSelectedResource(resolveWebResourceRef(e.currentTarget.value))}
+                                style={{width: '100%'}}/>
+                    </div>
+                    : null}
                 {selectedResource ?
                     <PromiseStateContainer promiseState={annotations$}>
                         {(annotations) =>
