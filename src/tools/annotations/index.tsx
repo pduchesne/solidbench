@@ -94,6 +94,7 @@ export const AnnotationsDisplay = () => {
                                               annotations={annotations}
                                               highlightedAnnotations={selectedAnnotation ? [selectedAnnotation] : []}
                                               ref={scrollableRef}
+                                              proxifier={appContext.proxifier}
                             />}
                     </PromiseStateContainer> : null}
             </div>

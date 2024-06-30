@@ -9,6 +9,7 @@ import {createProxifier, DEFAULT_PROXIFIER} from "@hilats/utils";
 // TODO make these configurable in env file
 const EXTENSION_ID = 'bgpjelbiopechflolhlgnkmkpajlppip';
 const PROXY_URL = "https://demo.highlatitud.es/proxy";
+//const PROXY_URL = "https://localhost:8000/proxy";
 
 DEFAULT_PROXIFIER.proxifier = createProxifier(PROXY_URL);
 
@@ -30,6 +31,7 @@ function createInitAppContext(updateAppContextFn: (update: Partial<AppContextTyp
             pods: [],
             theme: 'auto'
         },
+        // TODO provide a way to use proxy only for resources that require it (same-origin policy for frames, ...)
         proxifier: DEFAULT_PROXIFIER.proxifier
     };
 }
