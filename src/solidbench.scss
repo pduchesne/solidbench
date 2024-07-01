@@ -784,10 +784,15 @@ svg {
   }
 
   .resource-viewer {
+    @extend .vFlow;
+
+    .resource-url-input {
+      flex: none;
+    }
+
     .viewer-html {
       background-color: white;
       color: #101010;
-      overflow: auto;
     }
   }
 }
