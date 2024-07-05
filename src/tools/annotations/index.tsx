@@ -89,7 +89,7 @@ export const AnnotationsDisplay = () => {
             <div className="resource-viewer">
                 {selectedResource?.type == 'SpecificResource' ?
                     <div className="resource-url-input">
-                        <Input defaultValue={selectedResource.source}
+                        <Input value={selectedResource.source}
                                 onChange={(e) => setSelectedResource(resolveWebResourceRef(e.currentTarget.value))}
                                 style={{width: '100%'}}/>
                     </div>
