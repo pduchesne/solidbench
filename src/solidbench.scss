@@ -96,6 +96,12 @@
  */
 
 
+.icon-action {
+  opacity: 0.6;
+  &:hover {
+    opacity: 1;
+  }
+}
 
 
 $primary: var(--theme-color1-back);
@@ -559,28 +565,57 @@ svg {
       @extend .vFlow;
 
       .topbar {
+        @extend .hFlow;
         flex: none;
         //min-height: 25px;
         background-color: var(--theme-back1);
         border-bottom: 1px solid var(--theme-back2);
 
-        .filebreadcrumb {
-          display: inline-block;
+        &>* {
           color: var(--theme-front1);
           border-radius: 2px;
           background-color: var(--theme-back2);
           border: 1px solid var(--theme-back2);
           margin: 3px;
-          padding: 0px 3px;
+          padding: 0px 1px;
+        }
 
-          &:hover {
-            box-shadow: inset 0 0 5px var(--theme-shadow);
+        .filebreadcrumb {
+          display: flex;
+
+          .MuiBreadcrumbs-root {
+            display: inline-block;
+
+            .MuiBreadcrumbs-li:first-child svg {
+              font-size: 1.2rem;
+              vertical-align: sub;
+              margin-right: 2px;
+            }
+          }
+
+
+          .breadcrumb-input {
+            flex: auto;
+          }
+
+          .MuiBreadcrumbs-separator {
+            margin: 0px 4px;
+          }
+
+          input {
+            padding: 0;
+          }
+
+          .edit-action {
+            @extend .icon-action;
+            font-size: 1.2rem;
+            vertical-align: text-bottom;
+            margin-left: 7px;
           }
         }
 
         .file_actions {
-          display: inline-block;
-          float: right;
+          flex: none;
 
           &>* {
             vertical-align: bottom;

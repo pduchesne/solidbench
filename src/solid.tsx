@@ -25,7 +25,8 @@ const ISSUERS: Record<string, string> = {
     "https://login.inrupt.com/": "Inrupt Pod Spaces",
     "https://idp.use.id/": "use.id",
     "https://teamid.live": "TeamID",
-    "http://localhost:3000/": "Localhost Solid",
+    "https://openid.sandbox-pod.datanutsbedrijf.be": "Athumi Sandbox",
+    "http://localhost:3000/": "Localhost Solid"
 }
 
 export const LoginMultiButton = (props: Omit<Parameters<typeof LoginButton>[0], 'oidcIssuer'>) => {

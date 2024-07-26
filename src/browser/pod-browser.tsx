@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useCallback, useContext, useEffect, useMemo, useState} from 'react';
+import {useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react';
 
 import {CachedPromiseState, PromiseStateContainer, usePromiseFn} from "@hilats/react-utils";
 import {useSolidContainer, useSolidFile} from "../solid";
@@ -61,8 +61,9 @@ export const PodBrowserPanel = () => {
 function FileBreadcrumbs(props: { rootUrl?: string, path: string, onSelect: (url: string) => void } & CommonProps) {
 
     const [editMode, setEditMode] = useState(false);
+    const inputRef = useRef<HTMLInputElement>();
 
-    const {rootUrl, path, onSelect, ...commonProps} = props;
+    const {rootUrl, path, onSelect, className, ...commonProps} = props;
 
     // compute the root and the relative path of the file
     const [computedRoot, relPath] = useMemo(() => {
@@ -82,23 +83,33 @@ function FileBreadcrumbs(props: { rootUrl?: string, path: string, onSelect: (url
         return acc;
     }, [[computedRoot.endsWith('/') ? computedRoot.substring(0, computedRoot.length-1) : computedRoot, computedRoot]]);
 
+    const handleInputEnter = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            setEditMode(false);
+            props.onSelect(e.currentTarget.value);
+        }
+    }, []);
+
     return (
+        <div className={className} onDoubleClick={() => setEditMode(true)}>{
         editMode?
-            <Input defaultValue={props.path}
-                   onBlur={(e) => {
-                       props.onSelect(e.target.value);
-                       setEditMode(false)
-                   } }/> :
-            <Breadcrumbs aria-label="breadcrumb" {...commonProps} onDoubleClick={() => setEditMode(true)}>
+            <Input className="breadcrumb-input"
+                    defaultValue={props.path}
+                   onKeyDown={handleInputEnter}
+                   ref={inputRef}
+                   onBlur={(e) => setEditMode(false) }
+                   autoFocus
+            /> :
+            <Breadcrumbs aria-label="breadcrumb" {...commonProps}>
                 <Link
-                    title={computedRoot}
+                    title={props.rootUrl ? computedRoot : 'External URL'}
                     key={computedRoot}
                     underline="hover"
                     color="inherit"
                     onClick={(e) => {props.onSelect(subpaths[0][1]); e.stopPropagation();} }>
                     {props.rootUrl ?
-                        <HomeIcon style={{marginRight: '3px'}}/> :
-                        <><GlobeIcon style={{marginRight: '3px'}}/>{subpaths[0][0]}</>
+                        <HomeIcon/> :
+                        <><GlobeIcon/>{subpaths[0][0]}</>
                     }
                 </Link>
 
@@ -114,6 +125,11 @@ function FileBreadcrumbs(props: { rootUrl?: string, path: string, onSelect: (url
                 }
 
             </Breadcrumbs>
+        }
+        <EditIcon className="edit-action" onClick={() => {
+            setEditMode(!editMode);
+        } } />
+        </div>
     );
 }
 
@@ -310,7 +326,7 @@ export const PodBrowser = (props: { rootUrl?: string, fetch?: typeof fetch, disp
                                 </> : null}
                                 {resourceActions.map(action =>
                                     <action.icon onClick={() => action.onClick(currentUrl)} titleAccess={action.title} />)}
-                                <InfoIcon titleAccess="Display Metadata" sx={{verticalAlign: 'sub', fontSize: '110%'}}
+                                <InfoIcon titleAccess="Display Metadata"
                                           onClick={() => setDisplayMetadata(!displayMetadata)}/>
                             </div>
 
