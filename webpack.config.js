@@ -30,8 +30,6 @@ const definePlugin = new webpack.DefinePlugin({
     PROXY_URL: (localVariables && JSON.stringify(localVariables.proxyUrl)) || false
 });
 
-const dev = true;
-
 var styleLoader = 'style-loader';
 var cssLoader = 'css-loader';
 
@@ -45,11 +43,13 @@ function injectEnv(buffer) {
 
 module.exports = (env, argv) => {
     const mode = argv.mode || 'development';
+    const isDev = mode == 'development';
+    const isProd = mode == 'production';
 
     return {
         // this can be overridden by command line `--mode=production`
         mode,
-        optimization: mode == 'production' ? {
+        optimization: isProd ? {
             minimize: true,
                 minimizer: [
                 new TerserPlugin({
@@ -129,10 +129,12 @@ module.exports = (env, argv) => {
                 //'@inrupt/solid-client/dist': path.resolve(__dirname, 'node_modules/@inrupt/solid-client/dist'),
             },
             //modules: ['node_modules', '../node_modules'],
-            symlinks: false
+            symlinks: isDev
         },
         target: 'web',
-        devtool: mode == 'development' ? 'source-map' : undefined,
+        devtool: isDev ? 'source-map' : undefined,
+        watchOptions: { ignored: /node_modules/, followSymlinks: false},
+        watch: isDev,
         module: {
             // consists the transform configuration
             rules: [
@@ -169,7 +171,7 @@ module.exports = (env, argv) => {
         },
         // this will create a development server to host our application
         // and will also provide live reload functionality
-        devServer: {
+        devServer: isDev && {
             host: '0.0.0.0',
                 static: './dist',
                 //contentBase: path.join(__dirname, 'dist'),
