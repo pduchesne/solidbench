@@ -4,14 +4,14 @@ import {getPodUrls, ResourceCache} from "@hilats/solid-utils";
 import {Preferences} from "./tools/personal-dashboard/preferences";
 import {useDarkThemeDetector} from "@hilats/react-utils";
 import {useFixedSolidSession} from "./solid/SessionProvider";
-import {createProxifier, DEFAULT_PROXIFIER} from "@hilats/utils";
+import {createProxifier, FetchOptions} from "@hilats/utils";
 
 // TODO make these configurable in env file
-const EXTENSION_ID = 'bgpjelbiopechflolhlgnkmkpajlppip';
+const EXTENSION_ID = 'ahicinbmejhdecnejpoodcddihofbcmd';
 const PROXY_URL = "https://demo.highlatitud.es/proxy";
 //const PROXY_URL = "https://localhost:8000/proxy";
 
-DEFAULT_PROXIFIER.proxifier = createProxifier(PROXY_URL);
+//DEFAULT_PROXIFIER.proxifier = createProxifier(PROXY_URL);
 
 export type AppContextType = {
     webId?: string,
@@ -20,7 +20,7 @@ export type AppContextType = {
     preferences: Preferences,
     theme?: string,
     updateCtx: (update: Partial<AppContextType>) => void;
-    proxifier?: (url: string) => string,
+    fetchOptions?: FetchOptions,
     extensionVersion?: string
 };
 
@@ -29,10 +29,9 @@ function createInitAppContext(updateAppContextFn: (update: Partial<AppContextTyp
         updateCtx: updateAppContextFn,
         preferences: {
             pods: [],
-            theme: 'auto'
-        },
-        // TODO provide a way to use proxy only for resources that require it (same-origin policy for frames, ...)
-        proxifier: DEFAULT_PROXIFIER.proxifier
+            theme: 'auto',
+            proxyUrl: PROXY_URL
+        }
     };
 }
 
@@ -76,24 +75,30 @@ export const AppContextProvider = memo((props: { children?: React.ReactNode }) =
 
             const prefTheme = appContext.preferences.theme;
             const actualTheme = prefTheme == 'auto' ? (isDarkTheme ? 'dark' : undefined) : prefTheme;
-            appContext.updateCtx({theme: actualTheme})
+            appContext.updateCtx({
+                theme: actualTheme,
+                fetchOptions: {
+                    ...appContext.fetchOptions,
+                    proxifier: createProxifier(appContext.preferences.proxyUrl)
+                }
+            })
         },
         [appContext.preferences, isDarkTheme]
     );
 
     useEffect(
         () => {
-            if (typeof chrome != 'undefined' && chrome.runtime) {
-                chrome.runtime.sendMessage(EXTENSION_ID, {type: 'version'}, (response: any) => {
-                    if (!response) {
-                        console.warn('Extension not found');
+                if (typeof chrome != 'undefined' && chrome.runtime) {
+                    chrome.runtime.sendMessage(EXTENSION_ID, {type: 'version'}, (response: any) => {
+                        if (!response) {
+                            console.warn('Extension not found');
                         return;
-                    }
+                                }
                     appContext.updateCtx({
                         extensionVersion: response.version
+                        });
                     });
-                });
-            }
+                }
         },
         // run this only once
         []

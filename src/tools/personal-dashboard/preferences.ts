@@ -4,6 +4,6 @@ export type Preferences = {
         uri: string,
         webId?: string
     }[],
-
+    proxyUrl?: string,
     theme: 'auto' | string
 }
