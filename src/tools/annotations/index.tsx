@@ -100,7 +100,7 @@ export const AnnotationsDisplay = () => {
                                               onDeleteAnnotation={(a) => annotationContainer.deleteAnnotation(a)}
                                               highlightedAnnotations={selectedAnnotation ? [selectedAnnotation] : []}
                                               ref={scrollableRef}
-                                              proxifier={appContext.proxifier}
+                                              fetchOptions={appContext.fetchOptions}
                             />}
                     </PromiseContainer> : null}
             </div>
