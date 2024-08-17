@@ -100,6 +100,7 @@ module.exports = (env, argv) => {
                     process: "process/browser",
                 'react-pdf': path.resolve(__dirname, 'node_modules/react-pdf'),
                 'video.js': path.resolve(__dirname, 'node_modules/video.js'),
+                'loglevel': path.resolve(__dirname, 'node_modules/loglevel'),
 
 
                 /*

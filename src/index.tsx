@@ -20,7 +20,13 @@ import {SolidAuth} from "./solid/auth";
 import {MODULE_REGISTRY} from "@hilats/data-modules";
 import {DM_ANNOTATIONS} from "@hilats/annotations-core";
 
+import loglevel from 'loglevel';
+loglevel.setDefaultLevel('debug');
+loglevel.getLogger('iframeMessenger').setLevel('debug');
+
 MODULE_REGISTRY.registerModule(DM_ANNOTATIONS);
+
+
 
 const routes = [
     {

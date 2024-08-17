@@ -9,10 +9,12 @@
     <!-- Sitesights reghistration -->
     <script defer src="https://app-static.sitesights.io/client.min.js?v=1" data-website-uid="7zv__TuDX0WLIe8HupF3Cw"></script>
     <script defer type="module">
-        MDAL.pageView({
-            "Absolute": null,
-            "ClientId": null
-        });
+        if (document.location.hostname != 'localhost') {
+            MDAL.pageView({
+                "Absolute": null,
+                "ClientId": null
+            });
+        }
     </script>
 
     <title>Solid Bench</title>
