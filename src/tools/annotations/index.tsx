@@ -47,7 +47,7 @@ export const AnnotationsDisplay = () => {
 
 //const preferences$ = useMemo(() => podStorage?.fetchPreferences(), [podStorage]);
 
-    const [annotations$, annotationContainer] = useUrlAnnotationContainer(externalInput || appContext.podUrl+BOOKMARKS_URL, fetch);
+    const [annotations$, annotationContainer] = useUrlAnnotationContainer(externalInput || (appContext.podUrl ? appContext.podUrl+BOOKMARKS_URL : undefined), fetch);
     const [ /* editedAnnotation */ , setEditedAnnotation, editModal] = useAnnotationsEditor(annotationContainer);
 
     //const navigate = usePersistentQueryNavigate();
@@ -71,7 +71,10 @@ export const AnnotationsDisplay = () => {
         {editModal}
         {externalInput ?
             <Alert variant='outlined' severity="info" style={{flex: "none"}}>Viewing information
-                from {externalInput}</Alert> : null}
+                from {externalInput}</Alert> :
+            !appContext.podUrl ? <div className="paddedPanel">
+                Please log in to your pod to view annotations in your pod.
+            </div> : null}
         <div className="hFlow">
             <div className="annotations-list">
                 <PromiseContainer promise={annotations$}>
