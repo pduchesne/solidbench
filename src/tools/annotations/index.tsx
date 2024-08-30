@@ -1,7 +1,7 @@
 import * as React from "react";
 import {useSearchParams} from "react-router-dom";
 import {useFixedSolidSession} from "../../solid/SessionProvider";
-import {useCallback, useContext, useEffect, useRef, useState} from "react";
+import {useCallback, useContext, useEffect, useMemo, useRef, useState} from "react";
 import {AppContext} from "../../appContext";
 //import {AnnotationStorage, MemoryAnnotationStorage, PodAnnotationStorage} from "./storage";
 import Alert from "@mui/material/Alert";
@@ -59,7 +59,15 @@ export const AnnotationsDisplay = () => {
     const [selectedAnnotation, setSelectedAnnotation] = useState<Annotation>();
 
     useEffect(() => {
-        selectedAnnotation && setSelectedResource(resolveWebResourceRef(getElemOrArray(selectedAnnotation.target)[0]))
+        if (selectedAnnotation) {
+            const webRes = resolveWebResourceRef(getElemOrArray(selectedAnnotation.target)[0]);
+            if (webRes.type != selectedResource?.type ||
+                   (selectedResource?.type == 'SpecificResource' &&
+                    webRes.type == 'SpecificResource' &&
+                    selectedResource.source != webRes.source) )
+                setSelectedResource(webRes);
+        }
+
     }, [selectedAnnotation]);
 
     const selectAnnotationCb = useCallback((a: Annotation) => {
@@ -78,11 +86,7 @@ export const AnnotationsDisplay = () => {
         <div className="hFlow">
             <div className="annotations-list">
                 <PromiseContainer promise={annotations$}>
-                    {annotations => <>
-                        {(annotations || []).map(a => <div key={a.id} onClick={() => selectAnnotationCb(a)}>
-                            {a.title}
-                        </div>)}
-                    </>}
+                    { (annotations) => <AnnotationList annotations={annotations} onSelectAnnotation={selectAnnotationCb} />}
                 </PromiseContainer>
             </div>
             <div className="resource-viewer">
@@ -108,6 +112,42 @@ export const AnnotationsDisplay = () => {
                     </PromiseContainer> : null}
             </div>
         </div>
+    </div>
+}
+
+export const AnnotationList = (props: {annotations: Annotation[], onSelectAnnotation: (a: Annotation) => void}) => {
+    const {annotations, onSelectAnnotation} = props;
+
+    const annotationsByTarget = useMemo( () => {
+
+        const map: Record<string, Annotation[]> = {};
+        annotations.forEach(a => {
+            const targetResource = resolveWebResourceRef(getElemOrArray(a.target)[0]);
+            if (targetResource?.type == 'SpecificResource') {
+                if (!map[targetResource.source]) map[targetResource.source] = [];
+                map[targetResource.source].push(a);
+            }
+
+        })
+
+
+        return map;
+    }, [annotations]);
+
+    return <div className="annotations-list">
+        {Object.entries(annotationsByTarget).map(([target, anns]) =>
+            <div>
+                {target}
+                <div className="annotations-list-target">
+                    {anns.map(a => (
+                        <div key={a.id} onClick={() => onSelectAnnotation(a)}>
+                            {a.title}
+                        </div>
+                    ))}
+                </div>
+            </div>
+        )
+        }
     </div>
 }
 

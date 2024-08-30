@@ -817,6 +817,18 @@ svg {
 
   .annotations-list {
     @extend .sidenav;
+
+    &>div {
+      margin-top: 5px;
+    }
+
+    .annotations-list-target {
+      margin-left: 15px;
+
+      &>div {
+        @extend .actionableItem;
+      }
+    }
   }
 
   .resource-viewer {
