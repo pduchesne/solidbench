@@ -16,6 +16,7 @@ import Box from "@mui/material/Box/Box";
 import {useNavigate} from "react-router";
 import {useFixedSolidSession} from "./solid/SessionProvider";
 import { LogoutButton } from "./solid/LogoutButton";
+import ExtensionIcon from '@mui/icons-material/Extension';
 
 export const ToolsMenu = () => {
     const popupState = usePopupState({variant: 'popover'})
@@ -64,6 +65,7 @@ const ProfileMenu = () => {
 
 
 export const AppNavBar = memo(() => {
+    const appContext = useContext(AppContext);
     const {session} = useFixedSolidSession();
 
     const navigate = useNavigate();
@@ -84,6 +86,12 @@ export const AppNavBar = memo(() => {
 
 
                 <Box sx={{overflow: 'hidden', flexGrow: 0, float: 'right'}}>
+                    {
+                        appContext.extensionVersion ?
+                            <span title={"Extension installed: "+appContext.extensionVersion} style={{color: '#177817', marginRight: '5px'}}><ExtensionIcon /></span> :
+                            <span title="Download & Install extension manually" style={{marginRight: '5px'}}><a href="/solid-annotations-extension.zip"><ExtensionIcon /></a></span>
+                    }
+                    <div style={{display: 'inline-block'}}>
                     {session.info.isLoggedIn ? (
                         <ProfileMenu/>
                     ) : (
@@ -108,7 +116,7 @@ export const AppNavBar = memo(() => {
                                 </Button>
                             </LoginMultiButton>
                         </>
-                    )}
+                    )}</div>
                 </Box>
             </Toolbar>
         </AppBar>
