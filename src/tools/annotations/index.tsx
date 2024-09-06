@@ -131,6 +131,26 @@ export const AnnotationsDisplay = () => {
     </div>
 }
 
+export const AnnotationContainerList = (props: {collections: InlineOrRef<AnnotationCollection>[], onSelectAnnotation: (a: Annotation) => void, fetch?: typeof fetch}) => {
+    return <div className="annotations-containers-list">
+        {props.collections.map(ref =>
+            <DereferenceResource resRef={ref} fetch={props.fetch}>
+                {coll => <div>
+                    {coll.label || coll.id}
+                    <DereferenceResource resRef={coll.first} fetch={props.fetch}>
+                        {page =>
+                            <DereferenceResources resRefs={page.items} fetch={props.fetch}>
+                                {annotations => <AnnotationList annotations={annotations} onSelectAnnotation={props.onSelectAnnotation}/> }
+                            </DereferenceResources>
+                            }
+                    </DereferenceResource>
+                </div>
+                }
+            </DereferenceResource>
+        )}
+    </div>
+}
+
 export const AnnotationList = (props: { annotations: Annotation[], onSelectAnnotation: (a: Annotation) => void }) => {
     const {annotations, onSelectAnnotation} = props;
 
