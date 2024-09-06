@@ -1,19 +1,27 @@
 import * as React from "react";
-import {useSearchParams} from "react-router-dom";
+import {useNavigate, useSearchParams} from "react-router-dom";
 import {useFixedSolidSession} from "../../solid/SessionProvider";
 import {useCallback, useContext, useEffect, useMemo, useRef, useState} from "react";
 import {AppContext} from "../../appContext";
 //import {AnnotationStorage, MemoryAnnotationStorage, PodAnnotationStorage} from "./storage";
 import Alert from "@mui/material/Alert";
-import {PromiseContainer} from "@hilats/react-utils";
-import {Annotation, BOOKMARKS_URL, getElemOrArray, resolveWebResourceRef, WebResource} from "@hilats/annotations-core";
+import {DereferenceResource, DereferenceResources, InlineOrRef, PromiseContainer} from "@hilats/react-utils";
+import {
+    Annotation,
+    AnnotationCollection,
+    BOOKMARKS_URL,
+    getElemOrArray,
+    resolveWebResourceRef,
+    WebResource
+} from "@hilats/annotations-core";
 import {
     AnnotationViewer,
     ScrollableRef,
     useAnnotationsEditor,
     useUrlAnnotationContainer
 } from "@hilats/annotations-react-ui";
-
+import CodeIcon from '@mui/icons-material/Code';
+import EditIcon from '@mui/icons-material/Edit';
 
 import { pdfjs } from 'react-pdf';
 import Input from "@mui/material/Input";
@@ -47,10 +55,12 @@ export const AnnotationsDisplay = () => {
 
 //const preferences$ = useMemo(() => podStorage?.fetchPreferences(), [podStorage]);
 
-    const [annotations$, annotationContainer] = useUrlAnnotationContainer(externalInput || (appContext.podUrl ? appContext.podUrl+BOOKMARKS_URL : undefined), fetch);
+    const containerUrl = externalInput || (appContext.podUrl ? appContext.podUrl+BOOKMARKS_URL : undefined);
+
+    const [annotations$, annotationContainer] = useUrlAnnotationContainer(containerUrl, fetch);
     const [ /* editedAnnotation */ , setEditedAnnotation, editModal] = useAnnotationsEditor(annotationContainer);
 
-    //const navigate = usePersistentQueryNavigate();
+    const navigate = useNavigate();
 
     const scrollableRef = useRef<ScrollableRef>(null);
 
@@ -85,6 +95,12 @@ export const AnnotationsDisplay = () => {
             </div> : null}
         <div className="hFlow">
             <div className="annotations-list">
+                <h4>Annotations
+                    <span title="Open raw file" className="actionableItem" style={{float: 'right', position: 'relative', width: '30px'}} onClick={() => navigate('../podbrowser/$EXT/'+containerUrl, {relative: 'path'})}>
+                        <CodeIcon style={{position: 'absolute' }}  />
+                        <EditIcon style={{position: 'absolute', scale: '0.7', right: '2px', top: '-4px'}} />
+                    </span>
+                </h4>
                 <PromiseContainer promise={annotations$}>
                     { (annotations) => <AnnotationList annotations={annotations} onSelectAnnotation={selectAnnotationCb} />}
                 </PromiseContainer>
