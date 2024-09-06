@@ -7,7 +7,7 @@ import {useFixedSolidSession} from "./solid/SessionProvider";
 import {createProxifier, FetchOptions} from "@hilats/utils";
 
 // TODO make these configurable in env file
-const EXTENSION_ID = 'ahicinbmejhdecnejpoodcddihofbcmd';
+const EXTENSION_ID = undefined; //'bgpjelbiopechflolhlgnkmkpajlppip';
 const PROXY_URL = "https://demo.highlatitud.es/proxy";
 //const PROXY_URL = "https://localhost:8000/proxy";
 
@@ -22,6 +22,7 @@ export type AppContextType = {
     updateCtx: (update: Partial<AppContextType>) => void;
     fetchOptions?: FetchOptions,
     extensionVersion?: string
+    extensionId?: string
 };
 
 function createInitAppContext(updateAppContextFn: (update: Partial<AppContextType>) => void): AppContextType {
@@ -31,7 +32,8 @@ function createInitAppContext(updateAppContextFn: (update: Partial<AppContextTyp
             pods: [],
             theme: 'auto',
             proxyUrl: PROXY_URL
-        }
+        },
+        extensionId: EXTENSION_ID
     };
 }
 
@@ -86,10 +88,28 @@ export const AppContextProvider = memo((props: { children?: React.ReactNode }) =
         [appContext.preferences, isDarkTheme]
     );
 
+
+
+    useEffect( () => {
+        window.addEventListener("message", (event) => {
+            // We only accept messages from ourselves
+            if (event.source !== window) {
+                return;
+            }
+
+            if (event.data.type == 'SOLIDBENCH_EXTENSION_ID') {
+                console.log("Received Extension id : " + event.data.id)
+                appContext.updateCtx({
+                    extensionId: event.data.id
+                });
+            }
+        }, false);
+    }, [])
+
     useEffect(
         () => {
-                if (typeof chrome != 'undefined' && chrome.runtime) {
-                    chrome.runtime.sendMessage(EXTENSION_ID, {type: 'version'}, (response: any) => {
+                if (typeof chrome != 'undefined' && chrome.runtime && appContext.extensionId) {
+                    chrome.runtime.sendMessage(appContext.extensionId, {type: 'version'}, (response: any) => {
                         if (!response) {
                             console.warn('Extension not found');
                         return;
@@ -100,8 +120,7 @@ export const AppContextProvider = memo((props: { children?: React.ReactNode }) =
                     });
                 }
         },
-        // run this only once
-        []
+        [appContext.extensionId]
     );
 
     return <AppContext.Provider value={appContext}>{props.children}</AppContext.Provider>;
