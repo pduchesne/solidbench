@@ -115,10 +115,10 @@ export const AnnotationsDisplay = () => {
     </div>
 }
 
-export const AnnotationList = (props: {annotations: Annotation[], onSelectAnnotation: (a: Annotation) => void}) => {
+export const AnnotationList = (props: { annotations: Annotation[], onSelectAnnotation: (a: Annotation) => void }) => {
     const {annotations, onSelectAnnotation} = props;
 
-    const annotationsByTarget = useMemo( () => {
+    const annotationsByTarget = useMemo(() => {
 
         const map: Record<string, Annotation[]> = {};
         annotations.forEach(a => {
@@ -136,9 +136,9 @@ export const AnnotationList = (props: {annotations: Annotation[], onSelectAnnota
 
     return <div className="annotations-list">
         {Object.entries(annotationsByTarget).map(([target, anns]) =>
-            <div>
-                {target}
-                <div className="annotations-list-target">
+            <div key={target} className="annotations-list-target">
+                <div className="annotations-list-target-name">{target}</div>
+                <div className="target-annotations-list">
                     {anns.map(a => (
                         <div key={a.id} onClick={() => onSelectAnnotation(a)}>
                             {a.title}
