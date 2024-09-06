@@ -818,15 +818,27 @@ svg {
   .annotations-list {
     @extend .sidenav;
 
+    background-color: var(--theme-back2);
+    flex: 0.5;
+
     &>div {
       margin-top: 5px;
     }
 
     .annotations-list-target {
-      margin-left: 15px;
+      @extend .vFlow;
 
-      &>div {
-        @extend .actionableItem;
+      .annotations-list-target-name {
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .target-annotations-list {
+        margin-left: 15px;
+
+        & > div {
+          @extend .actionableItem;
+        }
       }
     }
   }
