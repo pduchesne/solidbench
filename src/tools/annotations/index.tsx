@@ -15,7 +15,7 @@ import {
     WebResource
 } from "@hilats/annotations-core";
 import {
-    AnnotationViewer,
+    AnnotationViewer, HighlightableRef,
     ScrollableRef,
     useAnnotationsEditor,
     useUrlAnnotationContainer
@@ -62,11 +62,13 @@ export const AnnotationsDisplay = () => {
 
     const navigate = useNavigate();
 
-    const scrollableRef = useRef<ScrollableRef>(null);
+    const scrollableRef = useRef<ScrollableRef & HighlightableRef>(null);
 
     const [selectedResource, setSelectedResource] = useState<WebResource>();
 
     const [selectedAnnotation, setSelectedAnnotation] = useState<Annotation>();
+
+    const [ /*highlightedAnnotations */, /* setHighLightedAnnotations */ ] = useState<Annotation[]>([]);
 
     useEffect(() => {
         if (selectedAnnotation) {
@@ -83,6 +85,11 @@ export const AnnotationsDisplay = () => {
     const selectAnnotationCb = useCallback((a: Annotation) => {
         setSelectedAnnotation(a);
         scrollableRef.current?.scrollTo && scrollableRef.current.scrollTo(a);
+    }, [scrollableRef.current]);
+
+    const highlightAnnotationCb = useCallback((a?: Annotation) => {
+        scrollableRef.current?.highlightAnnotation && scrollableRef.current.highlightAnnotation(a);
+        //setHighLightedAnnotations(a ? [a] : []);
     }, [scrollableRef.current]);
 
     return <div className="annotations vFlow">
@@ -102,7 +109,7 @@ export const AnnotationsDisplay = () => {
                     </span>
                 </h4>
                 <PromiseContainer promise={annotations$}>
-                    { (annotations) => <AnnotationList annotations={annotations} onSelectAnnotation={selectAnnotationCb} />}
+                    { (annotations) => <AnnotationList annotations={annotations} onSelectAnnotation={selectAnnotationCb} onHighlightAnnotation={highlightAnnotationCb}/>}
                 </PromiseContainer>
             </div>
             <div className="resource-viewer">
@@ -114,7 +121,7 @@ export const AnnotationsDisplay = () => {
                     </div>
                     : null}
                 {selectedResource ?
-                    <PromiseContainer promise={annotations$}>
+                    <PromiseContainer promise={annotations$} loadingMessage="Loading Annotations">
                         {(annotations) =>
 
                             <AnnotationViewer resource={selectedResource}
@@ -131,7 +138,7 @@ export const AnnotationsDisplay = () => {
     </div>
 }
 
-export const AnnotationContainerList = (props: {collections: InlineOrRef<AnnotationCollection>[], onSelectAnnotation: (a: Annotation) => void, fetch?: typeof fetch}) => {
+export const AnnotationContainerList = (props: {collections: InlineOrRef<AnnotationCollection>[], onSelectAnnotation: (a: Annotation) => void, onHighlightAnnotation: (a?: Annotation) => void , fetch?: typeof fetch}) => {
     return <div className="annotations-containers-list">
         {props.collections.map(ref =>
             <DereferenceResource resRef={ref} fetch={props.fetch}>
@@ -140,7 +147,7 @@ export const AnnotationContainerList = (props: {collections: InlineOrRef<Annotat
                     <DereferenceResource resRef={coll.first} fetch={props.fetch}>
                         {page =>
                             <DereferenceResources resRefs={page.items} fetch={props.fetch}>
-                                {annotations => <AnnotationList annotations={annotations} onSelectAnnotation={props.onSelectAnnotation}/> }
+                                {annotations => <AnnotationList annotations={annotations} onSelectAnnotation={props.onSelectAnnotation} onHighlightAnnotation={props.onHighlightAnnotation}/> }
                             </DereferenceResources>
                             }
                     </DereferenceResource>
@@ -151,7 +158,7 @@ export const AnnotationContainerList = (props: {collections: InlineOrRef<Annotat
     </div>
 }
 
-export const AnnotationList = (props: { annotations: Annotation[], onSelectAnnotation: (a: Annotation) => void }) => {
+export const AnnotationList = (props: { annotations: Annotation[], onSelectAnnotation: (a: Annotation) => void, onHighlightAnnotation: (a?: Annotation) => void }) => {
     const {annotations, onSelectAnnotation} = props;
 
     const annotationsByTarget = useMemo(() => {
@@ -176,7 +183,7 @@ export const AnnotationList = (props: { annotations: Annotation[], onSelectAnnot
                 <div className="annotations-list-target-name">{target}</div>
                 <div className="target-annotations-list">
                     {anns.map(a => (
-                        <div key={a.id} onClick={() => onSelectAnnotation(a)}>
+                        <div key={a.id} onClick={() => onSelectAnnotation(a)} onMouseEnter={() => props.onHighlightAnnotation(a)} onMouseLeave={() => props.onHighlightAnnotation(undefined)}>
                             {a.title}
                         </div>
                     ))}
