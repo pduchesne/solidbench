@@ -4,10 +4,8 @@ import {Sidenav} from "./sidenav";
 
 import {Navigate, Route, Routes, useLocation, useParams} from "react-router-dom";
 import {useNavigate} from "react-router";
-import {lazy, LazyExoticComponent, Suspense, useContext} from "react";
-import {AppContext} from "../../appContext";
+import {lazy, LazyExoticComponent, Suspense} from "react";
 import { DEFAULTS } from "@hilats/react-utils";
-import { ToastContainer } from 'react-toastify';
 import {useFixedSolidSession} from "../../solid/SessionProvider";
 
 DEFAULTS.loaderMessage = 'Loading data...';
@@ -35,7 +33,6 @@ export const DashboardRoutes = () => {
 
 export const PersonalDashboard = (props: {selectedPanel?: string }) => {
 
-    const appContext = useContext(AppContext);
     /*const {fetch} = */ useFixedSolidSession();
 
     const navigate = useNavigate();
@@ -51,7 +48,6 @@ export const PersonalDashboard = (props: {selectedPanel?: string }) => {
             <Suspense fallback={<DEFAULTS.Loader message="Loading UI..."/>}>
                 <Panel/>
             </Suspense>
-            <ToastContainer theme={appContext.theme}/>
         </div>
 
     </div>

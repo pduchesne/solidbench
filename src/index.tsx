@@ -3,14 +3,14 @@
 import 'react-toastify/dist/ReactToastify.css';
 
 import * as React from 'react';
-import {memo, useCallback} from 'react';
+import {memo, useCallback, useContext} from 'react';
 import {BrowserRouter, Navigate, Route, Routes} from 'react-router-dom';
 import './solidbench.scss';
 
 import {ErrorBoundary, DEFAULTS} from '@hilats/react-utils';
 import {createRoot} from "react-dom/client";
 import {AppNavBar} from "./navbar";
-import {AppContextProvider} from "./appContext";
+import {AppContext, AppContextProvider} from "./appContext";
 import {useNavigate} from "react-router";
 import {DashboardRoutes} from "./tools/personal-dashboard";
 import classNames from "classnames";
@@ -20,7 +20,9 @@ import {SolidAuth} from "./solid/auth";
 import {MODULE_REGISTRY} from "@hilats/data-modules";
 import {DM_ANNOTATIONS} from "@hilats/annotations-core";
 
+import { ToastContainer } from 'react-toastify';
 import loglevel from 'loglevel';
+import { toast } from 'react-toastify';
 loglevel.setDefaultLevel('debug');
 loglevel.getLogger('iframeMessenger').setLevel('debug');
 
@@ -73,6 +75,7 @@ const MemoSessionProvider = memo(SessionProvider);
 
 export const AppWithContext = memo(() => {
 
+    const appContext = useContext(AppContext);
     const session = useFixedSolidSession();
 
     /*
@@ -110,6 +113,7 @@ export const AppWithContext = memo(() => {
                 </div>
             }
         </div>
+        <ToastContainer theme={appContext.theme}/>
     </AppThemeProvider>
 })
 
@@ -135,11 +139,30 @@ export const App = memo(() => {
                              sessionId="solidbench-app"
                              sessionRequestInProgress={false}
                              onSessionRestore={sessionRestoreCb}
-                             onSessionLogin={() => navigate('/personal/dashboard')}
-                             // TODO loading the profile is useless as of now, but skipping it causes abug
+                             onSessionLogin={() => {
+                                 const currentIssuer = localStorage.getItem("currentSolidIssuer");
+                                 if (currentIssuer) {
+                                     const str = localStorage.getItem("customSolidIssuers");
+                                     let customSolidIssuers: string[];
+                                     try {
+                                         customSolidIssuers = str ? JSON.parse(str) : [];
+                                     } catch (e) {
+                                         customSolidIssuers = [];
+                                     }
+                                     if ((currentIssuer in customSolidIssuers)) {
+                                         customSolidIssuers.push(currentIssuer);
+                                         localStorage.setItem("customSolidIssuers", JSON.stringify(customSolidIssuers));
+                                     }
+                                     localStorage.setItem("lastSolidIssuer", currentIssuer);
+                                 }
+
+
+                                 navigate('/personal/dashboard');
+                             } }
+                             // TODO loading the profile is useless as of now, but skipping it causes a bug
                              // see https://github.com/inrupt/solid-ui-react/issues/970
                              //skipLoadingProfile={true}
-                         onError={console.log}>
+                         onError={ (err) => {console.log("Failed to authenticate: "+err); console.log(err); toast.warn("Authentication failed"); navigate('/personal/dashboard')} }>
             <AppContextProvider>
                 <AppWithContext />
             </AppContextProvider>

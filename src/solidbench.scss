@@ -265,6 +265,23 @@ body {
         .MuiInputBase-root {
           overflow: hidden;
         }
+
+        .solid-provider-select {
+          padding: 0px;
+
+          label {
+            top: -9px;
+          }
+
+          .MuiInputBase-root {
+            padding: 7px;
+          }
+
+          input {
+            width: fit-content;
+            padding: 0px;
+          }
+        }
       }
 
     }

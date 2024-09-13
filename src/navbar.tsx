@@ -17,6 +17,7 @@ import {useNavigate} from "react-router";
 import {useFixedSolidSession} from "./solid/SessionProvider";
 import { LogoutButton } from "./solid/LogoutButton";
 import ExtensionIcon from '@mui/icons-material/Extension';
+import { toast } from "react-toastify";
 
 export const ToolsMenu = () => {
     const popupState = usePopupState({variant: 'popover'})
@@ -109,7 +110,7 @@ export const AppNavBar = memo(() => {
                                     }
                                 }
                                 redirectUrl={new URL("/auth/solid", window.location.href).toString()}
-                                onError={console.log}
+                                onError={(err) => {console.log("Failed to authenticate: "); console.log(err); toast.warn("Authentication failed"); navigate('/')} }
                             >
                                 <Button variant="contained" color="primary">
                                     Log&nbsp;in

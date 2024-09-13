@@ -13,12 +13,11 @@ import {GetFileOptions} from "@inrupt/solid-client/dist/resource/file";
 import {ResourceCache} from "@hilats/solid-utils";
 import ButtonGroup from '@mui/material/ButtonGroup/ButtonGroup';
 import Button from '@mui/material/Button/Button';
-import Select from '@mui/material/Select/Select';
-import MenuItem from '@mui/material/MenuItem/MenuItem';
 import {LoginButton} from "./solid/LoginButton";
+import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
+import TextField from '@mui/material/TextField';
 
 const ISSUERS: Record<string, string> = {
-    //"https://openid.sandbox-pod.datanutsbedrijf.be": "DNB Sandbox",
     "https://solidweb.me": "SolidWeb.me",
     "https://inrupt.net": "Inrupt.net",
     "https://solidcommunity.net/": "Solid Community",
@@ -29,26 +28,73 @@ const ISSUERS: Record<string, string> = {
     "http://localhost:3000/": "Localhost Solid"
 }
 
+
+const str = localStorage.getItem("customSolidIssuers");
+let customSolidIssuers: string[];
+try {
+    customSolidIssuers = str ? JSON.parse(str) : [];
+} catch (e) {
+    customSolidIssuers = [];
+}
+
+customSolidIssuers.forEach(i => {if (!ISSUERS[i]) {ISSUERS[i] = i}})
+
 export const LoginMultiButton = (props: Omit<Parameters<typeof LoginButton>[0], 'oidcIssuer'>) => {
-    const [issuer, setIssuer] = useState("https://login.inrupt.com/");
+    const [issuer, setIssuer] = useState("https://solidcommunity.net/");
+    const lastSolidIssuer = localStorage.getItem("lastSolidIssuer");
+    const [issuerInput, setIssuerInput] = useState(lastSolidIssuer || "https://solidcommunity.net/");
+
+    const [options, setOptions] = useState(Object.entries(ISSUERS));
+
+    const filterOptions = createFilterOptions({
+        matchFrom: 'any',
+        stringify: (option: [string, string]) => option.join(' ') ,
+    });
 
     return (
         <LoginButton {...props} oidcIssuer={issuer}>
             <ButtonGroup variant="contained" className="solid-login-multi">
-                <Button variant="contained" color="primary">
+                <Button variant="contained" color="primary" onClick={() => localStorage.setItem("currentSolidIssuer", issuer)}>
                     Log in &nbsp;
                 </Button>
-                <Select color="primary"
+                <Autocomplete
+                    filterOptions={filterOptions}
+                    className="solid-provider-select"
                     sx={{'& .MuiSelect-select': {padding: "5px 6px"}}}
-                    value={issuer}
                     onClick={(e) => e.stopPropagation()}
-                    onChange={(e) => {
-                        setIssuer(e.target.value as string);
-                        e.stopPropagation()
+                    options={options}
+                    noOptionsText="Hit Enter to add your Solid Provider"
+                    getOptionLabel={(option) => option[1]}
+                    getOptionKey={(option) => option[0]}
+                    isOptionEqualToValue={(option, value) => option[0] == value[0]}
+                    onChange={(e, newValue) => {
+                        newValue && setIssuer(newValue[0]);
+                        e.stopPropagation();
                     }}
-                >
-                    {Object.keys(ISSUERS).map(uri => <MenuItem value={uri} key={uri}>{ISSUERS[uri]}</MenuItem>)}
-                </Select>
+                    onInputChange={(e, newValue) => {
+                        setIssuerInput(newValue);
+                        e?.stopPropagation();
+                    }}
+                    value={[issuerInput, ISSUERS[issuerInput] || issuerInput]}
+                    renderInput={(params) => (
+                        <TextField
+                            style={{padding: 0, width: 'fit-content'}}
+                            {...params}
+                            onClick={(e) => e.stopPropagation()}
+                            label="Select"
+                            variant="outlined"
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                    if (options.findIndex((o) => o[0] === issuerInput) === -1) {
+                                        setOptions((o) => o.concat([[issuerInput, issuerInput]]));
+                                    }
+                                }
+                                e.stopPropagation();
+                            }}
+                        />
+                    )}
+                />
+
             </ButtonGroup>
 
         </LoginButton>
