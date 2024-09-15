@@ -134,35 +134,44 @@ export const App = memo(() => {
         // See this issue for navigate : https://github.com/remix-run/react-router/issues/7634
     }, [ /* navigate TODO WARN this means the navigate function will never get updated, and therefore cannot be used for relative navigation*/ ]);
 
+
+    const sessionLoginCb = useCallback(() => {
+        const currentIssuer = localStorage.getItem("currentSolidIssuer");
+        if (currentIssuer) {
+            const str = localStorage.getItem("customSolidIssuers");
+            let customSolidIssuers: string[];
+            try {
+                customSolidIssuers = str ? JSON.parse(str) : [];
+            } catch (e) {
+                customSolidIssuers = [];
+            }
+            if ((currentIssuer in customSolidIssuers)) {
+                customSolidIssuers.push(currentIssuer);
+                localStorage.setItem("customSolidIssuers", JSON.stringify(customSolidIssuers));
+            }
+            localStorage.setItem("lastSolidIssuer", currentIssuer);
+        }
+
+        navigate('/personal/dashboard');
+    }, [ /* navigate TODO WARN this means the navigate function will never get updated, and therefore cannot be used for relative navigation*/ ]);
+
+    const onErrorCb = useCallback( (err: Error) => {
+        console.log("Failed to authenticate: "+err);
+        console.log(err); toast.warn("Authentication failed");
+        navigate('/personal/dashboard');
+    }, [])
+
     return (
         <MemoSessionProvider restorePreviousSession={shouldRestoreSession}
                              sessionId="solidbench-app"
                              sessionRequestInProgress={false}
                              onSessionRestore={sessionRestoreCb}
-                             onSessionLogin={() => {
-                                 const currentIssuer = localStorage.getItem("currentSolidIssuer");
-                                 if (currentIssuer) {
-                                     const str = localStorage.getItem("customSolidIssuers");
-                                     let customSolidIssuers: string[];
-                                     try {
-                                         customSolidIssuers = str ? JSON.parse(str) : [];
-                                     } catch (e) {
-                                         customSolidIssuers = [];
-                                     }
-                                     if ((currentIssuer in customSolidIssuers)) {
-                                         customSolidIssuers.push(currentIssuer);
-                                         localStorage.setItem("customSolidIssuers", JSON.stringify(customSolidIssuers));
-                                     }
-                                     localStorage.setItem("lastSolidIssuer", currentIssuer);
-                                 }
-
-
-                                 navigate('/personal/dashboard');
-                             } }
+                             onSessionLogin={ sessionLoginCb }
                              // TODO loading the profile is useless as of now, but skipping it causes a bug
                              // see https://github.com/inrupt/solid-ui-react/issues/970
                              //skipLoadingProfile={true}
-                         onError={ (err) => {console.log("Failed to authenticate: "+err); console.log(err); toast.warn("Authentication failed"); navigate('/personal/dashboard')} }>
+                             onError={ onErrorCb }
+        >
             <AppContextProvider>
                 <AppWithContext />
             </AppContextProvider>
