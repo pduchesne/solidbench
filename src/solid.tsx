@@ -40,9 +40,9 @@ try {
 customSolidIssuers.forEach(i => {if (!ISSUERS[i]) {ISSUERS[i] = i}})
 
 export const LoginMultiButton = (props: Omit<Parameters<typeof LoginButton>[0], 'oidcIssuer'>) => {
-    const [issuer, setIssuer] = useState("https://solidcommunity.net/");
     const lastSolidIssuer = localStorage.getItem("lastSolidIssuer");
-    const [issuerInput, setIssuerInput] = useState(lastSolidIssuer || "https://solidcommunity.net/");
+    const [issuer, setIssuer] = useState(lastSolidIssuer || "https://solidcommunity.net/");
+    const [issuerInput, setIssuerInput] = useState(issuer);
 
     const [options, setOptions] = useState(Object.entries(ISSUERS));
 
