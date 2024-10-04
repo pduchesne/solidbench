@@ -62,6 +62,7 @@
         "@emotion/react": "^11.11.1",
         "@emotion/styled": "^11.11.0",
         "@hilats/annotations-react-ui": "file:../web-annotations/annotations-react-ui",
+        "@hilats/annotations-extension": "file:../web-annotations/annotations-extension",
         "@hilats/data-modules": "file:../toolkit-ts/data-modules",
         "@hilats/monaco-language-turtle": "../monaco-language-turtle",
         "@hilats/react-utils": "0.0.5",
