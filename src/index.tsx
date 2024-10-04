@@ -150,6 +150,18 @@ export const App = memo(() => {
                 localStorage.setItem("customSolidIssuers", JSON.stringify(customSolidIssuers));
             }
             localStorage.setItem("lastSolidIssuer", currentIssuer);
+
+            if (document.location.hostname != 'localhost' && (window as any).MDAL) {
+                (window as any).MDAL.event({
+                    "Name": "solid-issuer",
+                    "ClientId": null,
+                    "Parameters": [{
+                        "Name": "uri",
+                        "Value": currentIssuer,
+                    }] //list of parameters
+                });
+            }
+
         }
 
         navigate('/personal/dashboard');
