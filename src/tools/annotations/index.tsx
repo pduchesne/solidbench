@@ -96,11 +96,11 @@ export const AnnotationsDisplay = () => {
         {editModal}
         {externalInput ?
             <Alert variant='outlined' severity="info" style={{flex: "none"}}>Viewing information
-                from {externalInput}</Alert> :
-            !appContext.podUrl ? <div className="paddedPanel">
-                Please log in to your pod to view annotations in your pod.
-            </div> : null}
+                from {externalInput}</Alert> : null}
         <div className="hFlow">
+            {!containerUrl ? <div className="paddedPanel" style={{flex: "none"}}>
+                Please log in to your pod to view annotations in your pod.
+            </div> :
             <div className="annotations-list">
                 <h4>Annotations
                     <span title="Open raw file" className="actionableItem" style={{float: 'right', position: 'relative', width: '30px'}} onClick={() => navigate('../podbrowser/$EXT/'+containerUrl, {relative: 'path'})}>
@@ -111,15 +111,14 @@ export const AnnotationsDisplay = () => {
                 <PromiseContainer promise={annotations$}>
                     { (annotations) => <AnnotationList annotations={annotations} onSelectAnnotation={selectAnnotationCb} onHighlightAnnotation={highlightAnnotationCb}/>}
                 </PromiseContainer>
-            </div>
+            </div>}
             <div className="resource-viewer">
-                {selectedResource?.type == 'SpecificResource' ?
-                    <div className="resource-url-input">
-                        <Input value={selectedResource.source}
-                                onChange={(e) => setSelectedResource(resolveWebResourceRef(e.currentTarget.value))}
-                                style={{width: '100%'}}/>
-                    </div>
-                    : null}
+                <div className="resource-url-input">
+                    <Input value={selectedResource?.type == 'SpecificResource' ? selectedResource?.source : undefined}
+                           placeholder="URL of the resource to annotate"
+                           onChange={(e) => setSelectedResource(resolveWebResourceRef(e.currentTarget.value))}
+                           style={{width: '100%'}}/>
+                </div>
                 {selectedResource ?
                     <PromiseContainer promise={annotations$} loadingMessage="Loading Annotations">
                         {(annotations) =>
