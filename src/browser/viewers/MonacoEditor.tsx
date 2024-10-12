@@ -12,6 +12,7 @@ const LANGUAGES: Record<string, string> = {
     [WELL_KNOWN_TYPES.ttl] : 'turtle',
     [WELL_KNOWN_TYPES.json] : 'json',
     [WELL_KNOWN_TYPES.md] : 'markdown',
+    ["text/reveal+markdown"] : 'markdown',
 }
 
 const MonacoComponent = lazy(() => import('../../ui/monaco'));

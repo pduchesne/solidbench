@@ -10,7 +10,8 @@ export type ContentEditor = React.ComponentType<ContentEditorProps>;
 const EDITORS: Record<string, ContentEditor> = {
     [WELL_KNOWN_TYPES.ttl]: MonacoEditor,
     [WELL_KNOWN_TYPES.json]: MonacoEditor,
-    [WELL_KNOWN_TYPES.md]: MonacoEditor
+    [WELL_KNOWN_TYPES.md]: MonacoEditor,
+    ["text/reveal+markdown"]: MonacoEditor
 }
 
 const DEFAULT_EDITOR = CodemirrorEditor;
