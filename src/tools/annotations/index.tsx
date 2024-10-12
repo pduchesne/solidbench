@@ -1,11 +1,17 @@
 import * as React from "react";
 import {useNavigate, useSearchParams} from "react-router-dom";
 import {useFixedSolidSession} from "../../solid/SessionProvider";
-import {useCallback, useContext, useEffect, useMemo, useRef, useState} from "react";
+import {useCallback, useContext, useEffect, useMemo, useState} from "react";
 import {AppContext} from "../../appContext";
 //import {AnnotationStorage, MemoryAnnotationStorage, PodAnnotationStorage} from "./storage";
 import Alert from "@mui/material/Alert";
-import {DereferenceResource, DereferenceResources, InlineOrRef, PromiseContainer} from "@hilats/react-utils";
+import {
+    DereferenceResource,
+    DereferenceResources,
+    InlineOrRef,
+    PromiseContainer,
+    useRefCallback
+} from "@hilats/react-utils";
 import {
     Annotation,
     AnnotationCollection,
@@ -62,7 +68,7 @@ export const AnnotationsDisplay = () => {
 
     const navigate = useNavigate();
 
-    const scrollableRef = useRef<ScrollableRef & HighlightableRef>(null);
+    //const scrollableRef = useRef<ScrollableRef & HighlightableRef>(null);
 
     const [selectedResource, setSelectedResource] = useState<WebResource>();
 
@@ -82,15 +88,24 @@ export const AnnotationsDisplay = () => {
 
     }, [selectedAnnotation]);
 
+
+
+    const [scrollableRef, setScrollableRef] = useRefCallback<ScrollableRef & HighlightableRef>();
+
+    useEffect( () => {
+        if (selectedAnnotation && scrollableRef?.scrollTo)
+            scrollableRef.scrollTo(selectedAnnotation);
+    }, [scrollableRef, selectedAnnotation]);
+
     const selectAnnotationCb = useCallback((a: Annotation) => {
         setSelectedAnnotation(a);
-        scrollableRef.current?.scrollTo && scrollableRef.current.scrollTo(a);
-    }, [scrollableRef.current]);
+        scrollableRef?.scrollTo && scrollableRef.scrollTo(a);
+    }, [scrollableRef]);
 
     const highlightAnnotationCb = useCallback((a?: Annotation) => {
-        scrollableRef.current?.highlightAnnotation && scrollableRef.current.highlightAnnotation(a);
+        scrollableRef?.highlightAnnotation && scrollableRef.highlightAnnotation(a);
         //setHighLightedAnnotations(a ? [a] : []);
-    }, [scrollableRef.current]);
+    }, [scrollableRef]);
 
     return <div className="annotations vFlow">
         {editModal}
@@ -103,13 +118,20 @@ export const AnnotationsDisplay = () => {
             </div> :
             <div className="annotations-list">
                 <h4>Annotations
-                    <span title="Open raw file" className="actionableItem" style={{float: 'right', position: 'relative', width: '30px'}} onClick={() => navigate('../podbrowser/$EXT/'+containerUrl, {relative: 'path'})}>
+                    <span title="Open raw file"
+                          className="actionableItem"
+                          style={{float: 'right', position: 'relative', width: '30px'}}
+                          onClick={() => navigate('../podbrowser/$EXT/'+containerUrl, {relative: 'path'})}>
                         <CodeIcon style={{position: 'absolute' }}  />
                         <EditIcon style={{position: 'absolute', scale: '0.7', right: '2px', top: '-4px'}} />
                     </span>
                 </h4>
                 <PromiseContainer promise={annotations$}>
-                    { (annotations) => <AnnotationList annotations={annotations} onSelectAnnotation={selectAnnotationCb} onHighlightAnnotation={highlightAnnotationCb}/>}
+                    { (annotations) =>
+                        <AnnotationList annotations={annotations}
+                                        onSelectAnnotation={selectAnnotationCb}
+                                        onHighlightAnnotation={highlightAnnotationCb}/>
+                    }
                 </PromiseContainer>
             </div>}
             <div className="resource-viewer">
@@ -128,7 +150,7 @@ export const AnnotationsDisplay = () => {
                                               onEditAnnotation={setEditedAnnotation}
                                               onDeleteAnnotation={(a) => annotationContainer.deleteAnnotation(a)}
                                               highlightedAnnotations={selectedAnnotation ? [selectedAnnotation] : []}
-                                              ref={scrollableRef}
+                                              ref={setScrollableRef}
                                               fetchOptions={appContext.fetchOptions}
                             />}
                     </PromiseContainer> : null}
