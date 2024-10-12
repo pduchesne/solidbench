@@ -43,6 +43,9 @@ import Breadcrumbs from "@mui/material/Breadcrumbs/Breadcrumbs";
 import Link from "@mui/material/Link/Link";
 import Input from "@mui/material/Input/Input";
 import {Link as RouterLink} from 'react-router-dom';
+import CloseIcon from '@mui/icons-material/Close';
+import FullscreenIcon from '@mui/icons-material/Fullscreen';
+import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 
 import {MODULE_REGISTRY} from "@hilats/data-modules";
 import {toast} from "react-toastify";
@@ -75,13 +78,13 @@ function FileBreadcrumbs(props: { rootUrl?: string, path: string, onSelect: (url
     const pathElements = relPath.split('/');
 
     // create a list of [pathLabel, path] for each subpath
-    const subpaths = pathElements.reduce<[string,string][]>((acc, path: string, idx, arr) => {
-        if (path) acc.push( [
+    const subpaths = pathElements.reduce<[string, string][]>((acc, path: string, idx, arr) => {
+        if (path) acc.push([
             path,
             acc[acc.length - 1][1] + path + ((idx < arr.length - 1) ? '/' : '')
-        ] );
+        ]);
         return acc;
-    }, [[computedRoot.endsWith('/') ? computedRoot.substring(0, computedRoot.length-1) : computedRoot, computedRoot]]);
+    }, [[computedRoot.endsWith('/') ? computedRoot.substring(0, computedRoot.length - 1) : computedRoot, computedRoot]]);
 
     const handleInputEnter = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
@@ -92,43 +95,46 @@ function FileBreadcrumbs(props: { rootUrl?: string, path: string, onSelect: (url
 
     return (
         <div className={className} onDoubleClick={() => setEditMode(true)}>{
-        editMode?
-            <Input className="breadcrumb-input"
-                    defaultValue={props.path}
-                   onKeyDown={handleInputEnter}
-                   ref={inputRef}
-                   onBlur={(e) => setEditMode(false) }
-                   autoFocus
-            /> :
-            <Breadcrumbs aria-label="breadcrumb" {...commonProps}>
-                <Link
-                    title={props.rootUrl ? computedRoot : 'External URL'}
-                    key={computedRoot}
-                    underline="hover"
-                    color="inherit"
-                    onClick={(e) => {props.onSelect(subpaths[0][1]); e.stopPropagation();} }>
-                    {props.rootUrl ?
-                        <HomeIcon/> :
-                        <><GlobeIcon/>{subpaths[0][0]}</>
-                    }
-                </Link>
+            editMode ?
+                <Input className="breadcrumb-input"
+                       defaultValue={props.path}
+                       onKeyDown={handleInputEnter}
+                       ref={inputRef}
+                       onBlur={(e) => setEditMode(false)}
+                       autoFocus
+                /> :
+                <Breadcrumbs aria-label="breadcrumb" {...commonProps}>
+                    <Link
+                        title={props.rootUrl ? computedRoot : 'External URL'}
+                        key={computedRoot}
+                        underline="hover"
+                        color="inherit"
+                        onClick={(e) => {
+                            props.onSelect(subpaths[0][1]);
+                            e.stopPropagation();
+                        }}>
+                        {props.rootUrl ?
+                            <HomeIcon/> :
+                            <><GlobeIcon/>{subpaths[0][0]}</>
+                        }
+                    </Link>
 
-                {subpaths.slice(1).map(([label, path]) => (
-                        <Link
-                            title={path}
-                            key={path}
-                            underline="hover"
-                            color="inherit"
-                            onClick={() => props.onSelect(path)}>{label}</Link>
+                    {subpaths.slice(1).map(([label, path]) => (
+                            <Link
+                                title={path}
+                                key={path}
+                                underline="hover"
+                                color="inherit"
+                                onClick={() => props.onSelect(path)}>{label}</Link>
+                        )
                     )
-                )
-                }
+                    }
 
-            </Breadcrumbs>
+                </Breadcrumbs>
         }
-        <EditIcon className="edit-action" onClick={() => {
-            setEditMode(!editMode);
-        } } />
+            <EditIcon className="edit-action" onClick={() => {
+                setEditMode(!editMode);
+            }}/>
         </div>
     );
 }
@@ -175,7 +181,7 @@ export const PodBrowser = (props: { rootUrl?: string, fetch?: typeof fetch, disp
 
     const [modal, openModal] = useModal();
 
-    const {ROOT= '-', '*' : RES_PATH} = params;
+    const {ROOT = '-', '*': RES_PATH} = params;
 
     const deleteResourceCb = useCallback(async (uri: string) => {
         openModal({
@@ -195,7 +201,7 @@ export const PodBrowser = (props: { rootUrl?: string, fetch?: typeof fetch, disp
     const addResourceCb = useCallback(async (containerUri: string) => {
         const onOk = (async (values: { resourceName: string }) => {
             const newUri = new URL(sanitizeResourceName(values.resourceName), containerUri).toString();
-            const type = MIME_REGISTRY.guessMimeType(newUri);
+            const type = MIME_REGISTRY.guessMimeType(newUri) || MIME_REGISTRY.getMimeType("txt");
             await overwriteFile(newUri, new Blob([""]), {fetch, contentType: type});
 
             // let's open the new resource
@@ -234,15 +240,15 @@ export const PodBrowser = (props: { rootUrl?: string, fetch?: typeof fetch, disp
 
     const navigateToResource = useCallback((resPath: string) => {
         const newPath =
-                resPath.match(ABSURL_REGEX) ?
-                    // we have an absolute URL
-                    (podUrl && resPath.startsWith(podUrl) ?
-                        // TODO have a list of roots and search through them to find the matching alias
-                        resPath.replace(podUrl, '../-/') :
-                        // it's not matching a known root -> browse it as external
-                        '../$EXT/'+resPath) :
-                    // it's not an absolute URL. let's assume it is relative to the main root
-                    '../-/'+resPath
+            resPath.match(ABSURL_REGEX) ?
+                // we have an absolute URL
+                (podUrl && resPath.startsWith(podUrl) ?
+                    // TODO have a list of roots and search through them to find the matching alias
+                    resPath.replace(podUrl, '../-/') :
+                    // it's not matching a known root -> browse it as external
+                    '../$EXT/' + resPath) :
+                // it's not an absolute URL. let's assume it is relative to the main root
+                '../-/' + resPath
         ;
         navigate(newPath);
     }, [podUrl, navigate]);
@@ -252,8 +258,7 @@ export const PodBrowser = (props: { rootUrl?: string, fetch?: typeof fetch, disp
             assert(RES_PATH, "No resource path provided for external resource");
             assert(RES_PATH.match(ABSURL_REGEX), "External URL cannot be relative")
             return RES_PATH;
-        }
-        else {
+        } else {
             // TODO support other roots
             if (ROOT == '-') {
                 return podUrl + (RES_PATH || '');
@@ -286,7 +291,8 @@ export const PodBrowser = (props: { rootUrl?: string, fetch?: typeof fetch, disp
 
     return (
         (!podUrl && ROOT != '$EXT') ?
-            ( !RES_PATH ? <Navigate to="../welcome"/> : <div className="paddedPanel">Please login to browse your pod</div>):
+            (!RES_PATH ? <Navigate to="../welcome"/> :
+                <div className="paddedPanel">Please login to browse your pod</div>) :
             <div className="vFlow fill podbrowser" onClick={anchorClickCallback}>
                 <div className="podbrowser-body">
                     {podUrl ?
@@ -317,15 +323,16 @@ export const PodBrowser = (props: { rootUrl?: string, fetch?: typeof fetch, disp
                                              rootUrl={ROOT == '-' ? podUrl : undefined}
                                              className='filebreadcrumb'/>
                             <div className='file_actions'>
+                                {resourceActions.map(action =>
+                                    <action.icon onClick={() => action.onClick(currentUrl)}
+                                                 titleAccess={action.title}/>)}
                                 {(!isFolder || selectedResource) ? <DeleteIcon titleAccess="Delete Resource"
-                                                                onClick={() => deleteResourceCb(isFolder ? selectedResource! : currentUrl)}/> : null}
+                                                                               onClick={() => deleteResourceCb(isFolder ? selectedResource! : currentUrl)}/> : null}
                                 {isFolder ? <>
                                     <CreateNewFolderIcon titleAccess="Create Folder"
                                                          onClick={() => addContainerCb(currentUrl)}/>
                                     <NoteAddIcon titleAccess="Create File" onClick={() => addResourceCb(currentUrl)}/>
                                 </> : null}
-                                {resourceActions.map(action =>
-                                    <action.icon onClick={() => action.onClick(currentUrl)} titleAccess={action.title} />)}
                                 <InfoIcon titleAccess="Display Metadata"
                                           onClick={() => setDisplayMetadata(!displayMetadata)}/>
                             </div>
@@ -359,7 +366,12 @@ export const PodBrowser = (props: { rootUrl?: string, fetch?: typeof fetch, disp
 };
 
 
-export const FileViewerWithFetch = (props: { uri: string, fetch?: typeof fetch, edition?: boolean, setResourceActions?: (actions: ResourceAction[]) => void }) => {
+export const FileViewerWithFetch = (props: {
+    uri: string,
+    fetch?: typeof fetch,
+    edition?: boolean,
+    setResourceActions?: (actions: ResourceAction[]) => void
+}) => {
 
     const {fetch, ...otherProps} = props;
 
@@ -370,68 +382,131 @@ export const FileViewerWithFetch = (props: { uri: string, fetch?: typeof fetch, 
     const onSave = useCallback((content: string | Blob) => currentFile?.saveRawContent(content), [currentFile]);
 
     return <PromiseStateContainer promiseState={currentFile.file$}>
-        {(blob) =>  blob ?
-                <FileViewer {...otherProps} content={blob} onSave={onSave} /> :
-                <div>
-                    Resource not found
-                </div>
+        {(blob) => blob ?
+            <FileViewer {...otherProps} content={blob} onSave={onSave}/> :
+            <div>
+                Resource not found
+            </div>
         }
     </PromiseStateContainer>
 }
 
 
-export const FileViewer = (props: { uri: string, content: Blob | string, edition?: boolean, onSave: (content: string | Blob) => Promise<void>, setResourceActions?: (actions: ResourceAction[]) => void }) => {
+export const FileViewer = (props: {
+    uri: string,
+    content: Blob | string,
+    edition?: boolean,
+    onSave: (content: string | Blob) => Promise<void>,
+    setResourceActions?: (actions: ResourceAction[]) => void
+}) => {
 
-    const {edition, onSave, ...otherProps} = props;
+    const {edition, onSave, setResourceActions, ...otherProps} = props;
 
     const [editMode, setEditMode] = useState(edition);
+    const [fullScreen, setFullScreen] = useState(false);
 
-    const [Viewer, Editor, contentType] = useMemo(() => {
-        const contentType = guessContentType(props.content, undefined, props.uri);
+    const contentType = useMemo(() => {
+        return guessContentType(props.content, undefined, props.uri);
+    }, [props.content, props.uri])
+
+    const [Viewer, Editor] = useMemo(() => {
 
         const [viewer] = getViewer(undefined, contentType, undefined);
         const [editor] = getEditor(undefined, contentType, undefined);
 
-        if (editor) {
-            if(viewer != editor) {
-                props.setResourceActions && props.setResourceActions([{
-                    icon: EditIcon,
-                    title: "Edit",
-                    onClick: async () => {
-                        setEditMode(prevState => !prevState);
-                    }
-                }]);
-            } else {
-                if (edition == undefined) setEditMode(true);
-            }
-        }
-
         return [
             viewer,
-            editor,
-            contentType
+            editor
         ];
-    }, [props.content, props.uri])
+    }, [contentType]);
+
+    const resourceActions = useMemo(() => {
+            const resourceActions: ResourceAction[] = [];
+
+            if (Editor) {
+                if (Viewer != Editor) {
+                    if (editMode)
+                        resourceActions.push({
+                            icon: CloseIcon,
+                            title: "Stop Editing",
+                            onClick: async () => {
+                                setEditMode(false);
+                            }
+                        });
+                    else {
+                        resourceActions.push({
+                            icon: EditIcon,
+                            title: "Edit",
+                            onClick: async () => {
+                                setEditMode(true);
+                            }
+                        });
+                    }
+                }
+
+                if (!editMode) {
+                    if (fullScreen) {
+                        resourceActions.push({
+                            icon: FullscreenExitIcon,
+                            title: "Exit Full Screen",
+                            onClick: async () => {
+                                setFullScreen(false);
+                            }
+                        });
+                    } else {
+                        resourceActions.push({
+                            icon: FullscreenIcon,
+                            title: "Full Screen",
+                            onClick: async () => {
+                                setFullScreen(true);
+                            }
+                        });
+                    }
+                }
+            }
+
+            return resourceActions;
+        },
+        [editMode, Editor, Viewer, fullScreen]);
+
+    useEffect(() => {
+            setEditMode(!!edition && !!Editor);
+        }, [edition, Editor]
+    );
+
+    useEffect(() => {
+            setResourceActions && setResourceActions(resourceActions);
+
+        }, [resourceActions, setResourceActions, edition]
+    );
 
     useEffect(() => {
         if ((contentType == WELL_KNOWN_TYPES.ttl || contentType == WELL_KNOWN_TYPES.nq || contentType == WELL_KNOWN_TYPES.nt)) {
-            Object.entries(MODULE_REGISTRY.modules).forEach( ([key, module]) => {
+            Object.entries(MODULE_REGISTRY.modules).forEach(([key, module]) => {
                 module.matches(props.content, contentType).then(result => {
                     if (result.matches.length)
                         toast(() => <div>
-                            This resource can be best viewed in your <RouterLink to={`/personal-dashboard/${key}?input=${encodeURIComponent(props.uri)}`}>{key} dashboard</RouterLink>
+                            This resource can be best viewed in your <RouterLink
+                            to={`/personal-dashboard/${key}?input=${encodeURIComponent(props.uri)}`}>{key} dashboard</RouterLink>
                         </div>);
                 })
             })
         }
     }, [contentType]);
 
-    return editMode ?
-        <Editor {...otherProps} type={contentType} onSave={onSave} /> :
-        <Viewer {...otherProps} type={contentType} />
+    const setResourceActionsCb = useCallback((actions: ResourceAction[]) => {
+        setResourceActions && setResourceActions([...actions, ...resourceActions])
+    },[resourceActions, setResourceActions]);
+
+    return <div className={classNames("fullscreen-container", {"fullscreen": fullScreen})}>
+        <div className="exit-fullscreen-button" title="Exit Full Screen"><CloseIcon
+            onClick={() => setFullScreen(false)}/>
+        </div>
+        {editMode ?
+            <Editor {...otherProps} type={contentType} setResourceActions={setResourceActionsCb} onSave={onSave}/> :
+            <Viewer {...otherProps} type={contentType} setResourceActions={setResourceActionsCb} fullscreen={fullScreen}/>}
+    </div>
 }
-
-
 
 
 export type ResourceViewerProps = {
@@ -461,10 +536,12 @@ export const ContainerViewer = (props: ResourceViewerProps & {
             return <div className="container-viewer">
                 {readme ?
                     <div className="container-readme">
-                        <div className="container-readme-quicklink" title="See README file"><a onClick={() => props.onNavigateToResource(readme)}><OpenInNewIcon/></a></div>
+                        <div className="container-readme-quicklink" title="See README file"><a
+                            onClick={() => props.onNavigateToResource(readme)}><OpenInNewIcon/></a></div>
                         <ReadmeViewer uri={readme} fetch={props.fetch}/>
-                    </div> : null }
-                <Dropzone noClick={true} onDrop={acceptedFiles => acceptedFiles.forEach(f => containerAccessor.saveFile(f.name, f))}>
+                    </div> : null}
+                <Dropzone noClick={true}
+                          onDrop={acceptedFiles => acceptedFiles.forEach(f => containerAccessor.saveFile(f.name, f))}>
                     {({getRootProps, getInputProps}) => (
                         <div {...getRootProps()} className="container-resources">
                             <input {...getInputProps()} />
@@ -491,11 +568,10 @@ export const ContainerViewer = (props: ResourceViewerProps & {
                     }
                 </Dropzone>
             </div>
-            }
         }
-</PromiseStateContainer>
+        }
+    </PromiseStateContainer>
 }
-
 
 
 export const ReadmeViewer = (props: {

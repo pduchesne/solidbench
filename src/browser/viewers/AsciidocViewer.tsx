@@ -24,8 +24,9 @@ export const AsciiDocRenderer = (props:{content: string}) => {
     const Asciidoctor = asciidoctor();
     const html = useMemo( () => Asciidoctor.convert(props.content), [props.content]);
 
-    return <div dangerouslySetInnerHTML={{__html: html}} />
-}
+    return <div className="paddedPanel">
+        <div dangerouslySetInnerHTML={{__html: html}}/></div>
+        }
 
 
-export default AsciiDocViewer;
+        export default AsciiDocViewer;

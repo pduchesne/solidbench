@@ -10,7 +10,8 @@ export type ContentViewerProps = {
     uri?: string,
     content: Blob | string,
     type?: string,
-    setResourceActions?: (actions: ResourceAction[]) => void
+    setResourceActions?: (actions: ResourceAction[]) => void,
+    fullscreen?: boolean
 };
 export type ContentViewer = React.ComponentType<ContentViewerProps>;
 

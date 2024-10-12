@@ -3,6 +3,9 @@ import Markdown from "react-markdown";
 import {PromiseStateContainer, usePromiseFn} from "@hilats/react-utils";
 // @ts-ignore
 import simplePlantUML from "@akebifiky/remark-simple-plantuml";
+import {MIME_REGISTRY} from "@hilats/utils";
+
+MIME_REGISTRY.registerMimeExtension("revealmd", "text/markdown");
 
 export const MarkdownViewer = (props:{uri?: string, content: Blob | string, type?: string}) => {
 
@@ -11,7 +14,9 @@ export const MarkdownViewer = (props:{uri?: string, content: Blob | string, type
     }, [props.content]);
 
     return <PromiseStateContainer promiseState={contentString$}>
-        {(content) => <div><Markdown remarkPlugins={[simplePlantUML]}>{content}</Markdown></div>}
+        {(content) => <div className="paddedPanel">
+            <Markdown remarkPlugins={[simplePlantUML]}>{content}</Markdown></div>
+        }
     </PromiseStateContainer>
 
 }

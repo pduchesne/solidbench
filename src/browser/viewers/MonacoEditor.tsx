@@ -22,25 +22,28 @@ export const MonacoEditor: ContentEditor = (props) => {
     const [updatedContent, setUpdatedContent] = useState<string | undefined>();
     const [isDirty, setIsDirty] = useState(false);
 
+    const {onSave, setResourceActions} = props;
+
     useEffect(() => {
-        if (props.setResourceActions) {
+        if (setResourceActions && onSave) {
             const actions: ResourceAction[] = [];
-            const onSave = props.onSave;
 
-            onSave && isDirty && actions.push(
-                {
-                    title: 'Save',
-                    icon: SaveIcon,
-                    onClick: async () => {
-                        updatedContent && await onSave(updatedContent);
-                        setIsDirty(false);
+            if (isDirty) {
+                actions.push(
+                    {
+                        title: 'Save',
+                        icon: SaveIcon,
+                        onClick: async () => {
+                            updatedContent && await onSave(updatedContent);
+                            setIsDirty(false);
+                        }
                     }
-                }
-            );
+                );
+            }
 
-            props.setResourceActions(actions);
+            setResourceActions(actions);
         }
-    }, [isDirty, updatedContent, /*, props.setResourceActions, props.onSave */]);
+    }, [isDirty, updatedContent, setResourceActions, onSave]);
 
     const language = (props.type && LANGUAGES[props.type]) || 'javascript';
 
