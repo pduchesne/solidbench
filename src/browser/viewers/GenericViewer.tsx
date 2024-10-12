@@ -5,6 +5,7 @@ import MarkdownViewer from "./MarkdownViewer";
 import MonacoEditor from "./MonacoEditor";
 import {ResourceAction} from "../pod-browser";
 import AsciiDocViewer from "./AsciidocViewer";
+import RevealViewer from "./RevealViewer";
 
 export type ContentViewerProps = {
     uri?: string,
@@ -15,10 +16,13 @@ export type ContentViewerProps = {
 };
 export type ContentViewer = React.ComponentType<ContentViewerProps>;
 
+MIME_REGISTRY.registerMimeExtension("revealmd", "text/reveal+markdown");
+
 const VIEWERS: Record<string, ContentViewer> = {
     [WELL_KNOWN_TYPES.html] : IFrameViewer,
     [WELL_KNOWN_TYPES.md] : MarkdownViewer,
     [WELL_KNOWN_TYPES.adoc] : AsciiDocViewer,
+    ["text/reveal+markdown"] : RevealViewer,
 
     // Certain types don't need a viewer, they go straight into the editor
     [WELL_KNOWN_TYPES.ttl] : MonacoEditor,

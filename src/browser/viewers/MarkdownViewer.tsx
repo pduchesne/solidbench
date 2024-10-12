@@ -3,9 +3,6 @@ import Markdown from "react-markdown";
 import {PromiseStateContainer, usePromiseFn} from "@hilats/react-utils";
 // @ts-ignore
 import simplePlantUML from "@akebifiky/remark-simple-plantuml";
-import {MIME_REGISTRY} from "@hilats/utils";
-
-MIME_REGISTRY.registerMimeExtension("revealmd", "text/markdown");
 
 export const MarkdownViewer = (props:{uri?: string, content: Blob | string, type?: string}) => {
 

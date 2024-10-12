@@ -658,8 +658,6 @@ svg {
       flex: 2;
       border-right: 1px solid var(--theme-back2);
 
-
-
       .fullscreen-container {
         @extend .vFlow;
         animation: 1s linear;
@@ -691,8 +689,6 @@ svg {
           }
         }
       }
-
-
 
       .container-viewer {
         @extend .vFlow;

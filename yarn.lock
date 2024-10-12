@@ -779,8 +779,8 @@
 "@hilats/annotations-core@0.0.1", "@hilats/annotations-core@file:../web-annotations/annotations-core":
   version "0.0.1"
   dependencies:
-    "@hilats/data-modules" "0.0.3"
-    "@hilats/utils" "0.0.3"
+    "@hilats/data-modules" "0.0.5"
+    "@hilats/utils" "0.0.5"
     jsonld "^8.1.0"
     rdflib "^2.2.32"
     uuid "^9.0.0"
@@ -792,7 +792,7 @@
     "@emotion/styled" "^11.10.6"
     "@hilats/annotations-core" "0.0.1"
     "@hilats/annotations-react-ui" "0.0.1"
-    "@hilats/utils" "0.0.3"
+    "@hilats/utils" "0.0.5"
     "@inrupt/solid-client" "^2.0.1"
     "@inrupt/solid-client-authn-browser" "2.2.0-hilats"
     "@inrupt/solid-ui-react" "^3.0.0"
@@ -803,8 +803,8 @@
   version "0.0.1"
   dependencies:
     "@hilats/annotations-core" "0.0.1"
-    "@hilats/react-utils" "0.0.3"
-    "@hilats/utils" "0.0.3"
+    "@hilats/react-utils" "0.0.5"
+    "@hilats/utils" "0.0.5"
     loglevel "^1.9.1"
     react "^18.3.1"
     react-dom "^18.3.1"
@@ -813,7 +813,7 @@
     video.js "^7.17.0"
     videojs-youtube "^2.6.1"
 
-"@hilats/data-modules@0.0.3", "@hilats/data-modules@file:../toolkit-ts/data-modules":
+"@hilats/data-modules@0.0.5", "@hilats/data-modules@file:../toolkit-ts/data-modules":
   version "0.0.5"
   dependencies:
     "@hilats/utils" "0.0.5"
@@ -829,7 +829,7 @@
     antlr4ts "^0.5.0-alpha.4"
     rdflib "^2.2.35"
 
-"@hilats/react-utils@0.0.3", "@hilats/react-utils@0.0.5", "@hilats/react-utils@file:../toolkit-ts/react-utils":
+"@hilats/react-utils@0.0.5", "@hilats/react-utils@file:../toolkit-ts/react-utils":
   version "0.0.5"
   dependencies:
     "@hilats/utils" "0.0.5"
@@ -845,7 +845,7 @@
     "@hilats/utils" "0.0.5"
     "@inrupt/solid-client" "^2.0.0"
 
-"@hilats/utils@0.0.3", "@hilats/utils@0.0.5", "@hilats/utils@file:../toolkit-ts/utils":
+"@hilats/utils@0.0.5", "@hilats/utils@file:../toolkit-ts/utils":
   version "0.0.5"
 
 "@humanwhocodes/config-array@^0.11.14":
@@ -2355,6 +2355,11 @@
   version "0.12.2"
   resolved "https://registry.yarnpkg.com/@types/retry/-/retry-0.12.2.tgz#ed279a64fa438bb69f2480eda44937912bb7480a"
   integrity sha512-XISRgDJ2Tc5q4TRqvgJtzsRkFYNJzZrhTdtMoGVBttwzzQJkPnS3WWTFc7kuDRoPtPakl+T+OfdEUjYJj7Jbow==
+
+"@types/reveal.js@^5.0.4":
+  version "5.0.4"
+  resolved "https://registry.yarnpkg.com/@types/reveal.js/-/reveal.js-5.0.4.tgz#a5ffc778d1b2e4a2f23a6bff0f1c2d88c0a927d5"
+  integrity sha512-70Qua903NRU736r8Z94okthf6hXKm+brta/KdHFrK6GD16eTmGhPrDYGCUP7eNifEA2mvJGlNq1IR41ycIX0Yw==
 
 "@types/send@*":
   version "0.17.4"
@@ -9587,6 +9592,11 @@ reusify@^1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/reusify/-/reusify-1.0.4.tgz#90da382b1e126efc02146e90845a88db12925d76"
   integrity sha512-U9nH88a3fc/ekCF1l0/UP1IosiuIjyTh7hBvXVMHYgVcfGvt897Xguj2UOLDeI5BG2m7/uwyaLVT6fbtCwTyzw==
+
+reveal.js@^5.1.0:
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/reveal.js/-/reveal.js-5.1.0.tgz#dfaa4631127e739aa8ebbaa425d653e72d799e66"
+  integrity sha512-KDt7m0+xwKV6nAZt4CNPVFBf42sTKRQapg0bGGKB5PKO5XvChnMfwlZkybydHiQJ7p5+6LbHKRGrhXODdoNIaA==
 
 rfdc@^1.3.0:
   version "1.4.1"
