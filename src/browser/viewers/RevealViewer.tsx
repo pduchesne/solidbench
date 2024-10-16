@@ -8,6 +8,8 @@ import Reveal from 'reveal.js';
 //@ts-ignore
 import RevealMarkdown from 'reveal.js/plugin/markdown/markdown.js';
 
+import {loadFront} from 'yaml-front-matter';
+
 export const RevealViewer = (props:{uri?: string, content: Blob | string, type?: string}) => {
 
     const contentString$ = usePromiseFn(async () => {
@@ -41,6 +43,9 @@ const RevealRenderer = (props: { content: string }) => {
     const deckDivRef = useRef<HTMLDivElement>(null);
     const deckRef = useRef<Reveal.Api | null>(null);
 
+    const {__content : mdString, ...yamlOptions} = loadFront(props.content.replace(/^\uFEFF/, ''));
+    const {revealOptions, ...slideOptions} = yamlOptions;
+
     useEffect(() => {
         // Prevents double initialization in strict mode
         if (deckRef.current) return;
@@ -53,7 +58,8 @@ const RevealRenderer = (props: { content: string }) => {
             "progress": true,
             markdown: {
                 smartypants: true
-            }
+            },
+            ...revealOptions,
             // other config options
         });
 
@@ -73,11 +79,14 @@ const RevealRenderer = (props: { content: string }) => {
         };
     }, []);
 
+    //TODO use slideOptions
+    slideOptions;
+
     return <div className="reveal" ref={deckDivRef}>
             <div className="slides">
                 <section data-markdown={""}  data-separator="^---"
                          data-separator-vertical="^--">
-                    <script type="text/template" dangerouslySetInnerHTML={{__html: props.content}}/>
+                    <script type="text/template" dangerouslySetInnerHTML={{__html: mdString}}/>
                 </section>
             </div>
     </div>
