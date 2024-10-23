@@ -14,3 +14,6 @@ with these various samples :
 
 Certain functionalities (in particular HTML annotations) require the installation of a browser extension
 that is not yet published in official app stores, but can be downloaded and installed manually from https://test.solidbench.dev/solid-annotations-extension.zip
+
+#### Contact
+[info@solidbench.dev](mailto:info@solidbench.dev)
