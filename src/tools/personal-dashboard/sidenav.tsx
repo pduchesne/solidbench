@@ -9,8 +9,12 @@ import IconButton from "@mui/material/IconButton";
 import Divider from "@mui/material/Divider";
 import CommentIcon from '@mui/icons-material/Comment';
 import {PANEL_ID} from "./index";
+import { useNavigate } from "react-router";
+import InfoIcon from '@mui/icons-material/Info';
 
 export const Sidenav = (props: {selected: PANEL_ID, selectPanel: (id: PANEL_ID) => void}) => {
+
+    const navigate = useNavigate();
 
     return <div className="sidenav">
         <NavButton label="Pod Browser" icon={FolderSharedIcon} id='podbrowser' {...props}/>
@@ -22,6 +26,7 @@ export const Sidenav = (props: {selected: PANEL_ID, selectPanel: (id: PANEL_ID) 
         <NavButton label="Health" icon={MonitorHeartIcon} id='health' {...props}/>
         <Divider className='sidenav-divider'/>
         <NavButton label="Settings" icon={SettingsIcon} id='settings' {...props}/>
+        <IconButton title="About" onClick={() => navigate("/")}><InfoIcon /></IconButton>
     </div>
 }
 
