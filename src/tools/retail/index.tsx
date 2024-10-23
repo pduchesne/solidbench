@@ -18,7 +18,7 @@ import ExpensesChart from "./components/ExpensesChart";
 import ItemsTable from "./components/ItemsTable";
 import ReceiptsTable from "./components/ReceiptsTable";
 import Overview from "./components/Overview";
-import {Navigate, Route, Routes, useLocation, useParams, useSearchParams} from "react-router-dom";
+import {Link, Navigate, Route, Routes, useLocation, useParams, useSearchParams} from "react-router-dom";
 import Tab from "@mui/material/Tab/Tab";
 import Select from "@mui/material/Select/Select";
 import OutlinedInput from "@mui/material/OutlinedInput/OutlinedInput";
@@ -154,14 +154,20 @@ export const ShoppingDashboard = (props: {}) => {
                     <PromiseStateContainer promiseState={histories$}>
                         {(history) => (history && history[0].length) ?
                             <Overview receipts={history[1]}/> :
-                            (podStorage ? <div className="paddedPanel">
-                                No retail data has been found in your pod. Use the Import tool to bring your
-                                personal retail data into your pod, or find it yourself using the pod browser.
-                            </div> : <div className="paddedPanel">
-                                Please log in to your pod to view the retail data in your pod, or use the Import
-                                tool to import and view some retailer data. (it will not be persisted unless you log
-                                in to your pod though)
-                            </div>)}
+                            <div className="paddedPanel">
+                                Welcome to the Solidbench Retail Dashboard.
+                                {(podStorage ? <div>
+                                    Your pod is connected, but no retail data has been found. Use the Import tool to bring your
+                                    personal retail data into your pod, or find it yourself using the <Link to="/podbrowser">pod browser</Link>.
+                                </div> : <div>
+                                    Please log in to your pod to view the retail data in your pod, or use the Import
+                                    tool to import and view some retailer data. (it will not be persisted unless you log
+                                    in to your pod though).
+                                </div>)}
+
+                                You can also test the dashboard view with a <Link to="/retail/overview?input=https://pod.solidbench.dev/samples/retail/receipts-1.ttl">sample data set</Link>.
+                            </div>
+                            }
                     </PromiseStateContainer>
 
                 </TabPanel>
