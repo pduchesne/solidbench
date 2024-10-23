@@ -6,6 +6,7 @@ import {useSpotifyPlayer} from "./controls";
 import {MusicPlayer} from "../types";
 import {music} from "@hilats/data-modules";
 import {useNavigate} from "react-router";
+import { APP_ROOT } from "../../..";
 
 // Store the scopes as a const, because 'Scopes.all' returns a new array on each call
 export const SPOTIFY_SCOPES_ALL = Scopes.all;
@@ -119,7 +120,7 @@ export function SpotifyAuthenticator(props: {}) {
 
     const code = searchParams.get("code");
     if (code) {
-        spotifyCtx.authenticate().then((profile) => navigate("/personal-dashboard/music"));
+        spotifyCtx.authenticate().then((profile) => navigate(APP_ROOT+"music"));
     }
 
     return null;

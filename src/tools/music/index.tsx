@@ -18,13 +18,14 @@ import ConnectSources from "./components/ConnectSources";
 import {SpotifyControlBar} from "./spotify/controls";
 import Alert from "@mui/material/Alert";
 import Overview from "./components/Overview";
+import {APP_ROOT} from "../../index";
 export const MusicDashboard = () => {
 
     const {search} = useLocation();
 
     return <div className="music">
         <SpotifyContextProvider clientId={process.env.SPOTIFY_CLIENTID!}
-                                redirectUrl={new URL('/personal-dashboard/music/spotify/auth', window.location.toString()).toString()}
+                                redirectUrl={new URL(APP_ROOT+'music/spotify/auth', window.location.toString()).toString()}
                                 scopes={SPOTIFY_SCOPES_ALL}>
             <Routes>
                 <Route path="/spotify/auth" element={<SpotifyAuthenticator />}/>

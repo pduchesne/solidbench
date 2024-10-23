@@ -7,6 +7,7 @@ import {useNavigate} from "react-router";
 import {lazy, LazyExoticComponent, Suspense} from "react";
 import { DEFAULTS } from "@hilats/react-utils";
 import {useFixedSolidSession} from "../../solid/SessionProvider";
+import { APP_ROOT } from "../..";
 
 DEFAULTS.loaderMessage = 'Loading data...';
 
@@ -26,7 +27,7 @@ export const DashboardRoutes = () => {
 
     return <Routes>
         <Route path="/:panelId/*" element={<PersonalDashboard />} />
-        <Route path="*" element={<Navigate to={"/personal-dashboard/podbrowser"+decodeURIComponent(search)} replace={true} />} />
+        <Route path="*" element={<Navigate to={APP_ROOT+"podbrowser"+decodeURIComponent(search)} replace={true} />} />
     </Routes>
 }
 
@@ -43,7 +44,7 @@ export const PersonalDashboard = (props: {selectedPanel?: string }) => {
     const Panel = PANELS[panelId];
 
     return <div className="hFlow">
-        <Sidenav selectPanel={(panelId: string) => {navigate("/personal-dashboard/"+panelId);}} selected={panelId}/>
+        <Sidenav selectPanel={(panelId: string) => {navigate(APP_ROOT+panelId);}} selected={panelId}/>
         <div className="contentPane">
             <Suspense fallback={<DEFAULTS.Loader message="Loading UI..."/>}>
                 <Panel/>

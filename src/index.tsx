@@ -28,12 +28,12 @@ loglevel.getLogger('iframeMessenger').setLevel('debug');
 
 MODULE_REGISTRY.registerModule(DM_ANNOTATIONS);
 
-
+export const APP_ROOT = '/';
 
 const routes = [
     {
         component: DashboardRoutes,
-        path: '/personal-dashboard/*'
+        path: APP_ROOT+'*'
     },
     /*
     {
@@ -107,7 +107,7 @@ export const AppWithContext = memo(() => {
                                     <route.component/>
                                 </ErrorBoundary>}/>
                             ))}
-                            <Route path="*" element={<Navigate to="/personal-dashboard"/>}/>
+                            <Route path="*" element={<Navigate to={APP_ROOT}/>}/>
                         </Routes>
                     </ErrorBoundary>
                 </div>
@@ -164,13 +164,13 @@ export const App = memo(() => {
 
         }
 
-        navigate('/personal/dashboard');
+        navigate(APP_ROOT);
     }, [ /* navigate TODO WARN this means the navigate function will never get updated, and therefore cannot be used for relative navigation*/ ]);
 
     const onErrorCb = useCallback( (err: Error) => {
         console.log("Failed to authenticate: "+err);
         console.log(err); toast.warn("Authentication failed");
-        navigate('/personal/dashboard');
+        navigate(APP_ROOT);
     }, [])
 
     return (

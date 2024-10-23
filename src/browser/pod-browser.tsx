@@ -50,6 +50,7 @@ import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 import {MODULE_REGISTRY} from "@hilats/data-modules";
 import {toast} from "react-toastify";
 import {useFixedSolidSession} from "../solid/SessionProvider";
+import {APP_ROOT} from "../index";
 
 export const PodBrowserPanel = () => {
 
@@ -487,7 +488,7 @@ export const FileViewer = (props: {
                     if (result.matches.length)
                         toast(() => <div>
                             This resource can be best viewed in your <RouterLink
-                            to={`/personal-dashboard/${key}?input=${encodeURIComponent(props.uri)}`}>{key} dashboard</RouterLink>
+                            to={`${APP_ROOT}${key}?input=${encodeURIComponent(props.uri)}`}>{key} dashboard</RouterLink>
                         </div>);
                 })
             })
