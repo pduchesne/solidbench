@@ -694,9 +694,9 @@ svg {
         @extend .vFlow;
         .container-readme {
           padding: 7px;
-          flex: 0 1 auto;
+          flex: fit-content;
           //max-height: 10em;
-          overflow: hidden;
+          //overflow: hidden;
           text-overflow: ellipsis;
           -webkit-line-clamp: 10;
           -webkit-box-orient: vertical;
@@ -725,7 +725,7 @@ svg {
 
       .container-resources {
         @extend .hFlow;
-        flex: 1 0.5 auto;
+        flex: fit-content;
 
         .container-resource-list {
           &.details .resource {

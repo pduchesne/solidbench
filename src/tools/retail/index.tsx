@@ -155,7 +155,7 @@ export const ShoppingDashboard = (props: {}) => {
                         {(history) => (history && history[0].length) ?
                             <Overview receipts={history[1]}/> :
                             <div className="paddedPanel">
-                                Welcome to the Solidbench Retail Dashboard.
+                                <h4>Welcome to the Solidbench Retail Dashboard</h4>
                                 {(podStorage ? <div>
                                     Your pod is connected, but no retail data has been found. Use the Import tool to bring your
                                     personal retail data into your pod, or find it yourself using the <Link to="/podbrowser">pod browser</Link>.
@@ -164,7 +164,7 @@ export const ShoppingDashboard = (props: {}) => {
                                     tool to import and view some retailer data. (it will not be persisted unless you log
                                     in to your pod though).
                                 </div>)}
-
+                                <br/>
                                 You can also test the dashboard view with a <Link to="/retail/overview?input=https://pod.solidbench.dev/samples/retail/receipts-1.ttl">sample data set</Link>.
                             </div>
                             }
