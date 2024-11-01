@@ -10,15 +10,6 @@ var path = require('path');
 
 const APP_NAME = 'solidbench';
 
-// this will create index.html file containing script
-// source in dist folder dynamically
-const htmlPlugin = new HtmlWebPackPlugin({
-    template: './src/index.html',
-    filename: './index.html',
-    inject: 'body',
-    chunks: [APP_NAME],
-});
-
 const dotenvPlugin = new Dotenv();
 
 var localVariables;
@@ -64,11 +55,16 @@ module.exports = (env, argv) => {
         } : undefined,
 
         //specify the entry point for your project
-        entry: {[APP_NAME]: ['./src/index.tsx']},
+        entry: {
+            [APP_NAME]: ['./src/index.tsx'],
+
+            // the entry point for the standalone reveal rendering
+            "reveal": ['./src/reveal.tsx']
+        },
         // specify the output file name
         output: {
             path: path.resolve(__dirname, 'dist'),
-                filename: 'index.js',
+                filename: '[name].js',
                 publicPath: '/',
                 libraryTarget: 'umd',
                 umdNamedDefine: true
@@ -232,7 +228,19 @@ module.exports = (env, argv) => {
                 Buffer: ['buffer', 'Buffer'],
                 process: 'process/browser'
             }),
-            htmlPlugin,
+            // html output for the main entry point
+            new HtmlWebPackPlugin({
+                template: './src/index.html',
+                filename: './index.html',
+                inject: 'body',
+                chunks: [APP_NAME],
+            }),
+            new HtmlWebPackPlugin({
+                template: './src/reveal.html',
+                filename: './reveal.html',
+                inject: 'body',
+                chunks: ["reveal"],
+            }),
             definePlugin,
             new CopyWebpackPlugin({
                 patterns: [

@@ -1,95 +1,97 @@
-import React, {useEffect, useRef } from "react";
+import React, {Suspense, lazy, useCallback, useMemo, useState} from "react";
 import {PromiseStateContainer, usePromiseFn} from "@hilats/react-utils";
 
-//@ts-ignore
-import "reveal.js/dist/reveal.css";
-import "reveal.js/dist/theme/black.css";
-import Reveal from 'reveal.js';
-//@ts-ignore
-import RevealMarkdown from 'reveal.js/plugin/markdown/markdown.js';
+import {createPortal} from "react-dom";
 
-import {loadFront} from 'yaml-front-matter';
+const RevealRenderer = lazy(() => import('./RevealRenderer'));
 
-export const RevealViewer = (props:{uri?: string, content: Blob | string, type?: string}) => {
+export const RevealViewer = (props: { uri?: string, content: Blob | string, type?: string }) => {
 
     const contentString$ = usePromiseFn(async () => {
         return props.content instanceof Blob ? props.content.text() : props.content;
     }, [props.content]);
 
     return <div className="reveal-viewport"><PromiseStateContainer promiseState={contentString$}>
-        {(content) => <RevealRenderer content={content}/>}
+        {(content) => <RevealViewerIFrame content={content} uri={props.uri}/>}
     </PromiseStateContainer></div>
+}
 
-    /*
-        const [contentRef, setContentRef] = useState<HTMLIFrameElement | null>(null);
-        const mountNode = contentRef?.contentWindow?.document?.body
+/**
+ * RevealViewer that renders the content directly in an inline react component
+ */
+export const RevealViewerInline = (props: { content: string, uri?: string }) => {
+    return <RevealRenderer content={props.content}/>
+}
 
-    return <div className="reveal-container"><PromiseStateContainer promiseState={contentString$}>
-        {(content) => <iframe ref={setContentRef}>
-            {mountNode && createPortal(<body><html>
-            <head><style dangerouslySetInnerHTML={{__html: revealCss}} /></head>
-            <RevealRenderer content={content}/>
-            </html></body>, mountNode)}
-        </iframe>}
-    </PromiseStateContainer>
+/**
+ * RevealViewer that uses a react portal to inject into an inline iframe
+ */
+export const RevealViewerPortal = (props: { content: string, uri?: string }) => {
+
+
+    const [contentRef, setContentRef] = useState<HTMLIFrameElement | null>(null);
+    const mountNode = contentRef?.contentWindow?.document?.body
+
+    return <div className="reveal-container">
+        <iframe ref={setContentRef} style={{height: "100%", width: "100%"}}>
+            {mountNode && createPortal(<>
+                {/* <head>
+                <style dangerouslySetInnerHTML={{__html: RevealCSS}}/>
+                <style dangerouslySetInnerHTML={{__html: RevealThemeCSS}}/>
+            </head>*/}
+                <Suspense>
+                    <RevealRenderer content={props.content}/>
+                </Suspense>
+            </>, mountNode)}
+        </iframe>
     </div>
-
-     */
 
 }
 
-const RevealRenderer = (props: { content: string }) => {
+/**
+ * RevealViewer that uses the dedicated reveal.html endpoint to render the content in an isolated browser scope
+ * This avoids having a mix of the solidbench artifacts and the reveal artifacts (styles, global variables injected by various modules, ...)
+ */
+export const RevealViewerIFrame = (props: { content: string, uri?: string }) => {
+    const [contentRef, setContentRef] = useState<HTMLIFrameElement | null>(null);
 
-    const deckDivRef = useRef<HTMLDivElement>(null);
-    const deckRef = useRef<Reveal.Api | null>(null);
+    // if a url is present, pass it to the reveal.html endpoint
+    // this is redundant with setting the content with postmessage below, but may be needed to enable reveal Notes
+    // TODO is this needed ?
+    const revealPageUrl = useMemo(() => props.uri?
+            new URL("/reveal.html?url="+encodeURIComponent(props.uri), origin).toString():
+            new URL("/reveal.html", origin).toString()
+        , [props.uri]);
 
-    const {__content : mdString, ...yamlOptions} = loadFront(props.content.replace(/^\uFEFF/, ''));
-    const {revealOptions, ...slideOptions} = yamlOptions;
-
-    useEffect(() => {
-        // Prevents double initialization in strict mode
-        if (deckRef.current) return;
-
-        deckRef.current = new Reveal(deckDivRef.current!, {
-            plugins: [RevealMarkdown],
-            transition: "slide",
-            embedded: true,
-            "controls": true,
-            "progress": true,
-            markdown: {
-                smartypants: true
-            },
-            ...revealOptions,
-            // other config options
-        });
-
-        deckRef.current.initialize().then(() => {
-            // good place for event handlers and plugin setups
-        });
-
-        return () => {
-            try {
-                if (deckRef.current) {
-                    deckRef.current.destroy();
-                    deckRef.current = null;
+    // When the iframe is loaded, pass the potential authenticated fetch, and set the base href attribute of the iframe doc
+    const onLoaded = useCallback( () => {
+        if (contentRef) {
+            if (contentRef.contentWindow) {
+                contentRef.contentWindow.fetch = (url, request) => {
+                    // TODO pass the authenticated fetch
+                    return fetch(url, request);
                 }
-            } catch (e) {
-                console.warn("Reveal.js destroy call failed.");
+
+                // set the base href - this is required to be able to resolve hrefs relatively to the markdown files
+                if (contentRef.contentDocument && props.uri) {
+                    const base = contentRef.contentDocument.createElement("base");
+                    base.setAttribute("href", props.uri);
+
+                    // TODO Temporarily disabled
+                    //contentRef.contentDocument.getElementsByTagName("head")[0].appendChild(base);
+                }
+
             }
-        };
-    }, []);
 
-    //TODO use slideOptions
-    slideOptions;
+            // send the content using postMessage
+            contentRef.contentWindow?.postMessage({content: props.content, type: "reveal-content"}, revealPageUrl);
+        }
+    }, [contentRef?.contentWindow, props.content, props.uri])
 
-    return <div className="reveal" ref={deckDivRef}>
-            <div className="slides">
-                <section data-markdown={""}  data-separator="^---"
-                         data-separator-vertical="^--">
-                    <script type="text/template" dangerouslySetInnerHTML={{__html: mdString}}/>
-                </section>
-            </div>
-    </div>
+    return <iframe onLoad={onLoaded}
+                   ref={setContentRef}
+                   style={{height: "100%", width: "100%", margin: 0}}
+                   src={revealPageUrl} />
 
 }
 
