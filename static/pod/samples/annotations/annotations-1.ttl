@@ -51,3 +51,21 @@
                         ];
                 o:hasSource html:rfc2616
             ].
+:003
+    a o:Annotation;
+    dc:title "Media Annotation: Gentse GemeenteRaad";
+    dct:created "2024-09-06T11:27:19.412Z"^^xsd:dateTime;
+    dct:modified "2024-09-06T11:27:19.412Z"^^xsd:dateTime;
+    o:hasBody [ a o:TextualBody; rdf:value "" ];
+    o:hasTarget
+            [
+                a o:SpecificResource;
+                o:hasSelector
+                        [
+                            a o:FragmentSelector;
+                            dct:conformsTo <http://www.w3.org/TR/media-frags/>;
+                            rdf:value "t=10,20"
+                        ];
+                o:hasSource
+                    <https://sdk.companywebcast.com/playlist/1.1/27eee276-f1e1-47c8-a281-181e6b9fa319/playlist/od/iv/sdk-ssl.m3u8?Policy=eyJTdGF0ZW1lbnQiOiBbeyJSZXNvdXJjZSI6Imh0dHBzOi8vc2RrLmNvbXBhbnl3ZWJjYXN0LmNvbS9wbGF5bGlzdC8~Lj8vMjdlZWUyNzYtZjFlMS00N2M4LWEyODEtMTgxZTZiOWZhMzE5LyoiLCJDb25kaXRpb24iOnsiRGF0ZUxlc3NUaGFuIjp7IkFXUzpFcG9jaFRpbWUiOjE3NDgwODA3OTF9LCJJcEFkZHJlc3MiOnsiQVdTOlNvdXJjZUlwIjoiMC4wLjAuMC8wIn19fV19&Signature=SPhl76LPExWAf6Hrxx-e45TQBUDMkynQabmoe6y11IJYumweYyMD4IVv5GmrzlAxLD0b7H0E10mij-Shgv3uw5O6Wv3grmnlPy0ZgwrziVgDN45rVnkhELGdfN2OlaUj52c1aSwMLCuYyVfCTMt1ew30nQLU5vz~Kvjm32EokneWcAuoeg0IPPAEU2Y4YcIk3yhXWf7AGh3STBaHtKqLKXVMBpvAELJcQeAGk~Fvttg5WtHtzZQxAnF68tFg-sfqfhdf~cbukBZHqRAekHLoLk0y3yHBU4j5QuGh3YLMOJImhDrBoyLN2pqq98mK-v5xxlVorl7KbYibh4-BDNWRIQ__&Key-Pair-Id=APKAIWM6LAZJX3UVVARQ>
+            ].
