@@ -503,7 +503,9 @@ export const FileViewer = (props: {
         <div className="exit-fullscreen-button" title="Exit Full Screen"><CloseIcon
             onClick={() => setFullScreen(false)}/>
         </div>
-        {editMode ?
+        {Editor == Viewer ?
+            <Editor {...otherProps} type={contentType} setResourceActions={setResourceActionsCb} onSave={onSave} fullscreen={fullScreen}/>
+            : editMode ?
             <Editor {...otherProps} type={contentType} setResourceActions={setResourceActionsCb} onSave={onSave}/> :
             <Viewer {...otherProps} type={contentType} setResourceActions={setResourceActionsCb} fullscreen={fullScreen}/>}
     </div>
