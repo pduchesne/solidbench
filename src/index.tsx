@@ -191,6 +191,25 @@ export const App = memo(() => {
     );
 });
 
+const MDAL_UID = process.env.MDAL_UID;
+if (MDAL_UID) {
+    const script = document.createElement('script');
+    script.setAttribute('data-website-uid', MDAL_UID);
+
+
+    script.onload = () => {
+        if ((window as any).MDAL) {
+            (window as any).MDAL.pageView({
+                "Absolute": null,
+                "ClientId": null
+            });
+        }
+    }
+
+    script.src = 'https://app-static.sitesights.io/client.min.js?v=1';
+
+    document.head.appendChild(script);
+}
 
 const container = document.getElementById('index');
 const root = createRoot(container!);
