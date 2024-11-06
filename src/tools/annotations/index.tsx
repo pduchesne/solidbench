@@ -201,10 +201,15 @@ export const AnnotationList = (props: { annotations: Annotation[], onSelectAnnot
     return <div className="annotations-list">
         {Object.entries(annotationsByTarget).map(([target, anns]) =>
             <div key={target} className="annotations-list-target">
-                <div className="annotations-list-target-name">{target}</div>
+                <div className="annotations-list-target-name" title={target}>{target}</div>
                 <div className="target-annotations-list">
                     {anns.map(a => (
-                        <div key={a.id} onClick={() => onSelectAnnotation(a)} onMouseEnter={() => props.onHighlightAnnotation(a)} onMouseLeave={() => props.onHighlightAnnotation(undefined)}>
+                        <div className="target-annotation"
+                             title={a.title}
+                             key={a.id}
+                             onClick={() => onSelectAnnotation(a)}
+                             onMouseEnter={() => props.onHighlightAnnotation(a)}
+                             onMouseLeave={() => props.onHighlightAnnotation(undefined)}>
                             {a.title}
                         </div>
                     ))}

@@ -603,6 +603,8 @@ svg {
 
           .MuiBreadcrumbs-root {
             display: inline-block;
+            white-space: nowrap;
+            overflow: hidden;
 
             .MuiBreadcrumbs-li:first-child svg {
               font-size: 1.2rem;
@@ -698,7 +700,7 @@ svg {
           //max-height: 10em;
           //overflow: hidden;
           text-overflow: ellipsis;
-          -webkit-line-clamp: 10;
+          //-webkit-line-clamp: 10;
           -webkit-box-orient: vertical;
           display: -webkit-box;
           background-color: var(--theme-back2);
@@ -880,12 +882,17 @@ svg {
       .annotations-list-target-name {
         overflow: hidden;
         text-overflow: ellipsis;
+        white-space: nowrap;
       }
 
       .target-annotations-list {
         margin-left: 15px;
 
         & > div {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+
           @extend .actionableItem;
         }
       }
