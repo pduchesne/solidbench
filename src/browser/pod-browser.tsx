@@ -279,7 +279,10 @@ export const PodBrowser = (props: { rootUrl?: string, fetch?: typeof fetch, disp
 
     const anchorClickCallback = useCallback((e: React.MouseEvent) => {
         //console.log(e.type + " : " + e.currentTarget.tagName);
-        if (e.target instanceof HTMLAnchorElement && e.target.href && !e.target.target) {
+        if (e.target instanceof HTMLAnchorElement &&
+            e.target.href &&
+            !e.target.target &&
+            !e.target.href.startsWith('mailto')) {
             e.preventDefault();
             const relUri = e.target.href.replace(e.target.baseURI, './')
             navigateToResource(new URL(relUri, currentUrl).toString());
