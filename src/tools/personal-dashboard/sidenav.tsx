@@ -26,7 +26,7 @@ export const Sidenav = (props: {selected: PANEL_ID, selectPanel: (id: PANEL_ID) 
         <NavButton label="Health" icon={MonitorHeartIcon} id='health' {...props}/>
         <Divider className='sidenav-divider'/>
         <NavButton label="Settings" icon={SettingsIcon} id='settings' {...props}/>
-        <IconButton title="About" onClick={() => navigate("/")}><InfoIcon /></IconButton>
+        <IconButton title="About" onClick={() => navigate("/podbrowser/welcome")}><InfoIcon /></IconButton>
     </div>
 }
 
