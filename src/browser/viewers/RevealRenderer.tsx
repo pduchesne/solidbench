@@ -30,11 +30,12 @@ const RevealRenderer = (props: { content: string }) => {
 
     const theme = slideOptions.theme || 'black';
 
-    const themeCss$ = usePromiseFn(() => {
+    const styleSheets$ = usePromiseFn(async () => {
         //@ts-ignore
-        const promise = import("!!raw-loader!reveal.js/dist/theme/"+theme+".css");
-        return promise;
-    }, [theme])
+        const themeCss = (await import("!!raw-loader!reveal.js/dist/theme/"+theme+".css")).default;
+        const customCss = slideOptions.css ? (await fetch(slideOptions.css).then(r => r.text())) : undefined;
+        return [themeCss, customCss];
+    }, [theme, slideOptions.css])
 
     useEffect(() => {
         if (!deckDivRef.current) return;
@@ -46,8 +47,8 @@ const RevealRenderer = (props: { content: string }) => {
             plugins: [RevealMarkdown, RevealNotes],
             transition: "slide",
             embedded: true,
-            "controls": true,
-            "progress": true,
+            controls: true,
+            progress: true,
             markdown: {
                 smartypants: true
             },
@@ -69,16 +70,17 @@ const RevealRenderer = (props: { content: string }) => {
                 console.warn("Reveal.js destroy call failed.");
             }
         };
-    }, [deckDivRef.current, themeCss$.status]);
+    }, [deckDivRef.current, styleSheets$.status]);
 
     //TODO use slideOptions
     slideOptions;
 
-    return <PromiseStateContainer promiseState={themeCss$}>
-        {(css) => (
+    return <PromiseStateContainer promiseState={styleSheets$}>
+        {(styleSheets) => (
             <div className="reveal" ref={deckDivRef}>
                 <style dangerouslySetInnerHTML={{__html: RevealCSS}}/>
-                <style dangerouslySetInnerHTML={{__html: css.default}}/>
+                {styleSheets.map(css => css ? <style dangerouslySetInnerHTML={{__html: css}}/> : null)}
+
                 <div className="slides">
                     <section data-markdown={""}
                              data-separator="^---"
