@@ -105,7 +105,9 @@ export const ShoppingDashboard = (props: {}) => {
         <Box className="retail">
             <TabContext value={tab}>
                 <Box sx={{borderBottom: 1, borderColor: 'divider', flex: 'none'}}>
-                    <TabList style={{flex: '1 1 100%'}} onChange={(e, value) => navigate('../' + value)}>
+                    <TabList style={{flex: '1 1 100%'}}
+                             sx={{ "& .MuiTabs-flexContainer": {flexWrap: "wrap"}}}
+                             onChange={(e, value) => navigate('../' + value)} >
                         <Tab label="Overview" value="overview"/>
                         <Tab label="Receipts" value="receipts" disabled={!receipts}/>
                         <Tab label="Frequent Items" value="frequent" disabled={!receipts}/>
