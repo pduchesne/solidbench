@@ -910,6 +910,11 @@ svg {
       background-color: white;
       color: #101010;
     }
+
+    .secondary-resources {
+      @extend .hFlow;
+      flex: 0.3;
+    }
   }
 }
 

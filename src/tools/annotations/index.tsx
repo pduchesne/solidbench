@@ -21,6 +21,7 @@ import {
     WebResource
 } from "@hilats/annotations-core";
 import {
+    AnnotationsContext,
     AnnotationViewer, HighlightableRef,
     ScrollableRef,
     useAnnotationsEditor,
@@ -72,6 +73,8 @@ export const AnnotationsDisplay = () => {
 
     const [selectedResource, setSelectedResource] = useState<WebResource>();
 
+    const [secondaryResources, setSecondaryResources] = useState<WebResource<"SpecificResource">[]>([]);
+
     const [selectedAnnotation, setSelectedAnnotation] = useState<Annotation>();
 
     const [ /*highlightedAnnotations */, /* setHighLightedAnnotations */ ] = useState<Annotation[]>([]);
@@ -107,6 +110,19 @@ export const AnnotationsDisplay = () => {
         //setHighLightedAnnotations(a ? [a] : []);
     }, [scrollableRef]);
 
+    const displaySecondaryResourceCb = useCallback((res: WebResource) => {
+        if (res.type == 'SpecificResource')
+            setSecondaryResources([...secondaryResources, res]);
+    }, [secondaryResources]);
+
+    const annotationsContext = useMemo<AnnotationsContext>(() => ({
+        annotations: [],
+        onEditAnnotation: setEditedAnnotation,
+        onDeleteAnnotation: (a) => annotationContainer.deleteAnnotation(a),
+        onSelectAnnotation: displaySecondaryResourceCb,
+        highlightedAnnotations: selectedAnnotation ? [selectedAnnotation] : []
+    }), [setEditedAnnotation, annotationContainer, displaySecondaryResourceCb, selectedAnnotation])
+
     return <div className="annotations vFlow">
         {editModal}
         {externalInput ?
@@ -136,7 +152,7 @@ export const AnnotationsDisplay = () => {
             </div>}
             <div className="resource-viewer">
                 <div className="resource-url-input">
-                    <Input value={selectedResource?.type == 'SpecificResource' ? selectedResource?.source : undefined}
+                    <Input value={selectedResource?.type == 'SpecificResource' ? selectedResource?.source : ''}
                            placeholder="URL of the resource to annotate"
                            onChange={(e) => setSelectedResource(resolveWebResourceRef(e.currentTarget.value))}
                            style={{width: '100%'}}/>
@@ -144,16 +160,21 @@ export const AnnotationsDisplay = () => {
                 {selectedResource ?
                     <PromiseContainer promise={annotations$} loadingMessage="Loading Annotations">
                         {(annotations) =>
-
                             <AnnotationViewer resource={selectedResource}
-                                              annotations={annotations}
-                                              onEditAnnotation={setEditedAnnotation}
-                                              onDeleteAnnotation={(a) => annotationContainer.deleteAnnotation(a)}
-                                              highlightedAnnotations={selectedAnnotation ? [selectedAnnotation] : []}
                                               ref={setScrollableRef}
                                               fetchOptions={appContext.fetchOptions}
+                                              annotationsContext={{...annotationsContext, annotations}}
                             />}
                     </PromiseContainer> : null}
+                <div className="secondary-resources">
+                    {secondaryResources.map(res => <div className="secondary-resource" key={res.source}>
+                        <AnnotationViewer resource={res}
+                                          //ref={setScrollableRef}
+                                          fetchOptions={appContext.fetchOptions}
+                                          annotationsContext={{...annotationsContext}}
+                        />
+                    </div>)}
+                </div>
             </div>
         </div>
     </div>
