@@ -3,6 +3,8 @@ import {useNavigate, useSearchParams} from "react-router-dom";
 import {useFixedSolidSession} from "../../solid/SessionProvider";
 import {useCallback, useContext, useEffect, useMemo, useState} from "react";
 import {AppContext} from "../../appContext";
+import {splitHash} from "@hilats/utils";
+
 //import {AnnotationStorage, MemoryAnnotationStorage, PodAnnotationStorage} from "./storage";
 import Alert from "@mui/material/Alert";
 import {
@@ -72,8 +74,12 @@ export const AnnotationsDisplay = () => {
     //const scrollableRef = useRef<ScrollableRef & HighlightableRef>(null);
 
     const [selectedResource, setSelectedResource] = useState<WebResource>();
-
     const [secondaryResources, setSecondaryResources] = useState<WebResource<"SpecificResource">[]>([]);
+
+    const setDisplayedResources = useCallback((mainResource: WebResource, secondaryResources?: WebResource<"SpecificResource">[]) => {
+        setSelectedResource(mainResource);
+        setSecondaryResources(secondaryResources || []);
+    }, []);
 
     const [selectedAnnotation, setSelectedAnnotation] = useState<Annotation>();
 
@@ -86,12 +92,10 @@ export const AnnotationsDisplay = () => {
                    (selectedResource?.type == 'SpecificResource' &&
                     webRes.type == 'SpecificResource' &&
                     selectedResource.source != webRes.source) )
-                setSelectedResource(webRes);
+                setDisplayedResources(webRes);
         }
 
     }, [selectedAnnotation]);
-
-
 
     const [scrollableRef, setScrollableRef] = useRefCallback<ScrollableRef & HighlightableRef>();
 
@@ -111,8 +115,27 @@ export const AnnotationsDisplay = () => {
     }, [scrollableRef]);
 
     const displaySecondaryResourceCb = useCallback((res: WebResource) => {
-        if (res.type == 'SpecificResource')
-            setSecondaryResources([...secondaryResources, res]);
+        if (res.type == 'SpecificResource') {
+
+            // TODO here we simply look for a secondary resource with same URL and override it
+            //      instead, we should maintain a map of URL and their viewers, and a
+            //      list of all annotations per URL
+            //      then secondary resources could be overlaid with all annotations at once
+
+            const existingResourceIdx = secondaryResources.findIndex(
+                r => splitHash(r.source).path == splitHash(res.source).path);
+
+            if (existingResourceIdx >= 0) {
+                // better to use toSpliced, but support is not ubiquitous yet
+                let newResources = [...secondaryResources];
+                newResources.splice(existingResourceIdx, 1, res);
+                setSecondaryResources(newResources);
+            } else {
+                setSecondaryResources([...secondaryResources, res]);
+            }
+
+        }
+
     }, [secondaryResources]);
 
     const annotationsContext = useMemo<AnnotationsContext>(() => ({
@@ -154,7 +177,7 @@ export const AnnotationsDisplay = () => {
                 <div className="resource-url-input">
                     <Input value={selectedResource?.type == 'SpecificResource' ? selectedResource?.source : ''}
                            placeholder="URL of the resource to annotate"
-                           onChange={(e) => setSelectedResource(resolveWebResourceRef(e.currentTarget.value))}
+                           onChange={(e) => setDisplayedResources(resolveWebResourceRef(e.currentTarget.value))}
                            style={{width: '100%'}}/>
                 </div>
                 {selectedResource ?
