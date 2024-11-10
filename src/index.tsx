@@ -192,10 +192,9 @@ export const App = memo(() => {
 });
 
 const MDAL_UID = process.env.MDAL_UID;
-if (MDAL_UID) {
+if (MDAL_UID && document.location.hostname != 'localhost') {
     const script = document.createElement('script');
     script.setAttribute('data-website-uid', MDAL_UID);
-
 
     script.onload = () => {
         if ((window as any).MDAL) {
