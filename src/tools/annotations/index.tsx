@@ -11,8 +11,7 @@ import {
     DereferenceResource,
     DereferenceResources,
     InlineOrRef,
-    PromiseContainer,
-    useRefCallback
+    PromiseContainer
 } from "@hilats/react-utils";
 import {
     Annotation,
@@ -23,9 +22,9 @@ import {
     WebResource
 } from "@hilats/annotations-core";
 import {
+    AnnotationDisplayRef,
     AnnotationsContext,
-    AnnotationViewer, HighlightableRef,
-    ScrollableRef,
+    AnnotationViewer,
     useAnnotationsEditor,
     useUrlAnnotationContainer
 } from "@hilats/annotations-react-ui";
@@ -71,17 +70,12 @@ export const AnnotationsDisplay = () => {
 
     const navigate = useNavigate();
 
-    //const scrollableRef = useRef<ScrollableRef & HighlightableRef>(null);
-
-    const [selectedResource, setSelectedResource] = useState<WebResource>();
-    const [secondaryResources, setSecondaryResources] = useState<WebResource<"SpecificResource">[]>([]);
+    const [[selectedResource, scrollableRef, selectedAnnotation, secondaryResources], setTuple] = useState<[WebResource | undefined, AnnotationDisplayRef | undefined, Annotation | undefined, WebResource<"SpecificResource">[]]>([undefined, undefined, undefined, []]);
 
     const setDisplayedResources = useCallback((mainResource: WebResource, secondaryResources?: WebResource<"SpecificResource">[]) => {
-        setSelectedResource(mainResource);
-        setSecondaryResources(secondaryResources || []);
+        setTuple([mainResource, undefined, undefined, secondaryResources || []]);
     }, []);
 
-    const [selectedAnnotation, setSelectedAnnotation] = useState<Annotation>();
 
     const [ /*highlightedAnnotations */, /* setHighLightedAnnotations */ ] = useState<Annotation[]>([]);
 
@@ -97,16 +91,25 @@ export const AnnotationsDisplay = () => {
 
     }, [selectedAnnotation]);
 
-    const [scrollableRef, setScrollableRef] = useRefCallback<ScrollableRef & HighlightableRef>();
-
     useEffect( () => {
         if (selectedAnnotation && scrollableRef?.scrollTo)
             scrollableRef.scrollTo(selectedAnnotation);
     }, [scrollableRef, selectedAnnotation]);
 
     const selectAnnotationCb = useCallback((a: Annotation) => {
-        setSelectedAnnotation(a);
-        scrollableRef?.scrollTo && scrollableRef.scrollTo(a);
+        setTuple( ([selectedResource, scrollableRef, selectedAnnotation, secondaryResources]) =>  {
+            const webRes = resolveWebResourceRef(getElemOrArray(a.target)[0]);
+            if (webRes.type != selectedResource?.type ||
+                (selectedResource?.type == 'SpecificResource' &&
+                    webRes.type == 'SpecificResource' &&
+                    selectedResource.source != webRes.source) ) {
+                selectedResource = webRes;
+                scrollableRef = undefined;
+                secondaryResources = [];
+            }
+
+            return [selectedResource, scrollableRef, a, secondaryResources]
+        });
     }, [scrollableRef]);
 
     const highlightAnnotationCb = useCallback((a?: Annotation) => {
@@ -127,16 +130,20 @@ export const AnnotationsDisplay = () => {
 
             if (existingResourceIdx >= 0) {
                 // better to use toSpliced, but support is not ubiquitous yet
-                let newResources = [...secondaryResources];
-                newResources.splice(existingResourceIdx, 1, res);
-                setSecondaryResources(newResources);
+                setTuple( ([selectedResource, scrollableRef, selectedAnnotation, secondaryResources]) => {
+                    let newResources = [...secondaryResources];
+                    newResources.splice(existingResourceIdx, 1, res);
+                    return [selectedResource, scrollableRef, selectedAnnotation, newResources];
+                })
             } else {
-                setSecondaryResources([...secondaryResources, res]);
+                setTuple( ([selectedResource, scrollableRef, selectedAnnotation, secondaryResources]) => {
+                    return [selectedResource, scrollableRef, selectedAnnotation, [...secondaryResources, res]];
+                })
             }
 
         }
 
-    }, [secondaryResources]);
+    }, []);
 
     const annotationsContext = useMemo<AnnotationsContext>(() => ({
         annotations: [],
@@ -145,6 +152,10 @@ export const AnnotationsDisplay = () => {
         onSelectAnnotation: displaySecondaryResourceCb,
         highlightedAnnotations: selectedAnnotation ? [selectedAnnotation] : []
     }), [setEditedAnnotation, annotationContainer, displaySecondaryResourceCb, selectedAnnotation])
+
+    const setRef = useCallback(
+        (ref: AnnotationDisplayRef) => setTuple( ([selectedResource, scrollableRef, selectedAnnotation, secondaryResources]) =>  [selectedResource, ref || undefined, selectedAnnotation, secondaryResources]),
+        []);
 
     return <div className="annotations vFlow">
         {editModal}
@@ -184,7 +195,7 @@ export const AnnotationsDisplay = () => {
                     <PromiseContainer promise={annotations$} loadingMessage="Loading Annotations">
                         {(annotations) =>
                             <AnnotationViewer resource={selectedResource}
-                                              ref={setScrollableRef}
+                                              ref={setRef}
                                               fetchOptions={appContext.fetchOptions}
                                               annotationsContext={{...annotationsContext, annotations}}
                             />}
