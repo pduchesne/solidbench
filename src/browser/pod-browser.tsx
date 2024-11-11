@@ -133,11 +133,14 @@ function FileBreadcrumbs(props: { rootUrl?: string, path: string, onSelect: (url
 
                 </Breadcrumbs>
         }
-            <EditIcon className="edit-action" onClick={() => {
+            <span title="Edit URL"><EditIcon className="edit-action"  onClick={() => {
                 setEditMode(!editMode);
-            }}/>
+            }}/></span>
+            <span title="Open in browser tab"><OpenInNewIcon className="edit-action" onClick={() => {
+                window.open(new URL(path, rootUrl).toString(), "blank")
+            }}/></span>
         </div>
-    );
+);
 }
 
 

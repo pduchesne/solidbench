@@ -30,6 +30,7 @@ import {
 } from "@hilats/annotations-react-ui";
 import CodeIcon from '@mui/icons-material/Code';
 import EditIcon from '@mui/icons-material/Edit';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 
 import { pdfjs } from 'react-pdf';
 import Input from "@mui/material/Input";
@@ -190,6 +191,12 @@ export const AnnotationsDisplay = () => {
                            placeholder="URL of the resource to annotate"
                            onChange={(e) => setDisplayedResources(resolveWebResourceRef(e.currentTarget.value))}
                            style={{width: '100%'}}/>
+                    {selectedResource?.type == 'SpecificResource' ?
+                        <span className="icon-action"  title="Open in browser tab" style={{position: "absolute", right: '5px'}}><OpenInNewIcon onClick={() => {
+                            window.open(selectedResource?.source, "blank")
+                        }}/></span> : null
+                    }
+
                 </div>
                 {selectedResource ?
                     <PromiseContainer promise={annotations$} loadingMessage="Loading Annotations">
