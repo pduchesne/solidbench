@@ -34,6 +34,7 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 
 import { pdfjs } from 'react-pdf';
 import Input from "@mui/material/Input";
+import classNames from "classnames";
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
     'pdfjs-dist/build/pdf.worker.min.js',
     import.meta.url,
@@ -181,7 +182,9 @@ export const AnnotationsDisplay = () => {
                     { (annotations) =>
                         <AnnotationList annotations={annotations}
                                         onSelectAnnotation={selectAnnotationCb}
-                                        onHighlightAnnotation={highlightAnnotationCb}/>
+                                        onHighlightAnnotation={highlightAnnotationCb}
+                                        displayedResource={selectedResource}
+                        />
                     }
                 </PromiseContainer>
             </div>}
@@ -241,7 +244,12 @@ export const AnnotationContainerList = (props: {collections: InlineOrRef<Annotat
     </div>
 }
 
-export const AnnotationList = (props: { annotations: Annotation[], onSelectAnnotation: (a: Annotation) => void, onHighlightAnnotation: (a?: Annotation) => void }) => {
+export const AnnotationList = (props: {
+    annotations: Annotation[],
+    onSelectAnnotation: (a: Annotation) => void,
+    onHighlightAnnotation: (a?: Annotation) => void,
+    displayedResource?: WebResource
+}) => {
     const {annotations, onSelectAnnotation} = props;
 
     const annotationsByTarget = useMemo(() => {
@@ -260,10 +268,13 @@ export const AnnotationList = (props: { annotations: Annotation[], onSelectAnnot
         return map;
     }, [annotations]);
 
+    const selectedUrl = props.displayedResource && props.displayedResource.type == 'SpecificResource' && props.displayedResource.source;
+
     return <div className="annotations-list">
         {Object.entries(annotationsByTarget).map(([target, anns]) =>
             <div key={target} className="annotations-list-target">
-                <div className="annotations-list-target-name" title={target}>{target}</div>
+                <div className={classNames("annotations-list-target-name", {selected: selectedUrl == target})}
+                     title={target}>{target}</div>
                 <div className="target-annotations-list">
                     {anns.map(a => (
                         <div className="target-annotation"

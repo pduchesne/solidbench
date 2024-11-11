@@ -883,6 +883,10 @@ svg {
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+
+        &.selected {
+          background-color: var(--theme-selection)
+        }
       }
 
       .target-annotations-list {
