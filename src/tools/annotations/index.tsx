@@ -210,7 +210,7 @@ export const AnnotationsDisplay = () => {
                                               annotationsContext={{...annotationsContext, annotations}}
                             />}
                     </PromiseContainer> : null}
-                <div className="secondary-resources">
+                {secondaryResources.length ? <div className="secondary-resources">
                     {secondaryResources.map(res => <div className="secondary-resource" key={res.source}>
                         <AnnotationViewer resource={res}
                                           //ref={setScrollableRef}
@@ -218,7 +218,7 @@ export const AnnotationsDisplay = () => {
                                           annotationsContext={{...annotationsContext}}
                         />
                     </div>)}
-                </div>
+                </div> : null}
             </div>
         </div>
     </div>
