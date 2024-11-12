@@ -3,7 +3,8 @@ import {AppContext} from "./appContext";
 import {useContext, useEffect} from "react";
 import createTheme, { Theme } from "@mui/material/styles/createTheme";
 import ThemeProvider from "@mui/material/styles/ThemeProvider";
-import CssBaseline from '@mui/material/CssBaseline';
+import CssBaseline from "@mui/material/CssBaseline";
+
 
 
 const THEMES: Record<string, Theme> = {
