@@ -212,6 +212,7 @@ export const AnnotationsDisplay = () => {
                     </PromiseContainer> : null}
                 {secondaryResources.length ? <div className="secondary-resources">
                     {secondaryResources.map(res => <div className="secondary-resource" key={res.source}>
+                        <div className="secondary-resource-url">{res.source}</div>
                         <AnnotationViewer resource={res}
                                           //ref={setScrollableRef}
                                           fetchOptions={appContext.fetchOptions}

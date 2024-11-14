@@ -918,6 +918,35 @@ svg {
     .secondary-resources {
       @extend .hFlow;
       flex: 0.3;
+
+      border-top: 1px solid var(--theme-border2);
+      box-shadow: 2px 2px 6px var(--theme-shadow);
+
+      .secondary-resource {
+        @extend .vFlow;
+        position: relative;
+
+        .secondary-resource-url {
+          position: absolute;
+          top: 0px;
+          width: 100%;
+          z-index: 100;
+          background-color: var(--theme-back2);
+          flex:none;
+          opacity: 0;
+          text-wrap: nowrap;
+          font-size: 70%;
+          padding: 0px 5px;
+          text-overflow: ellipsis;
+          overflow: hidden;
+        }
+
+        &:hover .secondary-resource-url {
+          opacity: 1;
+        }
+      }
+
+
     }
   }
 }
