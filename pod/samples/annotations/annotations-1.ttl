@@ -10,10 +10,10 @@
 
 :001
     a o:Annotation;
-    dc:title "Annotating a PDF";
-    dct:created "2023-08-02T07:07:12.362Z"^^xsd:dateTime;
-    dct:modified "2023-08-02T07:07:12.362Z"^^xsd:dateTime;
-    o:hasBody [ a o:TextualBody; rdf:value "A Test Annotation" ];
+    dc:title "Sample PDF Annotation";
+    dct:created "2024-09-17T17:58:51.180Z"^^xsd:dateTime;
+    dct:modified "2024-09-17T17:58:51.180Z"^^xsd:dateTime;
+    o:hasBody [ a o:TextualBody; rdf:value "Annotating the title" ];
     o:hasTarget
             [
                 a o:SpecificResource;
@@ -21,7 +21,26 @@
                         [
                             a o:FragmentSelector;
                             dct:conformsTo rfc:rfc3778;
-                            rdf:value "page=1&viewrect=114,363,461,273"
+                            rdf:value "page=1&viewrect=43,47,74,42"
+                        ];
+                o:hasSource
+                <https://www.w3.org/2013/04/odw/ODW13-CrossLinks-Pres.pdf>
+            ].
+
+:001-2
+    a o:Annotation;
+    dc:title "The possible fragment dimensions";
+    dct:created "2024-09-17T18:00:02.727Z"^^xsd:dateTime;
+    dct:modified "2024-09-17T18:00:02.727Z"^^xsd:dateTime;
+    o:hasBody [ a o:TextualBody; rdf:value "" ];
+    o:hasTarget
+            [
+                a o:SpecificResource;
+                o:hasSelector
+                        [
+                            a o:FragmentSelector;
+                            dct:conformsTo rfc:rfc3778;
+                            rdf:value "page=9&viewrect=19,79,89,75"
                         ];
                 o:hasSource
                 <https://www.w3.org/2013/04/odw/ODW13-CrossLinks-Pres.pdf>
@@ -47,6 +66,41 @@
                                         a o:TextPositionSelector;
                                         o:end "284"^^xsd:nonNegativeInteger;
                                         o:start "64"^^xsd:nonNegativeInteger
+                                    ]
+                        ];
+                o:hasSource html:rfc2616
+            ].
+:003
+    a o:Annotation;
+    dc:title "Hypertext Transfer Protocol - Status";
+    o:hasBody
+    [ a o:TextualBody; rdf:value "An example annotation of an HTML document" ];
+    o:hasTarget
+            [
+                a o:SpecificResource;
+                dc:format "text/html";
+                o:hasSelector
+                        [
+                            a o:RangeSelector;
+                            o:hasEndSelector
+                                    [
+                                        a o:XPathSelector;
+                                        rdf:value
+                                            "//DIV[@id='content']/DIV/DIV/PRE[1]/text()[3]";
+                                        o:refinedBy
+                                                [
+                                                    a o:TextPositionSelector;
+                                                    o:end
+                                                        "375"^^xsd:nonNegativeInteger;
+                                                    o:start
+                                                        "375"^^xsd:nonNegativeInteger
+                                                ]
+                                    ];
+                            o:hasStartSelector
+                                    [
+                                        a o:XPathSelector;
+                                        rdf:value
+                                            "//DIV[@id='content']/DIV/DIV/PRE[1]/SPAN[1]/text()[1]"
                                     ]
                         ];
                 o:hasSource html:rfc2616
