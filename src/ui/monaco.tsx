@@ -9,7 +9,7 @@ import {loader} from "@monaco-editor/react";
 import {MODULE_REGISTRY} from "@hilats/data-modules";
 loader.config({ monaco });
 
-Object.entries(MODULE_REGISTRY.modules).forEach( ([key, module])  => {
+Object.entries(MODULE_REGISTRY.items).forEach( ([key, module])  => {
     //@ts-ignore
     module.tooltipProducers?.length && TOOLTIPS.push(...module.tooltipProducers);
 })

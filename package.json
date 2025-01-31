@@ -68,6 +68,9 @@
         "@hilats/annotations-react-ui": "file:../web-annotations/annotations-react-ui",
         "@hilats/data-modules": "file:../toolkit-ts/data-modules",
         "@hilats/monaco-language-turtle": "../monaco-language-turtle",
+        "@hilats/solid-app-music": "file:../solid-app-music",
+        "@hilats/solid-app-template": "file:../solid-app-template",
+        "@hilats/solid-app-assistant": "file:../solid-app-assistant",
         "@hilats/react-utils": "0.0.5",
         "@hilats/solid-utils": "0.0.5",
         "@hilats/utils": "0.0.5",
@@ -121,6 +124,7 @@
         "@hilats/utils": "file:../toolkit-ts/utils",
         "@hilats/annotations-react-ui": "file:../web-annotations/annotations-react-ui",
         "@hilats/annotations-core": "file:../web-annotations/annotations-core",
+        "@hilats/solid-app-music": "file:../solid-app-music",
         "parse-asn1": "5.1.6"
     }
 }

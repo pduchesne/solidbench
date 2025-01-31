@@ -489,7 +489,7 @@ export const FileViewer = (props: {
 
     useEffect(() => {
         if ((contentType == WELL_KNOWN_TYPES.ttl || contentType == WELL_KNOWN_TYPES.nq || contentType == WELL_KNOWN_TYPES.nt)) {
-            Object.entries(MODULE_REGISTRY.modules).forEach(([key, module]) => {
+            Object.entries(MODULE_REGISTRY.items).forEach(([key, module]) => {
                 module.matches(props.content, contentType).then(result => {
                     if (result.matches.length)
                         toast(() => <div>

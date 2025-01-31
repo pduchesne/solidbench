@@ -89,6 +89,8 @@ module.exports = (env, argv) => {
                 // these are necessary to allow yarn linking of local packages
                 // cf https://github.com/facebook/react/issues/14257
                 react: path.resolve(__dirname, 'node_modules/react'),
+                'react-router': path.resolve(__dirname, 'node_modules/react-router'),
+                'react-router-dom': path.resolve(__dirname, 'node_modules/react-router-dom'),
                     rdflib: path.resolve(__dirname, 'node_modules/rdflib'),
                     'react-dom': path.resolve(__dirname, 'node_modules/react-dom'),
                     stream: path.resolve(__dirname, 'node_modules/stream-browserify'),
@@ -97,6 +99,13 @@ module.exports = (env, argv) => {
                 'react-pdf': path.resolve(__dirname, 'node_modules/react-pdf'),
                 'video.js': path.resolve(__dirname, 'node_modules/video.js'),
                 'loglevel': path.resolve(__dirname, 'node_modules/loglevel'),
+                //'@hilats/solid-app-assistant': path.resolve(__dirname, 'node_modules/@hilats/solid-app-assistant'),
+                //'@hilats/solid-app-template': path.resolve(__dirname, 'node_modules/@hilats/solid-app-template'),
+                //'@hilats/solid-app-music': path.resolve(__dirname, 'node_modules/@hilats/solid-app-music'),
+                //'@hilats/solid-utils': path.resolve(__dirname, 'node_modules/@hilats/solid-utils'),
+                '@mui/system': path.resolve(__dirname, 'node_modules/@mui/system'),
+                '@mui/material': path.resolve(__dirname, 'node_modules/@mui/material'),
+                //'@inrupt/solid-client': path.resolve(__dirname, 'node_modules/@inrupt/solid-client'),
 
 
                 /*
@@ -133,6 +142,8 @@ module.exports = (env, argv) => {
         watchOptions: { ignored: /node_modules/, followSymlinks: false},
         watch: isDev,
         module: {
+            unknownContextCritical: false,
+
             // consists the transform configuration
             rules: [
                 {
