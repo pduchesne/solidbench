@@ -4,6 +4,7 @@ import {useFixedSolidSession} from "../../solid/SessionProvider";
 import {useCallback, useContext, useEffect, useMemo, useState} from "react";
 import {AppContext} from "../../appContext";
 import {splitHash} from "@hilats/utils";
+import AssistantIcon from '@mui/icons-material/Assistant';
 
 //import {AnnotationStorage, MemoryAnnotationStorage, PodAnnotationStorage} from "./storage";
 import Alert from "@mui/material/Alert";
@@ -16,7 +17,7 @@ import {
 import {
     Annotation,
     AnnotationCollection,
-    BOOKMARKS_URL,
+    BOOKMARKS_URL, fixAnnotation,
     getElemOrArray,
     resolveWebResourceRef,
     WebResource
@@ -35,6 +36,9 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { pdfjs } from 'react-pdf';
 import Input from "@mui/material/Input";
 import classNames from "classnames";
+import { PodStorage } from "@hilats/solid-utils";
+import {TextField} from "@mui/material";
+import { AnnotationAssistant } from "./assistant";
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
     'pdfjs-dist/build/pdf.worker.min.js',
     import.meta.url,
@@ -60,6 +64,22 @@ export const AnnotationsDisplay = () => {
     const {fetch} = useFixedSolidSession();
     const appContext = useContext(AppContext);
 
+    const aiAssistant$ = useMemo(async () => {
+        try {
+            const aiModule = await import("@hilats/solid-app-assistant");
+
+            if (appContext.podUrl && aiModule?.Assistant) {
+                const preferences = await new aiModule.AppStorage(new PodStorage(appContext.podUrl, {fetch})).fetchPreferences();
+                return new AnnotationAssistant(preferences);
+            } else
+                return undefined
+        } catch (e) {
+          return undefined;
+        }
+    }, [appContext.podUrl, fetch]);
+
+    const [tempAnnotations, setTempAnnotations] = useState<Annotation[]>([]);
+
     const [params] = useSearchParams();
     const externalInput = params.get('input');
 
@@ -67,17 +87,32 @@ export const AnnotationsDisplay = () => {
 
     const containerUrl = externalInput || (appContext.podUrl ? appContext.podUrl+BOOKMARKS_URL : undefined);
 
-    const [annotations$, annotationContainer] = useUrlAnnotationContainer(containerUrl, fetch);
+    const [storageAnnotations$, annotationContainer] = useUrlAnnotationContainer(containerUrl, fetch);
     const [ /* editedAnnotation */ , setEditedAnnotation, editModal] = useAnnotationsEditor(annotationContainer);
+
+    useEffect(() => {
+            storageAnnotations$.then(as => [...as, ...tempAnnotations]).then(allAnnotations => {
+                setTuple( ([annotations, selectedResource, scrollableRef, selectedAnnotation, secondaryResources]) =>  {
+                    return [allAnnotations, selectedResource, scrollableRef, selectedAnnotation, secondaryResources]
+                });
+            })
+        },
+        [storageAnnotations$, tempAnnotations]
+    )
+    //const annotations$ = useMemo(() => storageAnnotations$.then(as => [...as, ...tempAnnotations]), [storageAnnotations$, tempAnnotations])
 
     const navigate = useNavigate();
 
-    const [[selectedResource, scrollableRef, selectedAnnotation, secondaryResources], setTuple] = useState<[WebResource | undefined, AnnotationDisplayRef | undefined, Annotation | undefined, WebResource<"SpecificResource">[]]>([undefined, undefined, undefined, []]);
+    const [[annotations, selectedResource, displayRef, selectedAnnotation, secondaryResources], setTuple] = useState<[Annotation[], WebResource | undefined, AnnotationDisplayRef | undefined, Annotation | undefined, WebResource<"SpecificResource">[]]>([[], undefined, undefined, undefined, []]);
 
     const setDisplayedResources = useCallback((mainResource: WebResource, secondaryResources?: WebResource<"SpecificResource">[]) => {
-        setTuple([mainResource, undefined, undefined, secondaryResources || []]);
+        setTuple( ([annotations, selectedResource, scrollableRef, selectedAnnotation, secondaryResources]) =>  {
+            return [annotations, mainResource, undefined, undefined, secondaryResources || []]
+        });
     }, []);
 
+
+    const [showAssistant, setShowAssistant] = useState(false);
 
     const [ /*highlightedAnnotations */, /* setHighLightedAnnotations */ ] = useState<Annotation[]>([]);
 
@@ -94,12 +129,12 @@ export const AnnotationsDisplay = () => {
     }, [selectedAnnotation]);
 
     useEffect( () => {
-        if (selectedAnnotation && scrollableRef?.scrollTo)
-            scrollableRef.scrollTo(selectedAnnotation);
-    }, [scrollableRef, selectedAnnotation]);
+        if (selectedAnnotation && displayRef?.scrollTo)
+            displayRef.scrollTo(selectedAnnotation);
+    }, [displayRef, selectedAnnotation]);
 
     const selectAnnotationCb = useCallback((a: Annotation) => {
-        setTuple( ([selectedResource, scrollableRef, selectedAnnotation, secondaryResources]) =>  {
+        setTuple( ([annotations, selectedResource, scrollableRef, selectedAnnotation, secondaryResources]) =>  {
             const webRes = resolveWebResourceRef(getElemOrArray(a.target)[0]);
             if (webRes.type != selectedResource?.type ||
                 (selectedResource?.type == 'SpecificResource' &&
@@ -110,14 +145,14 @@ export const AnnotationsDisplay = () => {
                 secondaryResources = [];
             }
 
-            return [selectedResource, scrollableRef, a, secondaryResources]
+            return [annotations, selectedResource, scrollableRef, a, secondaryResources]
         });
-    }, [scrollableRef]);
+    }, [displayRef]);
 
     const highlightAnnotationCb = useCallback((a?: Annotation) => {
-        scrollableRef?.highlightAnnotation && scrollableRef.highlightAnnotation(a);
+        displayRef?.highlightAnnotation && displayRef.highlightAnnotation(a);
         //setHighLightedAnnotations(a ? [a] : []);
-    }, [scrollableRef]);
+    }, [displayRef]);
 
     const displaySecondaryResourceCb = useCallback((res: WebResource) => {
         if (res.type == 'SpecificResource') {
@@ -132,14 +167,14 @@ export const AnnotationsDisplay = () => {
 
             if (existingResourceIdx >= 0) {
                 // better to use toSpliced, but support is not ubiquitous yet
-                setTuple( ([selectedResource, scrollableRef, selectedAnnotation, secondaryResources]) => {
+                setTuple( ([annotations, selectedResource, scrollableRef, selectedAnnotation, secondaryResources]) => {
                     let newResources = [...secondaryResources];
                     newResources.splice(existingResourceIdx, 1, res);
-                    return [selectedResource, scrollableRef, selectedAnnotation, newResources];
+                    return [annotations, selectedResource, scrollableRef, selectedAnnotation, newResources];
                 })
             } else {
-                setTuple( ([selectedResource, scrollableRef, selectedAnnotation, secondaryResources]) => {
-                    return [selectedResource, scrollableRef, selectedAnnotation, [...secondaryResources, res]];
+                setTuple( ([annotations, selectedResource, scrollableRef, selectedAnnotation, secondaryResources]) => {
+                    return [annotations, selectedResource, scrollableRef, selectedAnnotation, [...secondaryResources, res]];
                 })
             }
 
@@ -148,16 +183,20 @@ export const AnnotationsDisplay = () => {
     }, []);
 
     const annotationsContext = useMemo<AnnotationsContext>(() => ({
-        annotations: [],
+        annotations,
         onEditAnnotation: setEditedAnnotation,
         onDeleteAnnotation: (a) => annotationContainer.deleteAnnotation(a),
         onSelectAnnotation: displaySecondaryResourceCb,
         highlightedAnnotations: selectedAnnotation ? [selectedAnnotation] : []
-    }), [setEditedAnnotation, annotationContainer, displaySecondaryResourceCb, selectedAnnotation])
+    }), [annotations, setEditedAnnotation, annotationContainer, displaySecondaryResourceCb, selectedAnnotation])
 
     const setRef = useCallback(
-        (ref: AnnotationDisplayRef) => setTuple( ([selectedResource, scrollableRef, selectedAnnotation, secondaryResources]) =>  [selectedResource, ref || undefined, selectedAnnotation, secondaryResources]),
+        (ref: AnnotationDisplayRef) => setTuple(
+            ([annotations, selectedResource, scrollableRef, selectedAnnotation, secondaryResources]) =>
+                [annotations, selectedResource, ref || undefined, selectedAnnotation, secondaryResources]
+        ),
         []);
+
 
     return <div className="annotations vFlow">
         {editModal}
@@ -178,15 +217,11 @@ export const AnnotationsDisplay = () => {
                         <EditIcon style={{position: 'absolute', scale: '0.7', right: '2px', top: '-4px'}} />
                     </span>
                 </h4>
-                <PromiseContainer promise={annotations$}>
-                    { (annotations) =>
-                        <AnnotationList annotations={annotations}
-                                        onSelectAnnotation={selectAnnotationCb}
-                                        onHighlightAnnotation={highlightAnnotationCb}
-                                        displayedResource={selectedResource}
-                        />
-                    }
-                </PromiseContainer>
+                <AnnotationList annotations={annotations}
+                                onSelectAnnotation={selectAnnotationCb}
+                                onHighlightAnnotation={highlightAnnotationCb}
+                                displayedResource={selectedResource}
+                />
             </div>}
             <div className="resource-viewer">
                 <div className="resource-url-input">
@@ -202,14 +237,52 @@ export const AnnotationsDisplay = () => {
 
                 </div>
                 {selectedResource ?
-                    <PromiseContainer promise={annotations$} loadingMessage="Loading Annotations">
-                        {(annotations) =>
-                            <AnnotationViewer resource={selectedResource}
-                                              ref={setRef}
-                                              fetchOptions={appContext.fetchOptions}
-                                              annotationsContext={{...annotationsContext, annotations}}
-                            />}
-                    </PromiseContainer> : null}
+                    <div>
+                    <AnnotationViewer resource={selectedResource}
+                                      ref={setRef}
+                                      fetchOptions={appContext.fetchOptions}
+                                      annotationsContext={annotationsContext}
+                    />
+                <PromiseContainer promise={aiAssistant$}>
+                    {(aiAssistant) => aiAssistant ?
+                        <div onClick={() => setShowAssistant( prevValue => !prevValue)} className="icon-action" style={{position: "absolute", right: "5px", bottom: "5px"}}><AssistantIcon /></div> :
+                        null}
+                </PromiseContainer>
+                    </div> : null}
+                {showAssistant ? <PromiseContainer promise={aiAssistant$}>
+                    {(aiAssistant) => <div>
+                    <TextField
+                        fullWidth={true}
+                        multiline
+                        minRows={2}
+                        maxRows={5}
+                        onKeyDown={async (e) => {
+                            if(e.keyCode == 13){
+                                const text = displayRef?.getText && await displayRef.getText();
+
+                                console.log("AI Assistant: Text analyzed:");
+                                console.log(text);
+
+                                if (text && aiAssistant && displayRef.selectorFromFulltextRange && selectedResource && selectedResource.type == 'SpecificResource') {
+                                    const results = await aiAssistant.annotate(text, (e.target as any).value);
+
+                                    const annotations = results.map(r => (fixAnnotation({
+                                        target: {...selectedResource, selector: displayRef.selectorFromFulltextRange!(r.offset, r.offset + r.length)},
+                                        body: {
+                                            type: 'TextualBody',
+                                            value: r.summary
+                                        }
+                                    })));
+
+                                    setTempAnnotations(annotations);
+                                    console.log(JSON.stringify(annotations, null, 2))
+                                }
+                                (e.target as any).value = "";
+                            }
+                        }}
+                    />
+                    </div>}</PromiseContainer>
+                    : null}
                 {secondaryResources.length ? <div className="secondary-resources">
                     {secondaryResources.map(res => <div className="secondary-resource" key={res.source}>
                         <div className="secondary-resource-url">{res.source}</div>
