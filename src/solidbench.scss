@@ -667,6 +667,7 @@ svg {
         iframe {
           border: none;
           margin: 5px;
+          background-color: white;
         }
 
         .exit-fullscreen-button {
@@ -725,45 +726,46 @@ svg {
         }
       }
 
-      .container-resources {
-        @extend .hFlow;
-        flex: fit-content;
+  .container-resources {
+    @extend .hFlow;
+    flex: fit-content;
 
-        .container-resource-list {
-          &.details .resource {
-            svg {
-              margin-right: 5px;
-            }
+    .container-resource-list {
+      &.details .resource {
+        svg {
+          margin-right: 5px;
+        }
+      }
+
+      &.grid {
+        display: flex;
+        flex-flow: row wrap;
+        align-items: center;
+        align-content: baseline;
+
+        .resource {
+          @extend .vFlow;
+          text-align: center;
+          height: 110px;
+          padding: 3px;
+
+
+          svg {
+            flex: none;
+            font-size: var(--resource-icon-size);
+            display: block;
           }
 
-          &.grid {
-            display: flex;
-            flex-flow: row wrap;
-            align-items: center;
-            align-content: baseline;
+          .resource-name {
+            font-size: 75%;
+            line-height: 1em;
+            max-width: var(--resource-icon-size);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            word-break: break-all;
 
-            .resource {
-              @extend .vFlow;
-              text-align: center;
-              height: 110px;
-              padding: 3px;
-
-
-              svg {
-                flex: none;
-                font-size: var(--resource-icon-size);
-                display: block;
-              }
-
-              .resource-name {
-                font-size: 80%;
-                max-width: var(--resource-icon-size);
-                overflow: hidden;
-                text-overflow: ellipsis;
-                word-break: break-all;
-
-                display: -webkit-box;
-                -webkit-line-clamp: 2; /* max line number */
+            display: -webkit-box;
+            -webkit-line-clamp: 2; /* max line number */
                 -webkit-box-orient: vertical;
               }
 
