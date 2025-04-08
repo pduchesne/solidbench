@@ -20,7 +20,7 @@ import {usePromiseFn} from "@hilats/react-utils/dist/cjs/promises";
 
 
 
-const RevealRenderer = (props: { content: string }) => {
+const RevealRenderer = (props: { content: string, uri?: string }) => {
 
     const deckDivRef = useRef<HTMLDivElement>(null);
     const deckRef = useRef<Reveal.Api | null>(null);
@@ -76,7 +76,15 @@ const RevealRenderer = (props: { content: string }) => {
     slideOptions;
 
     return <PromiseStateContainer promiseState={styleSheets$}>
-        {(styleSheets) => (
+        {(styleSheets) => {
+
+            if (props.uri) {
+                const bt = window.document.createElement("base");
+                bt.setAttribute("href", props.uri);
+                window.document.getElementsByTagName("head")[0].appendChild(bt);
+            }
+
+            return (
             <div className="reveal" ref={deckDivRef}>
                 <style dangerouslySetInnerHTML={{__html: RevealCSS}}/>
                 {styleSheets.map(css => css ? <style dangerouslySetInnerHTML={{__html: css}}/> : null)}
@@ -91,7 +99,7 @@ const RevealRenderer = (props: { content: string }) => {
                     </section>
                 </div>
             </div>
-        )}
+        )} }
     </PromiseStateContainer>
 }
 
@@ -114,7 +122,7 @@ export const RevealIframeContent = (props: {}) => {
 
     // check for a uri param
     const params = new URLSearchParams(window.location.search)
-    const uri = params.get('uri');
+    const uri = params.get('uri') || undefined;
 
     function onReceivedMessage(event: MessageEvent) {
         // see notes on checking the data type
@@ -133,7 +141,7 @@ export const RevealIframeContent = (props: {}) => {
 
     // if the content has been set with a postMessage, use it
     // otherwise fallback on the provided uri, if any, and use the RevealRendererUrl to fetch and render the content
-    return content ? <RevealRenderer content={content}/> :
+    return content ? <RevealRenderer content={content} uri={uri}/> :
         uri ? <RevealRendererUrl uri={uri}/> :
         <span>"Loading content"</span>;
 }

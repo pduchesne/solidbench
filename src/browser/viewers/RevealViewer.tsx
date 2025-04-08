@@ -59,7 +59,7 @@ export const RevealViewerIFrame = (props: { content: string, uri?: string }) => 
     // this is redundant with setting the content with postmessage below, but may be needed to enable reveal Notes
     // TODO is this needed ?
     const revealPageUrl = useMemo(() => props.uri?
-            new URL("/reveal.html?url="+encodeURIComponent(props.uri), origin).toString():
+            new URL("/reveal.html?uri="+encodeURIComponent(props.uri), origin).toString():
             new URL("/reveal.html", origin).toString()
         , [props.uri]);
 
