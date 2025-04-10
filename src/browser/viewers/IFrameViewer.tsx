@@ -1,13 +1,23 @@
 import React, {useMemo} from "react";
+import {ContentViewer} from "./GenericViewer";
 
-export const IFrameViewer = (props:{uri?: string, content: Blob | string, type?: string}) => {
+export const IFrameViewer: ContentViewer = (props) => {
 
-    const blobUrl = useMemo(() => {
-        const blob = props.content instanceof Blob ? props.content : new Blob([props.content], {type: props.type});
-        return URL.createObjectURL(blob);
-    }, [props.content]);
+    const { resource } = props;
 
-    return <iframe src={blobUrl}/>
+    const resourceUrl = useMemo(() => {
+        if (resource.uri != undefined) {
+            return resource.uri;
+        } else if ('content' in resource) {
+            const blob = resource.content instanceof Blob ? resource.content : new Blob([resource.content!], {type: resource.type});
+            return URL.createObjectURL(blob);
+        } else {
+            throw "Cannot happen but TS is too dumb to infer it";
+        }
+
+    }, [resource]);
+
+    return <iframe src={resourceUrl}/>
 
 }
 

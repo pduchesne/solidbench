@@ -1,5 +1,5 @@
 import React, {useEffect, useState } from "react";
-import {ContentEditor} from "./GenericEditor";
+import {ContentEditor, ResolvedContentEditorProps} from "./GenericEditor";
 import {PromiseStateContainer, usePromiseFn} from "@hilats/react-utils";
 import {ResourceAction} from "../pod-browser";
 import SaveIcon from '@mui/icons-material/Save';
@@ -9,8 +9,9 @@ import 'codemirror/theme/material.css';
 import 'codemirror/mode/xml/xml';
 import 'codemirror/mode/turtle/turtle';
 import 'codemirror/mode/javascript/javascript';
+import {withResolvableUri} from "./GenericViewer";
 
-export const CodemirrorEditor: ContentEditor = (props) => {
+export const ResolvedCodemirrorEditor = (props: ResolvedContentEditorProps) => {
 
     const [updatedContent, setUpdatedContent] = useState<string | undefined>();
     const [isDirty, setIsDirty] = useState(false);
@@ -39,8 +40,8 @@ export const CodemirrorEditor: ContentEditor = (props) => {
     }, [isDirty, updatedContent, setResourceActions, onSave]);
 
     const contentString$ = usePromiseFn( async () => {
-        return props.content instanceof Blob ? props.content.text() : props.content;
-    }, [props.content]);
+        return props.resource.content instanceof Blob ? props.resource.content.text() : props.resource.content;
+    }, [props.resource.content]);
 
     return <PromiseStateContainer promiseState={contentString$}>
         {(content) =>
@@ -57,5 +58,7 @@ export const CodemirrorEditor: ContentEditor = (props) => {
     </PromiseStateContainer>
 
 }
+
+export const CodemirrorEditor: ContentEditor = withResolvableUri(ResolvedCodemirrorEditor);
 
 export default CodemirrorEditor;

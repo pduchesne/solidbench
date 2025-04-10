@@ -1,21 +1,17 @@
 import React from "react";
 import Markdown from "react-markdown";
-import {PromiseStateContainer, usePromiseFn} from "@hilats/react-utils";
 // @ts-ignore
 import simplePlantUML from "@akebifiky/remark-simple-plantuml";
+import {ResolvedContentViewerProps, withResolvableUri} from "./GenericViewer";
 
-export const MarkdownViewer = (props:{uri?: string, content: Blob | string, type?: string}) => {
+export const MarkdownViewer = withResolvableUri(
+    (props: ResolvedContentViewerProps<'string'>) => {
 
-    const contentString$ = usePromiseFn( async () => {
-        return props.content instanceof Blob ? props.content.text() : props.content;
-    }, [props.content]);
+    return <div className="paddedPanel">
+        <Markdown remarkPlugins={[simplePlantUML]}>{props.resource.content}</Markdown></div>
 
-    return <PromiseStateContainer promiseState={contentString$}>
-        {(content) => <div className="paddedPanel">
-            <Markdown remarkPlugins={[simplePlantUML]}>{content}</Markdown></div>
-        }
-    </PromiseStateContainer>
-
-}
+    },
+    {as: 'text'},
+)
 
 export default MarkdownViewer;

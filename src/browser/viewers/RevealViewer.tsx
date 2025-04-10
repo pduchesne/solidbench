@@ -1,32 +1,28 @@
 import React, {Suspense, lazy, useCallback, useMemo, useState} from "react";
-import {PromiseStateContainer, usePromiseFn} from "@hilats/react-utils";
+import {WebResourceDescriptorContent} from "@hilats/react-utils";
 
 import {createPortal} from "react-dom";
+import {ResolvedContentViewerProps, withResolvableUri} from "./GenericViewer";
 
 const RevealRenderer = lazy(() => import('./RevealRenderer'));
 
-export const RevealViewer = (props: { uri?: string, content: Blob | string, type?: string }) => {
-
-    const contentString$ = usePromiseFn(async () => {
-        return props.content instanceof Blob ? props.content.text() : props.content;
-    }, [props.content]);
-
-    return <div className="reveal-viewport"><PromiseStateContainer promiseState={contentString$}>
-        {(content) => <RevealViewerIFrame content={content} uri={props.uri}/>}
-    </PromiseStateContainer></div>
+export const ResolvedRevealViewer = (props: ResolvedContentViewerProps ) => {
+    return <div className="reveal-viewport"><RevealViewerIFrame {...props} /></div>
 }
+
+export const RevealViewer = withResolvableUri(ResolvedRevealViewer, {as: 'text'});
 
 /**
  * RevealViewer that renders the content directly in an inline react component
  */
-export const RevealViewerInline = (props: { content: string, uri?: string }) => {
+export const RevealViewerInline = (props: WebResourceDescriptorContent<'string'>) => {
     return <RevealRenderer content={props.content}/>
 }
 
 /**
  * RevealViewer that uses a react portal to inject into an inline iframe
  */
-export const RevealViewerPortal = (props: { content: string, uri?: string }) => {
+export const RevealViewerPortal = (props: WebResourceDescriptorContent<'string'>) => {
 
 
     const [contentRef, setContentRef] = useState<HTMLIFrameElement | null>(null);
@@ -52,16 +48,16 @@ export const RevealViewerPortal = (props: { content: string, uri?: string }) => 
  * RevealViewer that uses the dedicated reveal.html endpoint to render the content in an isolated browser scope
  * This avoids having a mix of the solidbench artifacts and the reveal artifacts (styles, global variables injected by various modules, ...)
  */
-export const RevealViewerIFrame = (props: { content: string, uri?: string }) => {
+export const RevealViewerIFrame = (props: ResolvedContentViewerProps) => {
     const [contentRef, setContentRef] = useState<HTMLIFrameElement | null>(null);
 
     // if a url is present, pass it to the reveal.html endpoint
     // this is redundant with setting the content with postmessage below, but may be needed to enable reveal Notes
     // TODO is this needed ?
-    const revealPageUrl = useMemo(() => props.uri?
-            new URL("/reveal.html?uri="+encodeURIComponent(props.uri), origin).toString():
+    const revealPageUrl = useMemo(() => props.resource.uri?
+            new URL("/reveal.html?uri="+encodeURIComponent(props.resource.uri), origin).toString():
             new URL("/reveal.html", origin).toString()
-        , [props.uri]);
+        , [props.resource.uri]);
 
     // When the iframe is loaded, pass the potential authenticated fetch, and set the base href attribute of the iframe doc
     const onLoaded = useCallback( () => {
@@ -73,9 +69,9 @@ export const RevealViewerIFrame = (props: { content: string, uri?: string }) => 
                 }
 
                 // set the base href - this is required to be able to resolve hrefs relatively to the markdown files
-                if (contentRef.contentDocument && props.uri) {
+                if (contentRef.contentDocument && props.resource.uri) {
                     const base = contentRef.contentDocument.createElement("base");
-                    base.setAttribute("href", props.uri);
+                    base.setAttribute("href", props.resource.uri);
 
                     // TODO Temporarily disabled
                     //contentRef.contentDocument.getElementsByTagName("head")[0].appendChild(base);
@@ -84,9 +80,9 @@ export const RevealViewerIFrame = (props: { content: string, uri?: string }) => 
             }
 
             // send the content using postMessage
-            contentRef.contentWindow?.postMessage({content: props.content, type: "reveal-content"}, revealPageUrl);
+            contentRef.contentWindow?.postMessage({content: props.resource.content, type: "reveal-content"}, revealPageUrl);
         }
-    }, [contentRef?.contentWindow, props.content, props.uri])
+    }, [contentRef?.contentWindow, props.resource.content, props.resource.uri])
 
     return <iframe onLoad={onLoaded}
                    ref={setContentRef}

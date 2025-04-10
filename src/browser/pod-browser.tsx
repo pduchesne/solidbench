@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react';
 
-import {CachedPromiseState, PromiseStateContainer, usePromiseFn} from "@hilats/react-utils";
+import {CachedPromiseState, PromiseStateContainer, WebResourceDescriptorUrl, usePromiseFn} from "@hilats/react-utils";
 import {useSolidContainer, useSolidFile} from "../solid";
 import {
     acp_ess_2, deleteFile, getContainedResourceUrlAll,
@@ -36,22 +36,17 @@ import {ModalComponent, useModal} from "../ui/modal";
 import {getViewer, guessContentType} from "./viewers/GenericViewer";
 import {getEditor} from "./viewers/GenericEditor";
 import Dropzone from "react-dropzone";
-import {ABSURL_REGEX, assert, getParentUrl, MIME_REGISTRY, WELL_KNOWN_TYPES} from "@hilats/utils";
+import {ABSURL_REGEX, assert, FetchOptions, getParentUrl, MIME_REGISTRY} from "@hilats/utils";
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import Markdown from "react-markdown";
 import Breadcrumbs from "@mui/material/Breadcrumbs/Breadcrumbs";
 import Link from "@mui/material/Link/Link";
 import Input from "@mui/material/Input/Input";
-import {Link as RouterLink} from 'react-router-dom';
 import CloseIcon from '@mui/icons-material/Close';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
 import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 
-import {MODULE_REGISTRY} from "@hilats/data-modules";
-import {toast} from "react-toastify";
 import {useFixedSolidSession} from "../solid/SessionProvider";
-import {APP_ROOT} from "../index";
-
 export const PodBrowserPanel = () => {
 
     return <PodBrowserRoutes/>
@@ -174,7 +169,9 @@ export type ResourceAction = {
 export const PodBrowser = (props: { rootUrl?: string, fetch?: typeof fetch, displayMetadata?: boolean }) => {
 
     const session = useFixedSolidSession();
+
     const fetch = props.fetch || session.fetch;
+    const fetchOptions = useMemo<FetchOptions>( () => ({fetch}), [fetch]);
 
     const [selectedResource, setSelectedResource] = useState<string | undefined>();
     const params = useParams();
@@ -296,6 +293,11 @@ export const PodBrowser = (props: { rootUrl?: string, fetch?: typeof fetch, disp
     const isOverview = currentUrl.endsWith('/overview');
     const isFolder = currentUrl.endsWith('/');
 
+
+    const resource = useMemo<WebResourceDescriptorUrl>(() => ({
+        uri: currentUrl
+    }), [currentUrl]);
+
     return (
         (!podUrl && ROOT != '$EXT') ?
             (!RES_PATH ? <Navigate to="../welcome"/> :
@@ -355,9 +357,9 @@ export const PodBrowser = (props: { rootUrl?: string, fetch?: typeof fetch, disp
                                             <ContainerViewer uri={currentUrl} fetch={fetch}
                                                              onNavigateToResource={navigateToResource}
                                                              onSelectResource={setSelectedResource}/> :
-                                            <FileViewerWithFetch uri={currentUrl}
-                                                                 fetch={fetch}
-                                                                 setResourceActions={setResourceActions}/>
+                                            <FileViewer resource={resource}
+                                                        fetchOptions={fetchOptions}
+                                                        setResourceActions={setResourceActions}/>
                                     }
 
                                 </div>
@@ -372,60 +374,32 @@ export const PodBrowser = (props: { rootUrl?: string, fetch?: typeof fetch, disp
     );
 };
 
-
-export const FileViewerWithFetch = (props: {
-    uri: string,
-    fetch?: typeof fetch,
-    edition?: boolean,
-    setResourceActions?: (actions: ResourceAction[]) => void
-}) => {
-
-    const {fetch, ...otherProps} = props;
-
-    const currentFile = useSolidFile(
-        props.uri,
-        fetch);
-
-    const onSave = useCallback((content: string | Blob) => currentFile?.saveRawContent(content), [currentFile]);
-
-    return <PromiseStateContainer promiseState={currentFile.file$}>
-        {(blob) => blob ?
-            <FileViewer {...otherProps} content={blob} onSave={onSave}/> :
-            <div>
-                Resource not found
-            </div>
-        }
-    </PromiseStateContainer>
-}
-
-
 export const FileViewer = (props: {
-    uri: string,
-    content: Blob | string,
+    resource: WebResourceDescriptorUrl,
+    fetchOptions?: FetchOptions,
     edition?: boolean,
-    onSave: (content: string | Blob) => Promise<void>,
     setResourceActions?: (actions: ResourceAction[]) => void
 }) => {
 
-    const {edition, onSave, setResourceActions, ...otherProps} = props;
+    const {edition, setResourceActions, ...otherProps} = props;
 
     const [editMode, setEditMode] = useState(edition);
     const [fullScreen, setFullScreen] = useState(false);
 
-    const contentType = useMemo(() => {
-        return guessContentType(props.content, undefined, props.uri);
-    }, [props.content, props.uri])
+    const resourceWithType = useMemo(() => {
+        return guessContentType(props.resource);
+    }, [props.resource])
 
     const [Viewer, Editor] = useMemo(() => {
 
-        const [viewer] = getViewer(undefined, contentType, undefined);
-        const [editor] = getEditor(undefined, contentType, undefined);
+        const [viewer] = getViewer(resourceWithType);
+        const [editor] = getEditor(resourceWithType);
 
         return [
             viewer,
             editor
         ];
-    }, [contentType]);
+    }, [resourceWithType]);
 
     const resourceActions = useMemo(() => {
             const resourceActions: ResourceAction[] = [];
@@ -487,20 +461,6 @@ export const FileViewer = (props: {
         }, [resourceActions, setResourceActions, edition]
     );
 
-    useEffect(() => {
-        if ((contentType == WELL_KNOWN_TYPES.ttl || contentType == WELL_KNOWN_TYPES.nq || contentType == WELL_KNOWN_TYPES.nt)) {
-            Object.entries(MODULE_REGISTRY.items).forEach(([key, module]) => {
-                module.matches(props.content, contentType).then(result => {
-                    if (result.matches.length)
-                        toast(() => <div>
-                            This resource can be best viewed in your <RouterLink
-                            to={`${APP_ROOT}${key}?input=${encodeURIComponent(props.uri)}`}>{key} dashboard</RouterLink>
-                        </div>);
-                })
-            })
-        }
-    }, [contentType]);
-
     const setResourceActionsCb = useCallback((actions: ResourceAction[]) => {
         setResourceActions && setResourceActions([...actions, ...resourceActions])
     },[resourceActions, setResourceActions]);
@@ -510,10 +470,10 @@ export const FileViewer = (props: {
             onClick={() => setFullScreen(false)}/>
         </div>
         {Editor == Viewer ?
-            <Editor {...otherProps} type={contentType} setResourceActions={setResourceActionsCb} onSave={onSave} fullscreen={fullScreen}/>
+            <Editor {...otherProps} resource={resourceWithType} setResourceActions={setResourceActionsCb} fullscreen={fullScreen} fetchOptions={props.fetchOptions}/>
             : editMode ?
-            <Editor {...otherProps} type={contentType} setResourceActions={setResourceActionsCb} onSave={onSave}/> :
-            <Viewer {...otherProps} type={contentType} setResourceActions={setResourceActionsCb} fullscreen={fullScreen}/>}
+            <Editor {...otherProps} resource={resourceWithType} setResourceActions={setResourceActionsCb} fetchOptions={props.fetchOptions}/> :
+            <Viewer {...otherProps} resource={resourceWithType} setResourceActions={setResourceActionsCb} fullscreen={fullScreen} fetchOptions={props.fetchOptions}/>}
     </div>
 }
 

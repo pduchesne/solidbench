@@ -1,11 +1,18 @@
 import {WELL_KNOWN_TYPES} from "@hilats/utils";
 import React, {useMemo} from "react";
-import {ContentViewerProps, guessContentType} from "./GenericViewer";
+import {
+    ContentViewerProps,
+    guessContentType,
+    ResolvedContentViewerProps,
+} from "./GenericViewer";
 import CodemirrorEditor from "./CodemirrorEditor";
 import MonacoEditor from "./MonacoEditor";
+import {WebResourceContentType, WebResourceDescriptor } from "@hilats/react-utils";
 
-export type ContentEditorProps = ContentViewerProps & {onSave?: (content: Blob | string) => Promise<void>};
+export type ContentEditorProps = ContentViewerProps & {onSave?: (content: WebResourceContentType) => Promise<void>};
 export type ContentEditor = React.ComponentType<ContentEditorProps>;
+
+export type ResolvedContentEditorProps<T extends WebResourceContentType = WebResourceContentType> = ContentEditorProps & ResolvedContentViewerProps<T>
 
 const EDITORS: Record<string, ContentEditor> = {
     [WELL_KNOWN_TYPES.ttl]: MonacoEditor,
@@ -16,18 +23,18 @@ const EDITORS: Record<string, ContentEditor> = {
 
 const DEFAULT_EDITOR = CodemirrorEditor;
 
-export function getEditor(uri?: string, type?: string, content?: string | Blob): [ContentEditor, string | undefined] {
-    let contentType = guessContentType(content, type, uri);
+export function getEditor(resource: WebResourceDescriptor): [ContentEditor, WebResourceDescriptor] {
+    resource = guessContentType(resource);
 
     return [
-        (contentType && EDITORS[contentType]) || DEFAULT_EDITOR,
-        contentType
+        (resource.type && EDITORS[resource.type]) || DEFAULT_EDITOR,
+        resource
         ];
 }
 
 export const GenericEditor: ContentEditor = (props) => {
 
-    const [Editor, contentType] = useMemo(()=> getEditor(props.uri, props.type, props.content), [props.content, props.type, props.uri]);
+    const [Editor, resourceWithType] = useMemo(()=> getEditor(props.resource), [props.resource]);
 
-    return <Editor {...props} type={contentType}/>;
+    return <Editor {...props} resource={resourceWithType}/>;
 }
