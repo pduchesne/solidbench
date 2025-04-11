@@ -277,15 +277,22 @@ export const PodBrowser = (props: { rootUrl?: string, fetch?: typeof fetch, disp
             setSelectedResource(currentUrl);
     }, [currentUrl]);
 
+    /*
+    This callback intercepts all clicks on <a href> elements within the pod browser
+    and replaces the natural browser navigation with pod-relative resolution
+     */
     const anchorClickCallback = useCallback((e: React.MouseEvent) => {
         //console.log(e.type + " : " + e.currentTarget.tagName);
         if (e.target instanceof HTMLAnchorElement &&
             e.target.href &&
             !e.target.target &&
             !e.target.href.startsWith('mailto')) {
+            let hrefValue = e.target.attributes.getNamedItem("href")?.value || e.target.href;
+            if (!hrefValue.match(ABSURL_REGEX)) {
+                hrefValue = new URL(hrefValue, currentUrl).toString();
+            }
+            navigateToResource(hrefValue);
             e.preventDefault();
-            const relUri = e.target.href.replace(e.target.baseURI, './')
-            navigateToResource(new URL(relUri, currentUrl).toString());
         }
     }, [navigateToResource]);
 
