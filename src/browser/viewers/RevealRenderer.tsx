@@ -33,7 +33,8 @@ const RevealRenderer = (props: { content: string, uri?: string }) => {
     const styleSheets$ = usePromiseFn(async () => {
         //@ts-ignore
         const themeCss = (await import("!!raw-loader!reveal.js/dist/theme/"+theme+".css")).default;
-        const customCss = slideOptions.css ? (await fetch(slideOptions.css).then(r => r.text())) : undefined;
+        const customCssUri = slideOptions.css && new URL(slideOptions.css, props.uri).toString();
+        const customCss = customCssUri ? (await fetch(customCssUri).then(r => r.text())) : undefined;
         return [themeCss, customCss];
     }, [theme, slideOptions.css])
 
