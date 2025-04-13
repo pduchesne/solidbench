@@ -32,7 +32,7 @@ import RadarIcon from '@mui/icons-material/Radar';
 import {useNavigate} from "react-router";
 import {Navigate, Route, Routes, useParams} from "react-router-dom";
 import {PodOverview} from "./overview";
-import {ModalComponent, useModal} from "../ui/modal";
+import {ModalComponent, useModal} from "@hilats/react-utils";
 import {getViewer, guessContentType} from "./viewers/GenericViewer";
 import {getEditor} from "./viewers/GenericEditor";
 import Dropzone from "react-dropzone";

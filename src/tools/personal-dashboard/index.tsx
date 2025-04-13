@@ -25,7 +25,7 @@ APP_REGISTRY.registerModule({
     id: 'retail',
     label: 'Retail Dashboard',
     icon: LocalGroceryStoreIcon,
-    loadApp: () => import('../retail').then(m => m.default)
+    loadApp: () => import('@hilats/solid-app-retail').then(m => m.default)
 })
 
 APP_REGISTRY.registerModule({
@@ -126,7 +126,7 @@ export const PersonalDashboard = (props: {selectedPanel?: string }) => {
         <Sidenav selectPanel={(panelId: string) => {navigate(APP_ROOT+panelId);}} selected={panelId} customPanels={appDescriptors}/>
         <div className="contentPane">
             <Suspense fallback={<DEFAULTS.Loader message="Loading UI..."/>}>
-                <Panel APP_ROOT={APP_ROOT+panelId+'/'} storage={podStorage} />
+                <Panel APP_ROOT={APP_ROOT+panelId+'/'} storage={podStorage} theme={appContext.theme}/>
             </Suspense>
         </div>
 
