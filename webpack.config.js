@@ -90,6 +90,7 @@ module.exports = (env, argv) => {
                 // cf https://github.com/facebook/react/issues/14257
                 react: path.resolve(__dirname, 'node_modules/react'),
                 'react-router': path.resolve(__dirname, 'node_modules/react-router'),
+                'react-toastify': path.resolve(__dirname, 'node_modules/react-toastify'),
                 'react-router-dom': path.resolve(__dirname, 'node_modules/react-router-dom'),
                     rdflib: path.resolve(__dirname, 'node_modules/rdflib'),
                     'react-dom': path.resolve(__dirname, 'node_modules/react-dom'),
