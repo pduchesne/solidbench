@@ -57,7 +57,11 @@ export const AppContextProvider = memo((props: { children?: React.ReactNode }) =
 
     useEffect(
         () => {
-            const podUrl$ = session.info.webId ? getPodUrls(session.info.webId, {fetch: session.fetch}).then(podUrls => podUrls[0]) : Promise.resolve(undefined);
+            const podUrl$ = session.info.webId ?
+                // TODO deal with multiple storage
+                // take last one as a temporary fix tto Inrupt having mixed old and new storages
+                getPodUrls(session.info.webId, {fetch: session.fetch}).then(podUrls => podUrls[podUrls.length - 1]) :
+                Promise.resolve(undefined);
 
             podUrl$.then(podUrl => {
                 appContext.updateCtx({
