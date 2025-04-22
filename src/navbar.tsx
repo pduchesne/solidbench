@@ -87,11 +87,6 @@ export const AppNavBar = memo(() => {
 
 
                 <Box sx={{overflow: 'hidden', flexGrow: 0, float: 'right'}}>
-                    {
-                        appContext.extensionVersion ?
-                            <span title={"Extension installed: "+appContext.extensionVersion} style={{color: '#177817', marginRight: '5px'}}><ExtensionIcon /></span> :
-                            <span title="Download & Install extension manually" style={{marginRight: '5px'}}><a href="/solid-annotations-extension.zip"><ExtensionIcon /></a></span>
-                    }
                     <div style={{display: 'inline-block'}}>
                     {session.info.isLoggedIn ? (
                         <ProfileMenu/>
@@ -100,9 +95,7 @@ export const AppNavBar = memo(() => {
                             <LoginMultiButton
                                 authOptions={
                                     {
-                                        //clientName: "Web Annotations App",
                                         clientId: process.env.ROOT_URL+"/client.jsonld",
-                                        //clientId: "https://highlatitud.es/app/annotations.jsonld",
                                         //redirectUrl: new URL("/", window.location.href).toString(),
 
                                         //tokenType: 'Bearer'

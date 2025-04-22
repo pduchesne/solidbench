@@ -263,8 +263,7 @@ module.exports = (env, argv) => {
                         transform(content, path) {
                             return injectEnv(content)
                         }
-                    },
-                    { from: '@hilats/annotations-extension/solid-annotations-extension.zip', to: '.', context: 'node_modules' }
+                    }
                 ]
             }),
             dotenvPlugin,

@@ -13,66 +13,7 @@ import { APP_ROOT } from "../..";
 import {AppContext} from "../../appContext";
 import { PodStorage, MemoryStorage } from "@hilats/solid-utils";
 
-import LocalGroceryStoreIcon from '@mui/icons-material/LocalGroceryStore';
 import LibraryMusicIcon from '@mui/icons-material/LibraryMusic';
-// import MonitorHeartIcon from '@mui/icons-material/MonitorHeart';
-// import MovieIcon from '@mui/icons-material/Movie';
-import CommentIcon from '@mui/icons-material/Comment';
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import AssistantIcon from '@mui/icons-material/Assistant';
-
-APP_REGISTRY.registerModule({
-    id: 'retail',
-    label: 'Retail Dashboard',
-    icon: LocalGroceryStoreIcon,
-    loadApp: () => import('@hilats/solid-app-retail').then(m => m.default)
-})
-
-APP_REGISTRY.registerModule({
-    id: 'annotations',
-    label: 'Annotation Dashboard',
-    icon: CommentIcon,
-    loadApp: () => import('../annotations').then(m => m.default)
-})
-
-APP_REGISTRY.registerModule( {
-    id: 'music',
-    label: 'Music Dashboard',
-    icon: LibraryMusicIcon,
-    loadApp: () => import('@hilats/solid-app-music').then(m => m.default)
-})
-
-APP_REGISTRY.registerModule({
-    id: 'assistant',
-    label: 'AI Assistant',
-    icon: AssistantIcon,
-    loadApp: () => import('@hilats/solid-app-assistant').then(m => m.default)
-})
-
-APP_REGISTRY.registerModule({
-    id: 'template',
-    label: 'Template Dashboard',
-    icon: DashboardIcon,
-    loadApp: () => import('@hilats/solid-app-template').then(m => m.default)
-})
-
-/*
-
-export const PANELS: Record<string, LazyExoticComponent<PersonalDataApp>> = {
-    podbrowser: lazy(() => import('../../browser/pod-browser')),
-    retail: lazy(() => import('../retail')),
-    //music: lazy(() => import('../music')),
-    settings: lazy(() => import('./settings')),
-    annotations: lazy(() => import('../annotations')),
-    movies: lazy(() => import('../movies')),
-    health: lazy(() => import('../health')),
-}
-
-Object.entries(APP_REGISTRY.items).forEach( ([id, appDescriptor]) => {
-    PANELS[appDescriptor.id] = lazy(() => appDescriptor.loadApp().then(app => ({default: app})));
-});
-
- */
 
 DEFAULTS.loaderMessage = 'Loading data...';
 

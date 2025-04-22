@@ -8,7 +8,7 @@
   ],
   "client_uri": "${process.env.ROOT_URL}",
   "logo_uri": "${process.env.ROOT_URL}/images/solidbench-1024.png",
-  "tos_uri": "https://annotations.highlatitud.es/tos",
+  "tos_uri": "${process.env.ROOT_URL}/tos",
   "scope": "openid offline_access webid",
   "grant_types": [
     "refresh_token",

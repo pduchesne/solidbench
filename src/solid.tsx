@@ -148,13 +148,6 @@ export async function getFileWithHeaders(path: string, options?: GetFileOptions)
     return file as unknown as Blob & SolidFileMetadata;
 }
 
-/**
- * Create a memoized annotation container to perform storage operations on an annotation file
- * @param annotations
- * @param preselection
- * @param onNewAnnotation
- * @param onSelection
- */
 export function useSolidFile(
     path: string,
     fetchFn: typeof fetch = fetch
@@ -199,7 +192,7 @@ export type ContainerAccessor = {
 };
 
 /**
- * Create a memoized annotation container to perform storage operations on a solid dataset
+ * Create a memoized container to perform storage operations on a solid dataset
  */
 export function useSolidContainer(
     path: string,

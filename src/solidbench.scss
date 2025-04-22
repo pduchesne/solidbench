@@ -73,8 +73,6 @@
 
 }
 
-@import '~@hilats/annotations-react-ui/scss/annotations.scss';
-
 /* MUI color overrides */
 /*
 .mainApp {
@@ -862,111 +860,6 @@ svg {
       @extend .paddedPanel;
     }
   }
-}
-
-.annotations {
-
-  @import "node_modules/@hilats/annotations-react-ui/scss/annotations.scss";
-
-  .annotations-list {
-    @extend .sidenav;
-
-    background-color: var(--theme-back2);
-    flex: 0.5;
-
-    &>div {
-      margin-top: 5px;
-    }
-
-    .annotations-list-target {
-      @extend .vFlow;
-
-      .annotations-list-target-name {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-
-        &.selected {
-          background-color: var(--theme-selection)
-        }
-      }
-
-      .target-annotations-list {
-        margin-left: 15px;
-
-        & > div {
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-
-          @extend .actionableItem;
-        }
-      }
-    }
-  }
-
-  .resource-viewer {
-    @extend .vFlow;
-
-    .resource-url-input {
-      flex: none;
-    }
-
-    .viewer-html {
-      background-color: white;
-      color: #101010;
-    }
-
-    .secondary-resources {
-      @extend .hFlow;
-      flex: 0.3;
-
-      border-top: 1px solid var(--theme-border2);
-      box-shadow: 2px 2px 6px var(--theme-shadow);
-
-      .secondary-resource {
-        @extend .vFlow;
-        position: relative;
-
-        .secondary-resource-url {
-          position: absolute;
-          top: 0px;
-          width: 100%;
-          z-index: 100;
-          background-color: var(--theme-back2);
-          flex:none;
-          opacity: 0;
-          text-wrap: nowrap;
-          font-size: 70%;
-          padding: 0px 5px;
-          text-overflow: ellipsis;
-          overflow: hidden;
-        }
-
-        &:hover .secondary-resource-url {
-          opacity: 1;
-        }
-      }
-
-
-    }
-  }
-}
-
-
-
-
-/**
-Copied from web-annotations/annotations-app
- */
-
-.annotationsLayer {
-  z-index: 100;
-  position: absolute;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
 }
 
 .CodeMirror {

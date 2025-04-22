@@ -18,15 +18,12 @@ import {AppThemeProvider} from "./theme";
 import {SessionProvider, useFixedSolidSession} from "./solid/SessionProvider";
 import {SolidAuth} from "./solid/auth";
 import {MODULE_REGISTRY} from "@hilats/data-modules";
-import {DM_ANNOTATIONS} from "@hilats/annotations-core";
 
 import { ToastContainer } from 'react-toastify';
 import loglevel from 'loglevel';
 import { toast } from 'react-toastify';
 loglevel.setDefaultLevel('debug');
 loglevel.getLogger('iframeMessenger').setLevel('debug');
-
-MODULE_REGISTRY.registerModule(DM_ANNOTATIONS);
 
 export const APP_ROOT = '/';
 
